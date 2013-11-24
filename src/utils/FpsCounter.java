@@ -19,10 +19,12 @@ public class FpsCounter {
         frameCount += 1;
         long actual = System.currentTimeMillis();
         float elapsed = (float) (actual - lastTimeStamp) / 1000;
-
-        fps = (float) frameCount / elapsed;
-        frameCount = 0;
-        lastTimeStamp = System.currentTimeMillis();
+        // just refresh every sencond
+        if(elapsed > 1.0f) {
+            fps = (float) frameCount / elapsed;
+            frameCount = 0;
+            lastTimeStamp = System.currentTimeMillis();
+        }
         return fps;
 
     };
