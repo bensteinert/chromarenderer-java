@@ -1,0 +1,42 @@
+package utils;
+
+import net.chroma.math.COLORS;
+import net.chroma.math.Vector3;
+
+/**
+ * @author steinerb
+ */
+public class ChromaCanvas {
+
+    protected final Vector3[] pixels;
+    protected final int width;
+    protected final int height;
+
+
+    public ChromaCanvas(int width, int height) {
+        this.width = width;
+        this.height = height;
+        pixels = new Vector3[width * height];
+        cleanCanvas();
+    }
+
+
+    public void cleanCanvas() {
+        for (int i = 0; i < width * height; i++) {
+            pixels[i] = COLORS.BLACK;
+        }
+    }
+
+
+    public byte[] toByteImage() {
+        int pixelCount = width * height;
+        byte[] result = new byte[pixelCount * 3];
+        for (int i = 0, j = 0; i < pixelCount; i+=1, j+=3) {
+            result[j] = (byte) (pixels[i].getZ());
+            result[j + 1] = (byte) (pixels[i].getY());
+            result[j + 2] = (byte) (pixels[i].getX());
+        }
+
+        return result;
+    }
+}

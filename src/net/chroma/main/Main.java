@@ -5,11 +5,11 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
-import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import net.chroma.Renderer;
+import net.chroma.renderer.cores.ColorCubeRenderer;
 import net.chroma.renderer.cores.RandomPixelRenderer;
 import utils.FpsCounter;
 
@@ -19,6 +19,7 @@ public class Main extends Application {
     private Renderer renderer;
     private int imgWidth = 512;
     private int imgHeight = 512;
+    private int scanlineStride;
 
     @Override
     public void start(final Stage primaryStage) throws Exception {
@@ -30,6 +31,9 @@ public class Main extends Application {
 
         fpsCounter = new FpsCounter();
         renderer = new RandomPixelRenderer(imgWidth, imgHeight);
+        //renderer = new ColorCubeRenderer(imgWidth, imgHeight);
+
+        scanlineStride = imgWidth * 3;
 
         final WritableImage img = new WritableImage(imgWidth, imgHeight);
 
@@ -48,7 +52,7 @@ public class Main extends Application {
 
     private void mainLoop(WritableImage img) {
         byte[] pixels = renderer.renderNextImage(imgWidth, imgHeight);
-        img.getPixelWriter().setPixels(0, 0, imgWidth, imgHeight, PixelFormat.getByteBgraInstance(), pixels, 0, 4*imgWidth);
+        img.getPixelWriter().setPixels(0, 0, imgWidth, imgHeight, PixelFormat.getByteRgbInstance(), pixels, 0, scanlineStride);
     }
 
 

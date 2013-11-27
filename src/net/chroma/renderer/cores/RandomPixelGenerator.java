@@ -31,9 +31,10 @@ public class RandomPixelGenerator {
         Vector3[] img = new Vector3[count];
 
         for (int i = 0; i < count; i++) {
-            //pixels[i] = new Vector3(255.0f * (float)Math.random(), 255.0f * (float)Math.random(), 255.0f * (float)Math.random());
-            //img[i] = new Vector3(255.0f * twister.nextFloat(), 255.0f * twister.nextFloat(), 255.0f * twister.nextFloat());
-            img[i] = new Vector3(255.0f,.0f,.0f);
+            img[i] = new Vector3(
+                    255.0f * twister.nextFloat(),
+                    255.0f * twister.nextFloat(),
+                    255.0f * twister.nextFloat());
         }
 
         return img;

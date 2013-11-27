@@ -93,8 +93,8 @@ public class ForkAccumulationBuffer extends SingleThreadedAccumulationBuffer{
 
                 for(int x = 0; x<taskWidth; x++){
                     int idx = offsetX + x;
-                    pixels[idx] = project.mult(255.0f);
-                    //pixels[idx] =  (pixels[idx].mult(accCount).plus(input[idx]).div(accCount+1)).mult(project);
+                    //pixels[idx] = project.mult(255.0f);
+                    pixels[idx] =  (pixels[idx].mult(accCount).plus(input[idx]).div(accCount+1)).mult(project);
                 }
             }
         }
