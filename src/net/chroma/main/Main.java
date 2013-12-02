@@ -9,16 +9,15 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import net.chroma.Renderer;
-import net.chroma.renderer.cores.ColorCubeRenderer;
-import net.chroma.renderer.cores.RandomPixelRenderer;
+import net.chroma.renderer.cores.MovingAverageRenderer;
 import utils.FpsCounter;
 
 public class Main extends Application {
 
     private FpsCounter fpsCounter;
     private Renderer renderer;
-    private int imgWidth = 512;
-    private int imgHeight = 512;
+    private int imgWidth = 1024;
+    private int imgHeight = 1024;
     private int scanlineStride;
 
     @Override
@@ -30,7 +29,7 @@ public class Main extends Application {
         primaryStage.show();
 
         fpsCounter = new FpsCounter();
-        renderer = new RandomPixelRenderer(imgWidth, imgHeight);
+        renderer = new MovingAverageRenderer(imgWidth, imgHeight);
         //renderer = new ColorCubeRenderer(imgWidth, imgHeight);
 
         scanlineStride = imgWidth * 3;

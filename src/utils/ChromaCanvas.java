@@ -1,6 +1,6 @@
 package utils;
 
-import net.chroma.math.COLORS;
+import net.chroma.math.MutableVector3;
 import net.chroma.math.Vector3;
 
 /**
@@ -17,13 +17,16 @@ public class ChromaCanvas {
         this.width = width;
         this.height = height;
         pixels = new Vector3[width * height];
+        for (int i = 0; i < width * height; i++) {
+            pixels[i] = new MutableVector3();
+        }
         cleanCanvas();
     }
 
 
     public void cleanCanvas() {
         for (int i = 0; i < width * height; i++) {
-            pixels[i] = COLORS.BLACK;
+            pixels[i].reset();
         }
     }
 
@@ -38,5 +41,9 @@ public class ChromaCanvas {
         }
 
         return result;
+    }
+
+    public Vector3[] getPixels() {
+        return pixels;
     }
 }

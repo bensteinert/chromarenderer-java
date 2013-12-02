@@ -26,17 +26,15 @@ public class RandomPixelGenerator {
         return pixels;
     }
 
-    protected Vector3[] randomFloatPixels(int imgWidth, int imgHeight) {
-        int count = imgWidth * imgHeight;
-        Vector3[] img = new Vector3[count];
+    protected void randomFloatPixels(Vector3[] pixels) {
+        int count = pixels.length;
 
         for (int i = 0; i < count; i++) {
-            img[i] = new Vector3(
-                    255.0f * twister.nextFloat(),
-                    255.0f * twister.nextFloat(),
-                    255.0f * twister.nextFloat());
+//            pixels[i] = new ImmutableVector3(
+//                    255.0f * twister.nextFloat(),
+//                    255.0f * twister.nextFloat(),
+//                    255.0f * twister.nextFloat());
+            pixels[i].set(255.0f * twister.nextFloat(), 255.0f * twister.nextFloat(), 255.0f * twister.nextFloat());
         }
-
-        return img;
     }
 }
