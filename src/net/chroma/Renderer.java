@@ -6,4 +6,6 @@ package net.chroma;
 public interface Renderer {
 
     byte[] renderNextImage(int imgWidth, int imgHeight);
+
+    boolean isContinuous();
 }

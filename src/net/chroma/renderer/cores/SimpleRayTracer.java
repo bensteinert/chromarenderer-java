@@ -90,4 +90,9 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
         return toByteImage();
     }
 
+    @Override
+    public boolean isContinuous() {
+        return false;
+    }
+
 }

@@ -1,7 +1,7 @@
 package net.chroma.main;
 
 import net.chroma.Renderer;
-import net.chroma.renderer.cores.SimpleRayTracer;
+import net.chroma.renderer.cores.MovingAverageRenderer;
 import utils.FpsCounter;
 
 /**
@@ -14,7 +14,9 @@ public class Chroma2 implements Runnable{
     private int imgWidth;
     private int imgHeight;
     private byte[] currentFrame;
+
     private boolean running = false;
+    private boolean changed = false;
 
 
     public Chroma2(int width, int height) {
@@ -22,10 +24,9 @@ public class Chroma2 implements Runnable{
         imgWidth = width;
         imgHeight = height;
         currentFrame = new byte[imgHeight * imgHeight * 3];
-        //renderer = new MovingAverageRenderer(imgWidth, imgHeight);
+        renderer = new MovingAverageRenderer(imgWidth, imgHeight);
         //renderer = new ColorCubeRenderer(imgWidth, imgHeight);
-        renderer = new SimpleRayTracer(imgWidth, imgHeight);
-
+        //renderer = new SimpleRayTracer(imgWidth, imgHeight);
     }
 
     public float getFps(){
@@ -33,19 +34,26 @@ public class Chroma2 implements Runnable{
     }
 
     public byte[] getCurrentFrame() {
+        changed = false;
         return currentFrame;
     }
 
     @Override
     public void run() {
         running = true;
-        while(running) {
-            currentFrame = renderer.renderNextImage(imgWidth, imgHeight);
-            fpsCounter.frame();
-        }
+         do {
+             currentFrame = renderer.renderNextImage(imgWidth, imgHeight);
+             changed = true;
+             fpsCounter.frame();
+         } while(running && renderer.isContinuous());
     }
 
     public void finish() {
         running = false;
     }
+
+    public boolean hasChanges(){
+        return changed;
+    }
+
 }

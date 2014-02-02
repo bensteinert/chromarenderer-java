@@ -11,4 +11,9 @@ public class WhittedRayTracer implements Renderer {
     public byte[] renderNextImage(int imgWidth, int imgHeight) {
         return new byte[0];
     }
+
+    @Override
+    public boolean isContinuous() {
+        return false;
+    }
 }

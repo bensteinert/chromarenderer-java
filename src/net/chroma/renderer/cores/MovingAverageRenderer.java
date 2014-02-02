@@ -30,4 +30,9 @@ public class MovingAverageRenderer implements Renderer {
         return buffer.toByteImage();
     }
 
+    @Override
+    public boolean isContinuous() {
+        return true;
+    }
+
 }

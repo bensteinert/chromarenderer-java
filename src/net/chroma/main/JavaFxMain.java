@@ -35,7 +35,10 @@ public class JavaFxMain extends Application {
             @Override
             public void handle(long now) {
                 primaryStage.setTitle("Chroma2 - " + (int)chroma.getFps() + " fps");
-                img.getPixelWriter().setPixels(0, 0, imgWidth, imgHeight, PixelFormat.getByteRgbInstance(), chroma.getCurrentFrame(), 0, scanlineStride);
+                if(chroma.hasChanges()) {
+                    img.getPixelWriter().setPixels(0, 0, imgWidth, imgHeight, PixelFormat.getByteRgbInstance(),
+                            chroma.getCurrentFrame(), 0, scanlineStride);
+                }
             }
         }.start();
     }

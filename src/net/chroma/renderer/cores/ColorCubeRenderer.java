@@ -20,6 +20,11 @@ public class ColorCubeRenderer extends ChromaCanvas implements Renderer {
         return toByteImage();
     }
 
+    @Override
+    public boolean isContinuous() {
+        return false;
+    }
+
     public static void createCubes(Vector3[] pixels, int imgWidth, int imgHeight) {
         for (int y=0; y<imgHeight; y++) {
             for(int x=0; x<imgWidth; x++) {
