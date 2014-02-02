@@ -8,6 +8,7 @@ import net.chroma.math.Vector3;
  */
 public class ChromaCanvas {
 
+    //TODO: Write post on JVM Array performance: one dimensional vs. two-dimensional: The latter one is 8 times slower ;)
     protected final Vector3[] pixels;
     protected final int width;
     protected final int height;

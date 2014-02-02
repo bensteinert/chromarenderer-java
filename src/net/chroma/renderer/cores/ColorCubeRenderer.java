@@ -22,15 +22,15 @@ public class ColorCubeRenderer extends ChromaCanvas implements Renderer {
 
     public static void createCubes(Vector3[] pixels, int imgWidth, int imgHeight) {
         for (int y=0; y<imgHeight; y++) {
-            for(int x=0; x<imgWidth; x++){
-                if(y > imgHeight/2){
-                    if(x > imgWidth/2){
+            for(int x=0; x<imgWidth; x++) {
+                if(y > imgHeight/2) {
+                    if(x > imgWidth/2) {
                         pixels[y*imgWidth + x].set(COLORS.RED);
                     } else{
                         pixels[y*imgWidth + x].set(COLORS.BLUE);
                     }
                 } else {
-                    if(x > imgWidth/2){
+                    if(x > imgWidth/2) {
                         pixels[y*imgWidth + x].set(COLORS.GREEN);
                     } else{
                         pixels[y*imgWidth + x].set(COLORS.PURPLE);

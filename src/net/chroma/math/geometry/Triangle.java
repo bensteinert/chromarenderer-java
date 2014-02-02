@@ -11,7 +11,6 @@ public class Triangle implements Geometry {
     private static final double EPSILON = 0.000001;
 
     private final ImmutableVector3 p0, p1, p2;
-    private final ImmutableVector3 E1, E2;
     private final ImmutableVector3 n;
 
     public Triangle(ImmutableVector3 p0, ImmutableVector3 p1, ImmutableVector3 p2, ImmutableVector3 n) {
@@ -19,14 +18,17 @@ public class Triangle implements Geometry {
         this.p1 = p1;
         this.p2 = p2;
         this.n = n;
-        E1 = new ImmutableVector3(p1).subtract(p0);
-        E2 = new ImmutableVector3(p2).subtract(p0);
+
     }
 
+    @Override
     public float intersect(Ray ray){
 
         ImmutableVector3 P, Q, T;
         float det;
+
+        ImmutableVector3 E1 = new ImmutableVector3(p1).subtract(p0);
+        ImmutableVector3 E2 = new ImmutableVector3(p2).subtract(p0);
 
         /* begin calculating determinant - also used to calculate U parameter */
         P = ray.getDirection().crossProduct(E2);
