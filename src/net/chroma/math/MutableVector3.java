@@ -44,6 +44,14 @@ public class MutableVector3 implements Vector3 {
     }
 
     @Override
+    public Vector3 subtract(Vector3 input) {
+        values[0] -= input.getX();
+        values[1] -= input.getY();
+        values[2] -= input.getZ();
+        return this;
+    }
+
+    @Override
     public float getX() {
         return values[0];
     }
@@ -83,5 +91,13 @@ public class MutableVector3 implements Vector3 {
         values[0] = x;
         values[1] = y;
         values[2] = z;
+    }
+
+    @Override
+    public Vector3 crossProduct(Vector3 input) {
+        values[0] = this.getY() * input.getZ() - this.getZ() * input.getY();
+        values[1] = this.getZ() * input.getX() - this.getX() * input.getZ();
+        values[2] = this.getX() * input.getY() - this.getY() * input.getX();
+        return this;
     }
 }

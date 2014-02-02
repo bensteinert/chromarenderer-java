@@ -17,6 +17,12 @@ public class ImmutableVector3 implements Vector3 {
         this.z = z;
     }
 
+    public ImmutableVector3(Vector3 input) {
+        this.x = input.getX();
+        this.y = input.getY();
+        this.z = input.getZ();
+    }
+
     public ImmutableVector3 mult(float val){
         return new ImmutableVector3(
                 x * val,
@@ -36,6 +42,15 @@ public class ImmutableVector3 implements Vector3 {
     public Vector3 div(float val) {
         float div = 1.0f / val;
         return mult(div);
+    }
+
+    @Override
+    public ImmutableVector3 subtract(Vector3 input) {
+        return new ImmutableVector3(
+                x - input.getX(),
+                y - input.getY(),
+                z - input.getZ()
+        );
     }
 
     public float getX() {
@@ -67,6 +82,14 @@ public class ImmutableVector3 implements Vector3 {
     @Override
     public void set(float x, float y, float z) {
         throw new NotImplementedException();
+    }
+
+    @Override
+    public ImmutableVector3 crossProduct(Vector3 input) {
+        return new ImmutableVector3(
+                this.getY() * input.getZ() - this.getZ() * input.getY(),
+                this.getZ() * input.getX() - this.getX() * input.getZ(),
+                this.getX() * input.getY() - this.getY() * input.getX());
     }
 
     @Override

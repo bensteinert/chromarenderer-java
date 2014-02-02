@@ -11,6 +11,12 @@ public interface Vector3 {
 
     Vector3 div(float val);
 
+    Vector3 subtract(Vector3 input);
+
+    default float dot(Vector3 input) {
+        return getX() * input.getX() + getY() * input.getY() + getZ() * input.getZ();
+    }
+
     float getX();
 
     float getY();
@@ -24,4 +30,6 @@ public interface Vector3 {
     void set(Vector3 input);
 
     void set(float x, float y, float z);
+
+    Vector3 crossProduct(Vector3 input);
 }
