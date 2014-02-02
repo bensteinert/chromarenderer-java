@@ -11,14 +11,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class MultiThreadedAccumulationBuffer extends SingleThreadedAccumulationBuffer{
 
-    private final int cores;
-
     private final ForkJoinPool pool;
-
 
     public MultiThreadedAccumulationBuffer(int width, int height) {
         super(width, height);
-        cores = Runtime.getRuntime().availableProcessors();
         pool = new ForkJoinPool();
     }
 
@@ -28,7 +24,7 @@ public class MultiThreadedAccumulationBuffer extends SingleThreadedAccumulationB
             throw new IllegalArgumentException("Mismatching Accumulation buffer input!");
         }
 
-        pool.invoke(new AccumulationTask(width, height, 0 , 0, input, 0));
+        pool.invoke(new AccumulationTask(width, height, 0 , 0, input, true));
         pool.awaitQuiescence(1, TimeUnit.SECONDS);
         accCount++;
         return this;
@@ -42,32 +38,32 @@ public class MultiThreadedAccumulationBuffer extends SingleThreadedAccumulationB
         private final int offsetWidth;
         private final int offsetHeight;
         private final Vector3[] input;
-        private final int depth;
+        private final boolean divide;
 
-        private AccumulationTask(int width, int height, int offsetWidth, int offsetHeight, Vector3[] input, int depth) {
+        private AccumulationTask(int width, int height, int offsetWidth, int offsetHeight, Vector3[] input, boolean divide) {
             super();
             this.taskWidth = width;
             this.taskHeight = height;
             this.offsetWidth = offsetWidth;
             this.offsetHeight = offsetHeight;
             this.input = input;
-            this.depth = depth;
+            this.divide = divide;
         }
 
         @Override
         protected void compute() {
-            if(cores <= depth * 4) {
+            // simple fork no core detection, multithreading could be meaningless here, above all (+1FPS vs Single-threaded) ;)
+            if(!divide) {
                 //System.out.println("Executing " + Thread.currentThread().getName());
                 this.accumulate();
             } else {
                 //System.out.println("Recursing " + Thread.currentThread().getName());
-                int splitX = width / 2;
-                int splitY = height / 2;
-                int newDepth = depth + 1;
-                AccumulationTask accumulationTask = new AccumulationTask(splitX, splitY, offsetWidth, offsetHeight, input, newDepth);
-                AccumulationTask accumulationTask1 = new AccumulationTask(splitX, splitY, offsetWidth + splitX, offsetHeight, input, newDepth);
-                AccumulationTask accumulationTask2 = new AccumulationTask(splitX, splitY, offsetWidth, offsetHeight + splitY, input, newDepth);
-                AccumulationTask accumulationTask3 = new AccumulationTask(splitX, splitY, offsetWidth + splitX, offsetHeight + splitY, input, newDepth);
+                int splitX = taskWidth / 2;
+                int splitY = taskHeight / 2;
+                AccumulationTask accumulationTask = new AccumulationTask(splitX, splitY, offsetWidth, offsetHeight, input, false);
+                AccumulationTask accumulationTask1 = new AccumulationTask(splitX, splitY, offsetWidth + splitX, offsetHeight, input, false);
+                AccumulationTask accumulationTask2 = new AccumulationTask(splitX, splitY, offsetWidth, offsetHeight + splitY, input, false);
+                AccumulationTask accumulationTask3 = new AccumulationTask(splitX, splitY, offsetWidth + splitX, offsetHeight + splitY, input, false);
                 invokeAll(
                         accumulationTask,
                         accumulationTask1,

@@ -8,17 +8,14 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import net.chroma.Renderer;
-import net.chroma.renderer.cores.MovingAverageRenderer;
-import utils.FpsCounter;
 
-public class Main extends Application {
+public class JavaFxMain extends Application {
 
-    private FpsCounter fpsCounter;
-    private Renderer renderer;
-    private int imgWidth = 1024;
-    private int imgHeight = 1024;
-    private int scanlineStride;
+    private static int imgWidth = 1024;
+    private static int imgHeight = 1024;
+    private static int scanlineStride = imgWidth * 3;
+
+    private static Chroma2 chroma = new Chroma2(imgWidth, imgHeight);
 
     @Override
     public void start(final Stage primaryStage) throws Exception {
@@ -27,12 +24,6 @@ public class Main extends Application {
         Scene scene = new Scene(root, imgWidth, imgHeight);
         primaryStage.setScene(scene);
         primaryStage.show();
-
-        fpsCounter = new FpsCounter();
-        renderer = new MovingAverageRenderer(imgWidth, imgHeight);
-        //renderer = new ColorCubeRenderer(imgWidth, imgHeight);
-
-        scanlineStride = imgWidth * 3;
 
         final WritableImage img = new WritableImage(imgWidth, imgHeight);
 
@@ -43,20 +34,17 @@ public class Main extends Application {
         new AnimationTimer() {
             @Override
             public void handle(long now) {
-                primaryStage.setTitle("Chroma2 - " + (int)fpsCounter.fps() + " fps");
-                mainLoop(img);
+                primaryStage.setTitle("Chroma2 - " + (int)chroma.getFps() + " fps");
+                img.getPixelWriter().setPixels(0, 0, imgWidth, imgHeight, PixelFormat.getByteRgbInstance(), chroma.getCurrentFrame(), 0, scanlineStride);
             }
         }.start();
     }
 
-    private void mainLoop(WritableImage img) {
-        byte[] pixels = renderer.renderNextImage(imgWidth, imgHeight);
-        img.getPixelWriter().setPixels(0, 0, imgWidth, imgHeight, PixelFormat.getByteRgbInstance(), pixels, 0, scanlineStride);
-    }
-
-
     public static void main(String[] args) {
+        Thread thread = new Thread(chroma);
+        thread.start();
         launch(args);
+        chroma.finish();
     }
 
 }

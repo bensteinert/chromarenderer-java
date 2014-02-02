@@ -15,7 +15,7 @@ public class FpsCounter {
         frameCount = 0;
     }
 
-    public float fps() {
+    public void frame() {
         frameCount += 1;
         long actual = System.currentTimeMillis();
         float elapsed = (float) (actual - lastTimeStamp) / 1000;
@@ -25,7 +25,10 @@ public class FpsCounter {
             frameCount = 0;
             lastTimeStamp = System.currentTimeMillis();
         }
-        return fps;
+    }
 
-    };
+    public float getFps() {
+        return fps;
+    }
+
 }
