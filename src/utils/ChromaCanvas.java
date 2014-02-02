@@ -36,9 +36,9 @@ public class ChromaCanvas {
         int pixelCount = width * height;
         byte[] result = new byte[pixelCount * 3];
         for (int i = 0, j = 0; i < pixelCount; i+=1, j+=3) {
-            result[j] = (byte) (pixels[i].getZ());
+            result[j] = (byte) (pixels[i].getX());
             result[j + 1] = (byte) (pixels[i].getY());
-            result[j + 2] = (byte) (pixels[i].getX());
+            result[j + 2] = (byte) (pixels[i].getZ());
         }
 
         return result;

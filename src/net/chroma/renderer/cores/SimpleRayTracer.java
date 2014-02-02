@@ -7,6 +7,8 @@ import net.chroma.math.Vector3;
 import net.chroma.math.geometry.Geometry;
 import net.chroma.math.geometry.Triangle;
 import net.chroma.math.raytracing.Ray;
+import net.chroma.renderer.cameras.Camera;
+import net.chroma.renderer.cameras.PinholeCamera;
 import utils.ChromaCanvas;
 
 import java.util.ArrayList;
@@ -19,11 +21,12 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
 
     private List<Geometry> scene;
     private boolean completed;
-    private Vector3 eyePosition;
+    Camera camera;
 
     public SimpleRayTracer(int imageHeight, int imageWidth) {
         super(imageWidth, imageHeight);
         createSomeTriangles();
+        camera = new PinholeCamera(new ImmutableVector3(0.0f, 0.0f, -50.0f), 20f, 0.01f, 0.01f, imageWidth, imageHeight);
         completed = false;
     }
 
@@ -43,7 +46,7 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
             for (int j = 0; j < height; j+=1) {
                 for (int i = 0; i < width; i+=1) {
 
-                    Ray ray = primaryRay(i, j);
+                    Ray ray = camera.getRay(i, j);
 
                     //Vector3 hitpoint;
                     //Vector3 hitpointNormal;
@@ -52,7 +55,7 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
 
                     for (Geometry geometry : scene) {
                         float distance = geometry.intersect(ray);
-                        if (distance< hitDistance) {
+                        if (distance > 0.0f && distance < hitDistance) {
                             hitGeometry = geometry;
                             hitDistance = distance;
                         }
@@ -85,12 +88,6 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
             completed = true;
         }
         return toByteImage();
-    }
-
-
-    private Ray primaryRay(int i, int j) {
-        //TODO
-        return null;
     }
 
 }

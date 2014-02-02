@@ -1,7 +1,7 @@
 package net.chroma.main;
 
 import net.chroma.Renderer;
-import net.chroma.renderer.cores.ColorCubeRenderer;
+import net.chroma.renderer.cores.SimpleRayTracer;
 import utils.FpsCounter;
 
 /**
@@ -23,8 +23,8 @@ public class Chroma2 implements Runnable{
         imgHeight = height;
         currentFrame = new byte[imgHeight * imgHeight * 3];
         //renderer = new MovingAverageRenderer(imgWidth, imgHeight);
-        renderer = new ColorCubeRenderer(imgWidth, imgHeight);
-        //renderer = new SimpleRayTracer(imgWidth, imgHeight);
+        //renderer = new ColorCubeRenderer(imgWidth, imgHeight);
+        renderer = new SimpleRayTracer(imgWidth, imgHeight);
 
     }
 

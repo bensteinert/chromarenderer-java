@@ -100,4 +100,9 @@ public class MutableVector3 implements Vector3 {
         values[2] = this.getX() * input.getY() - this.getY() * input.getX();
         return this;
     }
+
+    public Vector3 normalize() {
+        float recLen = 1.f / length();
+        return this.mult(recLen);
+    }
 }

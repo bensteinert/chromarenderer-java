@@ -17,6 +17,10 @@ public interface Vector3 {
         return getX() * input.getX() + getY() * input.getY() + getZ() * input.getZ();
     }
 
+    default float length() {
+        return (float) Math.sqrt(getX() * getX() + getY() * getY() + getZ() * getZ());
+    }
+
     float getX();
 
     float getY();

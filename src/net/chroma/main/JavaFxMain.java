@@ -11,8 +11,8 @@ import javafx.stage.Stage;
 
 public class JavaFxMain extends Application {
 
-    private static int imgWidth = 1024;
-    private static int imgHeight = 1024;
+    private static int imgWidth = 512;
+    private static int imgHeight = 512;
     private static int scanlineStride = imgWidth * 3;
 
     private static Chroma2 chroma = new Chroma2(imgWidth, imgHeight);

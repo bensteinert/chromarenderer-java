@@ -92,6 +92,7 @@ public class ImmutableVector3 implements Vector3 {
                 this.getX() * input.getY() - this.getY() * input.getX());
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -121,5 +122,10 @@ public class ImmutableVector3 implements Vector3 {
                 ", y=" + y +
                 ", z=" + z +
                 '}';
+    }
+
+    public ImmutableVector3 normalize() {
+        float recLen = 1.f / length();
+        return new ImmutableVector3(getX() * recLen, getY() * recLen, getZ() * recLen);
     }
 }
