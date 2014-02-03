@@ -1,8 +1,10 @@
 package net.chroma.main;
 
 import net.chroma.Renderer;
-import net.chroma.renderer.cores.MovingAverageRenderer;
+import net.chroma.renderer.cores.ColorCubeRenderer;
 import utils.FpsCounter;
+
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author steinerb
@@ -17,6 +19,7 @@ public class Chroma2 implements Runnable{
 
     private boolean running = false;
     private boolean changed = false;
+    private CountDownLatch countDownLatch;
 
 
     public Chroma2(int width, int height) {
@@ -24,9 +27,7 @@ public class Chroma2 implements Runnable{
         imgWidth = width;
         imgHeight = height;
         currentFrame = new byte[imgHeight * imgHeight * 3];
-        renderer = new MovingAverageRenderer(imgWidth, imgHeight);
-        //renderer = new ColorCubeRenderer(imgWidth, imgHeight);
-        //renderer = new SimpleRayTracer(imgWidth, imgHeight);
+        renderer = new ColorCubeRenderer(imgWidth, imgHeight);
     }
 
     public float getFps(){
@@ -41,19 +42,40 @@ public class Chroma2 implements Runnable{
     @Override
     public void run() {
         running = true;
-         do {
-             currentFrame = renderer.renderNextImage(imgWidth, imgHeight);
-             changed = true;
-             fpsCounter.frame();
-         } while(running && renderer.isContinuous());
+        while(running) {
+            do {
+                currentFrame = renderer.renderNextImage(imgWidth, imgHeight);
+                changed = true;
+                fpsCounter.frame();
+            } while(renderer.isContinuous());
+
+            try {
+                countDownLatch = new CountDownLatch(1);
+                countDownLatch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void finish() {
         running = false;
+        if(countDownLatch != null){
+            countDownLatch.countDown();
+        }
+    }
+
+    public void restart(){
+        if(countDownLatch != null){
+            countDownLatch.countDown();
+        }
     }
 
     public boolean hasChanges(){
         return changed;
     }
 
+    public void setRenderer(Renderer renderer) {
+        this.renderer = renderer;
+    }
 }
