@@ -71,7 +71,7 @@ public class JavaFxMain extends Application {
         Thread thread = new Thread(chroma);
         thread.start();
         launch(args);
-        chroma.finish();
+        chroma.shutDown();
         try {
             thread.join();
         } catch (InterruptedException e) {

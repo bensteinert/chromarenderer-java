@@ -20,6 +20,7 @@ public class Chroma2 implements Runnable{
     private boolean running = false;
     private boolean changed = false;
     private CountDownLatch countDownLatch;
+    private boolean shutDown;
 
 
     public Chroma2(int width, int height) {
@@ -47,19 +48,22 @@ public class Chroma2 implements Runnable{
                 currentFrame = renderer.renderNextImage(imgWidth, imgHeight);
                 changed = true;
                 fpsCounter.frame();
-            } while(renderer.isContinuous());
+            } while(renderer.isContinuous() && running);
 
             try {
-                countDownLatch = new CountDownLatch(1);
-                countDownLatch.await();
+                if(!shutDown) {
+                    countDownLatch = new CountDownLatch(1);
+                    countDownLatch.await();
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void finish() {
+    public void shutDown() {
         running = false;
+        shutDown = true;
         if(countDownLatch != null){
             countDownLatch.countDown();
         }
