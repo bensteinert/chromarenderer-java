@@ -1,4 +1,4 @@
-package net.chroma;
+package net.chroma.renderer;
 
 /**
  * @author steinerb

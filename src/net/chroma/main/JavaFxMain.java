@@ -3,13 +3,18 @@ package net.chroma.main;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import net.chroma.renderer.cores.ColorCubeRenderer;
 import net.chroma.renderer.cores.MovingAverageRenderer;
 import net.chroma.renderer.cores.SimpleRayTracer;
@@ -21,34 +26,56 @@ public class JavaFxMain extends Application {
     private static int scanlineStride = imgWidth * 3;
 
     private static Chroma2 chroma = new Chroma2(imgWidth, imgHeight);
+    private Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
+    private Stage utilityStage;
 
     @Override
     public void start(final Stage primaryStage) throws Exception {
+        mainRenderWindow(primaryStage);
+        utilityStage = statusWindow();
+    }
 
+    private Stage statusWindow() {
+        StackPane secondaryLayout = new StackPane();
+        Text fps = new Text();
+        secondaryLayout.getChildren().add(fps);
+
+        Scene secondScene = new Scene(secondaryLayout, 400, 400);
+        Stage secondStage = new Stage(StageStyle.UNDECORATED);
+        secondStage.setTitle("Chroma Info and Controls");
+        secondStage.setScene(secondScene);
+
+        secondStage.setX(visualBounds.getMaxX() - 400);
+        secondStage.setY(visualBounds.getMaxY() - 400);
+        secondStage.show();
+
+        new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+               fps.setText(String.valueOf(chroma.getFps()));
+            }
+        }.start();
+
+        return secondStage;
+    }
+
+    private void mainRenderWindow(final Stage primaryStage) {
         Pane root = new Pane();
         Scene scene = new Scene(root, imgWidth, imgHeight);
         primaryStage.setScene(scene);
+        primaryStage.setX(visualBounds.getMinX());
+        primaryStage.setX(visualBounds.getMinY());
+        primaryStage.setTitle("Chroma 2");
         primaryStage.show();
-        primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                switch (event.getCode()) {
-                    case F1:
-                        chroma.setRenderer(new MovingAverageRenderer(imgWidth, imgHeight));
-                        break;
-                    case F2:
-                         chroma.setRenderer(new ColorCubeRenderer(imgWidth, imgHeight));
-                        break;
-                    case F3:
-                        chroma.setRenderer(new SimpleRayTracer(imgWidth, imgHeight));
-                        break;
-                    case SPACE:
-                        System.out.println("blub");
-                        break;
-                }
-                chroma.restart();
-            }
-        });
+        primaryStage.toFront();
+
+        primaryStage.setOnCloseRequest((arg0 -> {
+            arg0.consume();
+            utilityStage.close();
+            primaryStage.close();
+        }));
+
+        primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, getKeyPressedEventHandler());
         final WritableImage img = new WritableImage(imgWidth, imgHeight);
 
         ImageView imageView = new ImageView();
@@ -58,7 +85,6 @@ public class JavaFxMain extends Application {
         new AnimationTimer() {
             @Override
             public void handle(long now) {
-                primaryStage.setTitle("Chroma2 - " + (int)chroma.getFps() + " fps");
                 if(chroma.hasChanges()) {
                     img.getPixelWriter().setPixels(0, 0, imgWidth, imgHeight, PixelFormat.getByteRgbInstance(),
                             chroma.getCurrentFrame(), 0, scanlineStride);
@@ -67,10 +93,27 @@ public class JavaFxMain extends Application {
         }.start();
     }
 
+    private EventHandler<KeyEvent> getKeyPressedEventHandler() {
+        return event -> {
+            switch (event.getCode()) {
+                case F5:
+                    chroma.setRenderer(new MovingAverageRenderer(imgWidth, imgHeight));
+                    break;
+                case F6:
+                    chroma.setRenderer(new ColorCubeRenderer(imgWidth, imgHeight));
+                    break;
+                case F7:
+                    chroma.setRenderer(new SimpleRayTracer(imgWidth, imgHeight));
+                    break;
+            }
+            chroma.restart();
+        };
+    }
+
     public static void main(String[] args) {
         Thread thread = new Thread(chroma);
         thread.start();
-        launch(args);
+        launch(JavaFxMain.class, args);
         chroma.shutDown();
         try {
             thread.join();

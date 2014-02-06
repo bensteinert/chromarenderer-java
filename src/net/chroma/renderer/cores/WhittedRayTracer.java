@@ -1,6 +1,6 @@
 package net.chroma.renderer.cores;
 
-import net.chroma.Renderer;
+import net.chroma.renderer.Renderer;
 
 /**
  * @author steinerb

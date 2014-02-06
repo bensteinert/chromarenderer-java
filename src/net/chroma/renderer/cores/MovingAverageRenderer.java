@@ -1,6 +1,6 @@
 package net.chroma.renderer.cores;
 
-import net.chroma.Renderer;
+import net.chroma.renderer.Renderer;
 import utils.AccumulationBuffer;
 import utils.ChromaCanvas;
 import utils.MultiThreadedAccumulationBuffer;
@@ -10,15 +10,13 @@ import utils.MultiThreadedAccumulationBuffer;
  */
 public class MovingAverageRenderer implements Renderer {
 
-    private AccumulationBuffer buffer;
+    private final AccumulationBuffer buffer;
+    private final ChromaCanvas nextImage;
+    private final RandomPixelGenerator generator = new RandomPixelGenerator(13499);
 
-    ChromaCanvas nextImage;
-
-    private RandomPixelGenerator generator = new RandomPixelGenerator(13499);
 
     public MovingAverageRenderer(int imgWidth, int imgHeight) {
         buffer = new MultiThreadedAccumulationBuffer(imgWidth, imgHeight);
-        //buffer = new SingleThreadedAccumulationBuffer(imgWidth, imgHeight);
         nextImage = new ChromaCanvas(imgWidth, imgHeight);
     }
 
@@ -29,6 +27,7 @@ public class MovingAverageRenderer implements Renderer {
         buffer.accumulate(nextImage.getPixels());
         return buffer.toByteImage();
     }
+
 
     @Override
     public boolean isContinuous() {

@@ -1,6 +1,7 @@
 package net.chroma.renderer.cores;
 
-import net.chroma.Renderer;
+import net.chroma.math.MutableVector3;
+import net.chroma.renderer.Renderer;
 import net.chroma.math.COLORS;
 import net.chroma.math.ImmutableVector3;
 import net.chroma.math.Vector3;
@@ -23,7 +24,7 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
     private boolean completed;
     Camera camera;
 
-    public SimpleRayTracer(int imageHeight, int imageWidth) {
+    public SimpleRayTracer(int imageWidth, int imageHeight) {
         super(imageWidth, imageHeight);
         createSomeTriangles();
         camera = new PinholeCamera(new ImmutableVector3(0.0f, 0.0f, -50.0f), 20f, 0.01f, 0.01f, imageWidth, imageHeight);
@@ -68,7 +69,7 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
                         color = COLORS.BLACK;
                     }
 
-                    pixels[width * j + i] = color;
+                    pixels[width * j + i] = new MutableVector3(color);
 
 //                if (object != NULL) {
 //                //compute illumination

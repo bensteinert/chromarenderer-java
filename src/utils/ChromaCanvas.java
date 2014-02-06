@@ -1,15 +1,13 @@
 package utils;
 
 import net.chroma.math.MutableVector3;
-import net.chroma.math.Vector3;
 
 /**
  * @author steinerb
  */
 public class ChromaCanvas {
 
-    //TODO: Write post on JVM Array performance: one dimensional vs. two-dimensional: The latter one is 8 times slower ;)
-    protected final Vector3[] pixels;
+    protected final MutableVector3[] pixels;
     protected final int width;
     protected final int height;
 
@@ -17,7 +15,7 @@ public class ChromaCanvas {
     public ChromaCanvas(int width, int height) {
         this.width = width;
         this.height = height;
-        pixels = new Vector3[width * height];
+        pixels = new MutableVector3[width * height];
         for (int i = 0; i < width * height; i++) {
             pixels[i] = new MutableVector3();
         }
@@ -44,7 +42,7 @@ public class ChromaCanvas {
         return result;
     }
 
-    public Vector3[] getPixels() {
+    public MutableVector3[] getPixels() {
         return pixels;
     }
 }

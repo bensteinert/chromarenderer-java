@@ -1,6 +1,6 @@
 package net.chroma.renderer.cores;
 
-import net.chroma.Renderer;
+import net.chroma.renderer.Renderer;
 import net.chroma.math.COLORS;
 import net.chroma.math.Vector3;
 import utils.ChromaCanvas;
@@ -30,7 +30,7 @@ public class ColorCubeRenderer extends ChromaCanvas implements Renderer {
             for(int x=0; x<imgWidth; x++) {
                 if(y > imgHeight/2) {
                     if(x > imgWidth/2) {
-                        pixels[y*imgWidth + x].set(COLORS.RED);
+                        pixels[y*imgWidth + x].set(COLORS.PURPLE);
                     } else{
                         pixels[y*imgWidth + x].set(COLORS.BLUE);
                     }
@@ -38,7 +38,7 @@ public class ColorCubeRenderer extends ChromaCanvas implements Renderer {
                     if(x > imgWidth/2) {
                         pixels[y*imgWidth + x].set(COLORS.GREEN);
                     } else{
-                        pixels[y*imgWidth + x].set(COLORS.PURPLE);
+                        pixels[y*imgWidth + x].set(COLORS.RED);
                     }
                 }
             }

@@ -1,6 +1,6 @@
 package net.chroma.main;
 
-import net.chroma.Renderer;
+import net.chroma.renderer.Renderer;
 import net.chroma.renderer.cores.ColorCubeRenderer;
 import utils.FpsCounter;
 
@@ -17,7 +17,7 @@ public class Chroma2 implements Runnable{
     private int imgHeight;
     private byte[] currentFrame;
 
-    private boolean running = false;
+    private boolean running = true;
     private boolean changed = false;
     private CountDownLatch countDownLatch;
     private boolean shutDown;
@@ -42,13 +42,12 @@ public class Chroma2 implements Runnable{
 
     @Override
     public void run() {
-        running = true;
         while(running) {
             do {
                 currentFrame = renderer.renderNextImage(imgWidth, imgHeight);
                 changed = true;
                 fpsCounter.frame();
-            } while(renderer.isContinuous() && running);
+            } while(renderer.isContinuous());
 
             try {
                 if(!shutDown) {
