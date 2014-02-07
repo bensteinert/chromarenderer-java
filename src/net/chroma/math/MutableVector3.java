@@ -22,6 +22,7 @@ public class MutableVector3 implements Vector3 {
     }
 
     public MutableVector3(Vector3 input) {
+        values = new float[3];
         values[0] = input.getX();
         values[1] = input.getY();
         values[2] = input.getZ();

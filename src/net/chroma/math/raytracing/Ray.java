@@ -34,4 +34,8 @@ public class Ray {
     public ImmutableVector3 getInvDirection() {
         return invDirection;
     }
+
+    public double getTMin() {
+        return 0.0f;
+    }
 }

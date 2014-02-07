@@ -1,13 +1,14 @@
 package net.chroma.renderer.cores;
 
-import net.chroma.math.MutableVector3;
-import net.chroma.renderer.Renderer;
 import net.chroma.math.COLORS;
 import net.chroma.math.ImmutableVector3;
+import net.chroma.math.MutableVector3;
 import net.chroma.math.Vector3;
 import net.chroma.math.geometry.Geometry;
+import net.chroma.math.geometry.Sphere;
 import net.chroma.math.geometry.Triangle;
 import net.chroma.math.raytracing.Ray;
+import net.chroma.renderer.Renderer;
 import net.chroma.renderer.cameras.Camera;
 import net.chroma.renderer.cameras.PinholeCamera;
 import utils.ChromaCanvas;
@@ -38,6 +39,7 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
                 new ImmutableVector3(.0f, 1.f, 1.f),    //y
                 new ImmutableVector3(1.f, 0.f, 1.f),    //z
                 new ImmutableVector3(0.f, 0.f, -1.f))); //n
+        scene.add(new Sphere(new ImmutableVector3(-6.0f, 4.0f, -1.0f), 3.0));
     }
 
 
