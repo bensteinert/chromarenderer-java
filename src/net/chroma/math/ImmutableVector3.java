@@ -31,7 +31,7 @@ public class ImmutableVector3 implements Vector3 {
         );
     }
 
-    public Vector3 plus(Vector3 input){
+    public ImmutableVector3 plus(Vector3 input){
         return new ImmutableVector3(
                 x + input.getX(),
                 y + input.getY(),
@@ -39,7 +39,7 @@ public class ImmutableVector3 implements Vector3 {
         );
     }
 
-    public Vector3 div(float val) {
+    public ImmutableVector3 div(float val) {
         float div = 1.0f / val;
         return mult(div);
     }

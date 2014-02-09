@@ -4,6 +4,8 @@ import net.chroma.math.ImmutableVector3;
 import net.chroma.math.raytracing.Ray;
 
 /**
+ * Chroma uses the right-hand-coordinate system. Think about three vertices specified counterclockwise on the floor.
+ * The normal will always point upwards!
  * @author steinerb
  */
 public class Triangle implements Geometry {
@@ -21,18 +23,24 @@ public class Triangle implements Geometry {
 
     }
 
+    public Triangle(ImmutableVector3 p0, ImmutableVector3 p1, ImmutableVector3 p2) {
+        this.p0 = p0;
+        this.p1 = p1;
+        this.p2 = p2;
+        this.n = e1().crossProduct(e2());
+    }
+
     @Override
     public float intersect(Ray ray){
 
         ImmutableVector3 P, Q, T;
         float det;
 
-        ImmutableVector3 E1 = new ImmutableVector3(p1).subtract(p0);
-        ImmutableVector3 E2 = new ImmutableVector3(p2).subtract(p0);
+        ImmutableVector3 E1 = e1();
+        ImmutableVector3 E2 = e2();
 
         /* begin calculating determinant - also used to calculate U parameter */
         P = ray.getDirection().crossProduct(E2);
-
 
         det = E1.dot(P);
 
@@ -88,5 +96,13 @@ public class Triangle implements Geometry {
 
 	    /* calculate t, ray intersects triangle */
         return E2.dot(Q) * invDet;
+    }
+
+    private ImmutableVector3 e2() {
+        return new ImmutableVector3(p2).subtract(p0);
+    }
+
+    private ImmutableVector3 e1() {
+        return new ImmutableVector3(p1).subtract(p0);
     }
 }

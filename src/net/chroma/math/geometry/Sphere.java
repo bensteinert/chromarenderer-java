@@ -60,11 +60,11 @@ public class Sphere implements Geometry{
 
         // if t1 is less than tmin, the object is in the ray's negative direction
         // and consequently the ray misses the sphere
-        if (t1 < ray.getTMin() + Constants.EPSILON)
+        if (t1 < ray.getTMin())
             return 0.0f;
 
         // if t0 is less than zero, the intersection point is at t1
-        if (t0 < ray.getTMin() + Constants.EPSILON)
+        if (t0 < ray.getTMin())
             //if (t0 < 0.05f)
             return (float) t1;
             // else the intersection point is at t0

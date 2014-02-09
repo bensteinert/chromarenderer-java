@@ -22,6 +22,7 @@ import java.util.List;
 public class SimpleRayTracer extends ChromaCanvas implements Renderer {
 
     private List<Geometry> scene;
+    ImmutableVector3 pointLight = new ImmutableVector3(0.0f, 8.0f, -4.0f);
     private boolean completed;
     Camera camera;
 
@@ -48,11 +49,8 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
         if(!completed){
             for (int j = 0; j < height; j+=1) {
                 for (int i = 0; i < width; i+=1) {
-
                     Ray ray = camera.getRay(i, j);
 
-                    //Vector3 hitpoint;
-                    //Vector3 hitpointNormal;
                     float hitDistance = Float.MAX_VALUE;
                     Geometry hitGeometry = null;
 
@@ -64,28 +62,27 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
                         }
                     }
 
+                    ImmutableVector3 hitpoint = ray.onRay(hitDistance);
                     Vector3 color;
+
                     if(hitGeometry != null){
                         color = COLORS.BLUE;
+                        Ray shadowRay = new Ray(hitpoint, pointLight.subtract(hitpoint).normalize());
+                        boolean shadowed = false;
+                        for (Geometry geometry : scene) {
+                            float distance = geometry.intersect(shadowRay);
+                            if (distance > 0.0f) {
+                                shadowed = true;
+                                color = COLORS.DARK_BLUE;
+                                break;
+                            }
+                        }
                     } else {
-                        color = COLORS.BLACK;
+                        color = COLORS.GREY;
                     }
 
                     pixels[width * j + i] = new MutableVector3(color);
 
-//                if (object != NULL) {
-//                //compute illumination
-//                    Ray shadowRay;
-//                    shadowRay.direction = lightPosition - pHit;
-//                    bool isShadow = false;
-//                    for (int k = 0; k < objects.size(); ++k) {
-//                        if (Intersect(objects[k], shadowRay)) {
-//                            isInShadow = true; break;
-//                        }
-//                    }
-//                }
-//                if (!isInShadow)
-//                    pixels[i][j] = object->color * light.brightness; else pixels[i][j] = 0;
                 }
             }
             completed = true;

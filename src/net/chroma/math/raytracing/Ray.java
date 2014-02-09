@@ -1,5 +1,6 @@
 package net.chroma.math.raytracing;
 
+import net.chroma.math.Constants;
 import net.chroma.math.ImmutableVector3;
 
 /**
@@ -36,6 +37,10 @@ public class Ray {
     }
 
     public double getTMin() {
-        return 0.0f;
+        return Constants.EPSILON;
+    }
+
+    public ImmutableVector3 onRay(float t){
+        return origin.plus(direction.mult(t));
     }
 }
