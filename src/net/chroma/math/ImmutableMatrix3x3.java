@@ -38,34 +38,20 @@ public class ImmutableMatrix3x3 {
 //        }
 //    }
 //
-//    public ImmutableMatrix3x3 orthogonalize()
-//    {
+//    public ImmutableMatrix3x3 orthogonalize() {
 //        Vector3 tempA2, tempA3;
-//        col1 = col1*(1.0f/col1.length());
-//        tempA2 = col2 - (col1*col2)*col1;
-//        col2 = tempA2*(1.0f/tempA2.length());
-//        tempA3 = col3 - (col1*col3)*col1 - (col2*col3)*col2;
-//        col3 = tempA3*(1.0f/tempA3.length());
+//        Vector3 normalizedCol1 = col1().normalize();
+//        tempA2 = col2().subtract(normalizedCol1.mult(col2())).mult(normalizedCol1);
+//        Vector3 orthoCol2 = tempA2.normalize();
+////TODO incomplete...
+////        tempA3 = (col3().subtract(normalizedCol1.mult(col3()).mult(normalizedCol1)) - (col2*col3)*col2;
+////        col3 = tempA3*(1.0f/tempA3.length());
 //    }
-//
-//    public ImmutableMatrix3x3 transpose()
-//    {
-//        Matrix3x3 m;
-//
-//        m.col1[0] = col1[0];
-//        m.col1[1] = col2[0];
-//        m.col1[2] = col3[0];
-//
-//        m.col2[0] = col1[1];
-//        m.col2[1] = col2[1];
-//        m.col2[2] = col3[1];
-//
-//        m.col3[0] = col1[2];
-//        m.col3[1] = col2[2];
-//        m.col3[2] = col3[2];
-//
-//        return m;
-//    }
+
+    public ImmutableMatrix3x3 transpose() {
+        return new ImmutableMatrix3x3(row1(), row2(), row3());
+    }
+
     public ImmutableMatrix3x3 mult(ImmutableMatrix3x3 input) {
 
         ImmutableVector3 row1 = row1();
@@ -81,6 +67,10 @@ public class ImmutableMatrix3x3 {
                                                                                     new ImmutableVector3(row1.dot(input.col3()),
                                                                                                          row2.dot(input.col3()),
                                                                                                          row3.dot(input.col3())));
+    }
+
+    public ImmutableVector3 mult(ImmutableVector3 input) {
+        return new ImmutableVector3( row1().dot(input), row2().dot(input), row3().dot(input) );
     }
 
     private ImmutableVector3 row1() {
