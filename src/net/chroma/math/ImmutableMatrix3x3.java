@@ -15,38 +15,40 @@ public class ImmutableMatrix3x3 {
     }
 
 
-//    public ImmutableMatrix3x3 invert() {
-//
-//        float temp[9];
-//        float invDet = 1.f/(col1[0]*col2[1]*col3[2] - col1[0]*col3[1]*col2[2] - col2[0]*col1[1]*col3[2]
-//                + col2[0]*col3[1]*col1[2] + col3[0]*col1[1]*col2[2] - col3[0]*col2[1]*col1[2]);
-//
-//        temp[0] = col2[1]*col3[2] - col3[1]*col2[2];
-//        temp[1] = col3[0]*col2[2] - col2[0]*col3[2];
-//        temp[2] = col3[0]*col3[1] - col3[0]*col2[1];
-//        temp[3] = col3[1]*col1[2] - col3[2]*col1[1];
-//        temp[4] = col1[0]*col3[2] - col3[0]*col1[2];
-//        temp[5] = col2[0]*col1[2] - col1[0]*col2[2];
-//        temp[6] = col1[1]*col2[2] - col1[2]*col2[1];
-//        temp[7] = col3[0]*col1[1] - col1[0]*col3[1];
-//        temp[8] = col1[0]*col2[1] - col2[0]*col1[1];
-//
-//        for(int i = 0; i < 3; i++){
-//            this->col1[i] = invDet * temp[i*3];
-//            this->col2[i] = invDet * temp[i*3+1];
-//            this->col3[i] = invDet * temp[i*3+2];
-//        }
-//    }
-//
-//    public ImmutableMatrix3x3 orthogonalize() {
-//        Vector3 tempA2, tempA3;
-//        Vector3 normalizedCol1 = col1().normalize();
-//        tempA2 = col2().subtract(normalizedCol1.mult(col2())).mult(normalizedCol1);
-//        Vector3 orthoCol2 = tempA2.normalize();
-////TODO incomplete...
-////        tempA3 = (col3().subtract(normalizedCol1.mult(col3()).mult(normalizedCol1)) - (col2*col3)*col2;
-////        col3 = tempA3*(1.0f/tempA3.length());
-//    }
+    public ImmutableMatrix3x3 invert() {
+
+        float temp[] = new float[9];
+        float invDet = 1.f/(col1().getX()*col2().getY()*col3().getZ() - col1().getX()*col3().getY()*col2().getZ() - col2().getX()*col1().getY()*col3().getZ()
+                + col2().getX()*col3().getY()*col1().getZ() + col3().getX()*col1().getY()*col2().getZ() - col3().getX()*col2().getY()*col1().getZ());
+
+        temp[0] = col2().getY()*col3().getZ() - col3().getY()*col2().getZ();
+        temp[1] = col3().getX()*col2().getZ() - col2().getX()*col3().getZ();
+        temp[2] = col3().getX()*col3().getY() - col3().getX()*col2().getY();
+        temp[3] = col3().getY()*col1().getZ() - col3().getZ()*col1().getY();
+        temp[4] = col1().getX()*col3().getZ() - col3().getX()*col1().getZ();
+        temp[5] = col2().getX()*col1().getZ() - col1().getX()*col2().getZ();
+        temp[6] = col1().getY()*col2().getZ() - col1().getZ()*col2().getY();
+        temp[7] = col3().getX()*col1().getY() - col1().getX()*col3().getY();
+        temp[8] = col1().getX()*col2().getY() - col2().getX()*col1().getY();
+
+        ImmutableVector3 newCol1 = new ImmutableVector3(invDet * temp[0], invDet * temp[3], invDet * temp[6]);
+        ImmutableVector3 newCol2 = new ImmutableVector3(invDet * temp[1], invDet * temp[4], invDet * temp[7]);
+        ImmutableVector3 newCol3 = new ImmutableVector3(invDet * temp[2], invDet * temp[5], invDet * temp[8]);
+
+        return new ImmutableMatrix3x3(newCol1, newCol2, newCol3);
+    }
+
+    public ImmutableMatrix3x3 orthogonalize() {
+        ImmutableVector3 tempA2, tempA3;
+        ImmutableVector3 newCol1 = col1().normalize();
+        tempA2 = col2().subtract(newCol1.mult(newCol1.dot(col2())));
+        ImmutableVector3 newCol2 = tempA2.normalize();
+        ImmutableVector3 projNewCol1 = newCol1.mult(newCol1.dot(col3()));
+        ImmutableVector3 projNewCol2 = newCol2.mult(newCol2.dot(col3()));
+        tempA3 = col3().subtract(projNewCol1).subtract(projNewCol2);
+        ImmutableVector3 newCol3 = tempA3.normalize();      
+        return new ImmutableMatrix3x3(newCol1, newCol2, newCol3);
+    }
 
     public ImmutableMatrix3x3 transpose() {
         return new ImmutableMatrix3x3(row1(), row2(), row3());
