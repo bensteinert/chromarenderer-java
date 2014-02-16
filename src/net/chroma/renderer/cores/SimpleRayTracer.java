@@ -29,7 +29,7 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
     public SimpleRayTracer(int imageWidth, int imageHeight) {
         super(imageWidth, imageHeight);
         createSomeTriangles();
-        camera = new PinholeCamera(new ImmutableVector3(0.0f, 0.0f, -50.0f), 20f, 0.01f, 0.01f, imageWidth, imageHeight);
+        camera = new PinholeCamera(new ImmutableVector3(0.0f, 0.0f, -40.0f), 20f, 0.01f, 0.01f, imageWidth, imageHeight);
         completed = false;
     }
 
@@ -56,7 +56,7 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
 
 
     @Override
-    public byte[] renderNextImage(int imgWidth, int imgHeight) {
+    public void renderNextImage(int imgWidth, int imgHeight) {
         if(!completed){
             for (int j = 0; j < height; j+=1) {
                 for (int i = 0; i < width; i+=1) {
@@ -77,7 +77,7 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
                     Vector3 color;
 
                     if(hitGeometry != null){
-                        color = COLORS.BLUE;
+                        color = hitGeometry.getNormal(hitpoint).abs();
                         Ray shadowRay = new Ray(hitpoint, pointLight.subtract(hitpoint).normalize());
                         boolean shadowed = false;
                         for (Geometry geometry : scene) {
@@ -98,12 +98,16 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
             }
             completed = true;
         }
-        return toByteImage();
     }
 
     @Override
     public boolean isContinuous() {
         return false;
+    }
+
+    @Override
+    public byte[] get8BitRGBSnapshot() {
+        return toByteImage();
     }
 
 }

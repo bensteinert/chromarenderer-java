@@ -128,4 +128,9 @@ public class ImmutableVector3 implements Vector3 {
         float recLen = 1.f / length();
         return new ImmutableVector3(getX() * recLen, getY() * recLen, getZ() * recLen);
     }
+
+    @Override
+    public ImmutableVector3 abs() {
+        return new ImmutableVector3(Math.abs(x), Math.abs(y), Math.abs(z));
+    }
 }

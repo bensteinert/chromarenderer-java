@@ -22,16 +22,21 @@ public class MovingAverageRenderer implements Renderer {
 
 
     @Override
-    public byte[] renderNextImage(int imgWidth, int imgHeight) {
+    public void renderNextImage(int imgWidth, int imgHeight) {
         generator.randomFloatPixels(nextImage.getPixels());
         buffer.accumulate(nextImage.getPixels());
-        return buffer.toByteImage();
     }
 
 
     @Override
     public boolean isContinuous() {
         return true;
+    }
+
+
+    @Override
+    public byte[] get8BitRGBSnapshot() {
+        return buffer.toByteImage();
     }
 
 }

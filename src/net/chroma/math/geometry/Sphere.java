@@ -82,4 +82,9 @@ public class Sphere implements Geometry{
     public Geometry rotate(ImmutableArrayMatrix3x3 rotationY) {
         return null;
     }
+
+    @Override
+    public ImmutableVector3 getNormal(ImmutableVector3 hitpoint) {
+        return hitpoint.subtract(center).normalize();
+    }
 }

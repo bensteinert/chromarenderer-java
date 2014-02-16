@@ -31,7 +31,7 @@ public class RandomPixelGenerator {
         int count = pixels.length;
 
         for (int i = 0; i < count; i++) {
-            pixels[i].set(255.0f * twister.nextFloat(), 255.0f * twister.nextFloat(), 255.0f * twister.nextFloat());
+            pixels[i].set(twister.nextFloat(), twister.nextFloat(),twister.nextFloat());
         }
     }
 }

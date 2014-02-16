@@ -112,4 +112,13 @@ public class MutableVector3 implements Vector3 {
         float recLen = 1.f / length();
         return this.mult(recLen);
     }
+
+    @Override
+    public MutableVector3 abs() {
+        values[0] = Math.abs(values[0]);
+        values[1] = Math.abs(values[1]);
+        values[2] = Math.abs(values[2]);
+
+        return this;
+    }
 }

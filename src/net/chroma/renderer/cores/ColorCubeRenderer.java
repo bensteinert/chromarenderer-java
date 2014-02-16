@@ -16,13 +16,17 @@ public class ColorCubeRenderer extends ChromaCanvas implements Renderer {
     }
 
     @Override
-    public byte[] renderNextImage(int imgWidth, int imgHeight) {
-        return toByteImage();
+    public void renderNextImage(int imgWidth, int imgHeight) {
     }
 
     @Override
     public boolean isContinuous() {
         return false;
+    }
+
+    @Override
+    public byte[] get8BitRGBSnapshot() {
+        return toByteImage();
     }
 
     public static void createCubes(Vector3[] pixels, int imgWidth, int imgHeight) {

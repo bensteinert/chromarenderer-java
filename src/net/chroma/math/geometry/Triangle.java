@@ -110,6 +110,11 @@ public class Triangle implements Geometry {
         return new Triangle(rotationY.mult(p0), rotationY.mult(p1), rotationY.mult(p2));
     }
 
+    @Override
+    public ImmutableVector3 getNormal(ImmutableVector3 hitpoint) {
+        return n;
+    }
+
     private ImmutableVector3 e2() {
         return new ImmutableVector3(p2).subtract(p0);
     }

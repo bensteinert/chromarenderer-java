@@ -31,11 +31,10 @@ public class Chroma2 implements Runnable {
     private Renderer renderer;
     private int imgWidth;
     private int imgHeight;
-    private byte[] currentFrame;
 
     private boolean running = true;
     private boolean changed = false;
-    private CountDownLatch countDownLatch;
+    private CountDownLatch renderLatch;
     private boolean shutDown;
 
 
@@ -43,7 +42,6 @@ public class Chroma2 implements Runnable {
         fpsCounter = new FpsCounter();
         imgWidth = width;
         imgHeight = height;
-        currentFrame = new byte[imgHeight * imgHeight * 3];
         renderer = new ColorCubeRenderer(imgWidth, imgHeight);
     }
 
@@ -53,22 +51,22 @@ public class Chroma2 implements Runnable {
 
     public byte[] getCurrentFrame() {
         changed = false;
-        return currentFrame;
+        return renderer.get8BitRGBSnapshot();
     }
 
     @Override
     public void run() {
         while (running) {
             do {
-                currentFrame = renderer.renderNextImage(imgWidth, imgHeight);
+                renderer.renderNextImage(imgWidth, imgHeight);
                 changed = true;
                 fpsCounter.frame();
-            } while (renderer.isContinuous());
+            } while (renderer.isContinuous() && running);
 
             try {
                 if (!shutDown) {
-                    countDownLatch = new CountDownLatch(1);
-                    countDownLatch.await();
+                    renderLatch = new CountDownLatch(1);
+                    renderLatch.await();
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -79,14 +77,14 @@ public class Chroma2 implements Runnable {
     public void shutDown() {
         running = false;
         shutDown = true;
-        if (countDownLatch != null) {
-            countDownLatch.countDown();
+        if (renderLatch != null) {
+            renderLatch.countDown();
         }
     }
 
     public void restart() {
-        if (countDownLatch != null) {
-            countDownLatch.countDown();
+        if (renderLatch != null) {
+            renderLatch.countDown();
         }
     }
 

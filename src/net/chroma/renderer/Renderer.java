@@ -5,7 +5,9 @@ package net.chroma.renderer;
  */
 public interface Renderer {
 
-    byte[] renderNextImage(int imgWidth, int imgHeight);
+    void renderNextImage(int imgWidth, int imgHeight);
 
     boolean isContinuous();
+
+    byte[] get8BitRGBSnapshot();
 }

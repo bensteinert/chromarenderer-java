@@ -43,4 +43,6 @@ public interface Vector3 {
     Vector3 crossProduct(Vector3 input);
 
     Vector3 normalize();
+
+    Vector3 abs();
 }

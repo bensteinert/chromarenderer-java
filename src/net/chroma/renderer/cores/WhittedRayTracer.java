@@ -8,12 +8,17 @@ import net.chroma.renderer.Renderer;
 public class WhittedRayTracer implements Renderer {
 
     @Override
-    public byte[] renderNextImage(int imgWidth, int imgHeight) {
-        return new byte[0];
+    public void renderNextImage(int imgWidth, int imgHeight) {
+
     }
 
     @Override
     public boolean isContinuous() {
         return false;
+    }
+
+    @Override
+    public byte[] get8BitRGBSnapshot() {
+        return new byte[0];
     }
 }
