@@ -1,12 +1,12 @@
 package net.chroma.renderer.cores;
 
 import net.chroma.math.COLORS;
+import net.chroma.math.Constants;
 import net.chroma.math.ImmutableVector3;
 import net.chroma.math.MutableVector3;
 import net.chroma.math.Vector3;
 import net.chroma.math.geometry.Geometry;
 import net.chroma.math.geometry.Sphere;
-import net.chroma.math.geometry.Triangle;
 import net.chroma.math.raytracing.Ray;
 import net.chroma.renderer.Renderer;
 import net.chroma.renderer.cameras.Camera;
@@ -22,7 +22,7 @@ import java.util.List;
 public class SimpleRayTracer extends ChromaCanvas implements Renderer {
 
     private List<Geometry> scene;
-    ImmutableVector3 pointLight = new ImmutableVector3(0.0f, 8.0f, -4.0f);
+    ImmutableVector3 pointLight = new ImmutableVector3(0.0f, 8.0f, 0.0f);
     private boolean completed;
     Camera camera;
 
@@ -35,12 +35,23 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
 
     private void createSomeTriangles() {
         scene = new ArrayList<>();
-        scene.add(new Triangle(
-                new ImmutableVector3(0.f, 0.f, 1.f),    //x
-                new ImmutableVector3(.0f, 1.f, 1.f),    //y
-                new ImmutableVector3(1.f, 0.f, 1.f),    //z
-                new ImmutableVector3(0.f, 0.f, -1.f))); //n
-        scene.add(new Sphere(new ImmutableVector3(-6.0f, 4.0f, -1.0f), 3.0));
+//        scene.add(new Triangle(
+//                new ImmutableVector3(-1.f, 3.f, 0.f),    //x
+//                new ImmutableVector3(.0f, 3.f, -1.f),    //y
+//                new ImmutableVector3(1.f, 3.f, 0.f),    //z
+//                new ImmutableVector3(0.f, 1.f, 0.f))); //n
+//        scene.add(new Triangle(
+//                new ImmutableVector3(-2.f, 0.f, 1.f),    //x
+//                new ImmutableVector3(.0f, 0.f, -2.f),    //y
+//                new ImmutableVector3(2.f, 0.f, 1.f),    //z
+//                new ImmutableVector3(0.f, 1.f, 0.f))); //n
+        scene.add(new Sphere(new ImmutableVector3(-6.0f, 2.0f, -1.0f), 3.0));
+        scene.add(new Sphere(new ImmutableVector3(3.0f, 0.0f, -4.0f), 1.0));
+        scene.add(new Sphere(new ImmutableVector3(-1.0f, -3.0f, 2.0f), 4.0));
+        scene.add(new Sphere(new ImmutableVector3(7.0f, -4.0f, 1.0f), 2.0));
+        //scene.add(new Sphere(new ImmutableVector3(0.0f, 12.0f, 1.0f), 1.0));
+
+        //scene.addAll(SceneFactory.cornellBox(new ImmutableVector3(0, 5, 0), 5));
     }
 
 
@@ -62,7 +73,7 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
                         }
                     }
 
-                    ImmutableVector3 hitpoint = ray.onRay(hitDistance);
+                    ImmutableVector3 hitpoint = ray.onRay((float) (hitDistance - Constants.FLT_EPSILON));
                     Vector3 color;
 
                     if(hitGeometry != null){

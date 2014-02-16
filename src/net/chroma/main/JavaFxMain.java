@@ -21,8 +21,8 @@ import net.chroma.renderer.cores.SimpleRayTracer;
 
 public class JavaFxMain extends Application {
 
-    private static int imgWidth = 512;
-    private static int imgHeight = 512;
+    private static int imgWidth = 1024;
+    private static int imgHeight = 1024;
     private static int scanlineStride = imgWidth * 3;
 
     private static Chroma2 chroma = new Chroma2(imgWidth, imgHeight);
@@ -79,6 +79,7 @@ public class JavaFxMain extends Application {
         final WritableImage img = new WritableImage(imgWidth, imgHeight);
 
         ImageView imageView = new ImageView();
+        imageView.setScaleY(-1.0);
         imageView.setImage(img);
         root.getChildren().add(imageView);
 
@@ -88,6 +89,7 @@ public class JavaFxMain extends Application {
                 if(chroma.hasChanges()) {
                     img.getPixelWriter().setPixels(0, 0, imgWidth, imgHeight, PixelFormat.getByteRgbInstance(),
                             chroma.getCurrentFrame(), 0, scanlineStride);
+
                 }
             }
         }.start();

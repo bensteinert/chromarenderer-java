@@ -5,6 +5,11 @@ package net.chroma.math;
  */
 public interface Vector3 {
 
+    public static Vector3 X_AXIS = new ImmutableVector3(1.0f, 0.0f, 0.0f);
+    public static Vector3 Y_AXIS = new ImmutableVector3(0.0f, 1.0f, 0.0f);
+    public static Vector3 Z_AXIS = new ImmutableVector3(0.0f, 0.0f, 1.0f);
+
+
     Vector3 mult(float val);
 
     Vector3 plus(Vector3 input);

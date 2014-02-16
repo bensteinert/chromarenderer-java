@@ -37,7 +37,7 @@ public class Ray {
     }
 
     public double getTMin() {
-        return Constants.EPSILON;
+        return Constants.DBL_EPSILON;
     }
 
     public ImmutableVector3 onRay(float t){

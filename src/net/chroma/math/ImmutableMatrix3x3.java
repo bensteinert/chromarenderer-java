@@ -1,5 +1,7 @@
 package net.chroma.math;
 
+import java.util.Arrays;
+
 /**
  * @author steinerb
  */
@@ -12,6 +14,10 @@ public class ImmutableMatrix3x3 {
         columns[0] = new ImmutableVector3(col1);
         columns[1] = new ImmutableVector3(col2);
         columns[2] = new ImmutableVector3(col3);
+    }
+
+    public ImmutableMatrix3x3(float m11, float m12, float m13, float m21, float m22, float m23, float m31, float m32, float m33) {
+        this(new ImmutableVector3(m11, m21, m31), new ImmutableVector3(m12, m22, m32), new ImmutableVector3(m13, m23, m33));
     }
 
 
@@ -99,4 +105,27 @@ public class ImmutableMatrix3x3 {
         return columns[2];
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ImmutableMatrix3x3 that = (ImmutableMatrix3x3) o;
+
+        if (!Arrays.equals(columns, that.columns)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(columns);
+    }
+
+    @Override
+    public String toString() {
+        return "ImmutableMatrix3x3{" +
+                "columns=" + Arrays.toString(columns) +
+                '}';
+    }
 }

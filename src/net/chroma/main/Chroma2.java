@@ -2,14 +2,30 @@ package net.chroma.main;
 
 import net.chroma.renderer.Renderer;
 import net.chroma.renderer.cores.ColorCubeRenderer;
+import sun.misc.Unsafe;
 import utils.FpsCounter;
 
+import java.lang.reflect.Field;
 import java.util.concurrent.CountDownLatch;
 
 /**
  * @author steinerb
  */
-public class Chroma2 implements Runnable{
+public class Chroma2 implements Runnable {
+
+    public static Unsafe UNSAFE;
+
+    static {
+        try {
+            Field f;
+            f = Unsafe.class.getDeclaredField("theUnsafe");
+            f.setAccessible(true);
+            UNSAFE = (Unsafe) f.get(null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private FpsCounter fpsCounter;
     private Renderer renderer;
@@ -31,7 +47,7 @@ public class Chroma2 implements Runnable{
         renderer = new ColorCubeRenderer(imgWidth, imgHeight);
     }
 
-    public float getFps(){
+    public float getFps() {
         return fpsCounter.getFps();
     }
 
@@ -42,15 +58,15 @@ public class Chroma2 implements Runnable{
 
     @Override
     public void run() {
-        while(running) {
+        while (running) {
             do {
                 currentFrame = renderer.renderNextImage(imgWidth, imgHeight);
                 changed = true;
                 fpsCounter.frame();
-            } while(renderer.isContinuous());
+            } while (renderer.isContinuous());
 
             try {
-                if(!shutDown) {
+                if (!shutDown) {
                     countDownLatch = new CountDownLatch(1);
                     countDownLatch.await();
                 }
@@ -63,18 +79,18 @@ public class Chroma2 implements Runnable{
     public void shutDown() {
         running = false;
         shutDown = true;
-        if(countDownLatch != null){
+        if (countDownLatch != null) {
             countDownLatch.countDown();
         }
     }
 
-    public void restart(){
-        if(countDownLatch != null){
+    public void restart() {
+        if (countDownLatch != null) {
             countDownLatch.countDown();
         }
     }
 
-    public boolean hasChanges(){
+    public boolean hasChanges() {
         return changed;
     }
 

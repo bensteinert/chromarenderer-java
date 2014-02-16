@@ -1,6 +1,8 @@
 package net.chroma.math.geometry;
 
+import net.chroma.math.ImmutableArrayMatrix3x3;
 import net.chroma.math.ImmutableVector3;
+import net.chroma.math.Vector3;
 import net.chroma.math.raytracing.Ray;
 
 /**
@@ -96,6 +98,16 @@ public class Triangle implements Geometry {
 
 	    /* calculate t, ray intersects triangle */
         return E2.dot(Q) * invDet;
+    }
+
+    @Override
+    public Geometry transpose(Vector3 transpose) {
+        return new Triangle(p0.plus(transpose), p1.plus(transpose), p2.plus(transpose));
+    }
+
+    @Override
+    public Geometry rotate(ImmutableArrayMatrix3x3 rotationY) {
+        return new Triangle(rotationY.mult(p0), rotationY.mult(p1), rotationY.mult(p2));
     }
 
     private ImmutableVector3 e2() {

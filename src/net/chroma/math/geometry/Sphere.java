@@ -1,6 +1,7 @@
 package net.chroma.math.geometry;
 
 import net.chroma.math.Constants;
+import net.chroma.math.ImmutableArrayMatrix3x3;
 import net.chroma.math.ImmutableVector3;
 import net.chroma.math.Vector3;
 import net.chroma.math.raytracing.Ray;
@@ -40,7 +41,7 @@ public class Sphere implements Geometry{
 
         // compute q as described above
         double distSqrt = Math.sqrt(disc);
-        double q = b<0 ? (-b - distSqrt)/2.0 : (-b + distSqrt)/2.0;
+        double q = b<0 ? (-b - distSqrt)*0.5 : (-b + distSqrt)*0.5;
 
         // compute t0 and t1
         double t0 = q / a;
@@ -70,5 +71,15 @@ public class Sphere implements Geometry{
             // else the intersection point is at t0
         else
             return (float) t0;
+    }
+
+    @Override
+    public Geometry transpose(Vector3 transpose) {
+        return null;
+    }
+
+    @Override
+    public Geometry rotate(ImmutableArrayMatrix3x3 rotationY) {
+        return null;
     }
 }
