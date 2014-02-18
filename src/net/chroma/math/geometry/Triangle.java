@@ -29,7 +29,7 @@ public class Triangle implements Geometry {
         this.p0 = p0;
         this.p1 = p1;
         this.p2 = p2;
-        this.n = e1().crossProduct(e2());
+        this.n = e1().crossProduct(e2()).normalize();
     }
 
     @Override
@@ -97,7 +97,13 @@ public class Triangle implements Geometry {
         }
 
 	    /* calculate t, ray intersects triangle */
-        return E2.dot(Q) * invDet;
+        float distance = E2.dot(Q) * invDet;
+
+        if(ray.getTMin() > distance || ray.getTMax() < distance) {
+            return 0.f;
+        }
+
+        return distance ;
     }
 
     @Override

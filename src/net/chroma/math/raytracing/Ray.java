@@ -8,21 +8,23 @@ import net.chroma.math.ImmutableVector3;
  */
 public class Ray {
 
-    private ImmutableVector3 origin;
-    private ImmutableVector3 direction;
-    private ImmutableVector3 invDirection;
+    private final ImmutableVector3 origin;
+    private final ImmutableVector3 direction;
+    private final ImmutableVector3 invDirection;
+    private final float tMin;
+    private final float tMax;
 
     public Ray(ImmutableVector3 origin, ImmutableVector3 direction) {
+        this(origin, direction, Constants.FLT_EPSILON, Float.MAX_VALUE);
+    }
+
+    public Ray(ImmutableVector3 origin, ImmutableVector3 direction, float tMin, float tMax) {
         this.origin = origin;
         this.direction = direction;
         invDirection =  new ImmutableVector3(1.f / direction.getX(), 1.f / direction.getY(), 1.f / direction.getZ());
+        this.tMin = tMin;
+        this.tMax = tMax;
     }
-
-    //    float tmin, tmax; // interval				// 8
-//    float lambda;   							// 4
-//    char sign[3];								// 3
-//    bool spectral;
-
 
     public ImmutableVector3 getOrigin() {
         return origin;
@@ -36,8 +38,12 @@ public class Ray {
         return invDirection;
     }
 
-    public double getTMin() {
-        return Constants.DBL_EPSILON;
+    public float getTMin() {
+        return tMin;
+    }
+
+    public float getTMax() {
+        return tMax;
     }
 
     public ImmutableVector3 onRay(float t){

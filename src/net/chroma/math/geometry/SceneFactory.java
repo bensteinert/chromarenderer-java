@@ -47,19 +47,19 @@ public class SceneFactory {
         result.add(t0.transpose(minusCenter).rotate(rotationY90).transpose(center));
         result.add(t1.transpose(minusCenter).rotate(rotationY90).transpose(center));
 
-        //floor
+        //ceil
         Geometry t2 = t0.transpose(minusCenter).rotate(rotationZ90).transpose(center);
         Geometry t3 = t1.transpose(minusCenter).rotate(rotationZ90).transpose(center);
         result.add(t2);
         result.add(t3);
 
-        //left
+        //right
         Geometry t4 = t2.transpose(minusCenter).rotate(rotationZ90).transpose(center);
         Geometry t5 = t3.transpose(minusCenter).rotate(rotationZ90).transpose(center);
         result.add(t4);
         result.add(t5);
 
-        //top
+        //floor
         result.add(t4.transpose(minusCenter).rotate(rotationZ90).transpose(center));
         result.add(t5.transpose(minusCenter).rotate(rotationZ90).transpose(center));
 

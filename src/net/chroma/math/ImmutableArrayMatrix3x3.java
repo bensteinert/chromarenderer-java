@@ -68,7 +68,7 @@ public class ImmutableArrayMatrix3x3 {
 
 
     public ImmutableVector3 mult(ImmutableVector3 input) {
-        return new ImmutableVector3( row1().dot(input), row2().dot(input), row3().dot(input) );
+        return new ImmutableVector3( col1().dot(input), col2().dot(input), col3().dot(input) );
     }
 
     private ImmutableVector3 row1() {

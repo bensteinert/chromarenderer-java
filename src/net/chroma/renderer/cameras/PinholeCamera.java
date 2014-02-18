@@ -32,7 +32,7 @@ public class PinholeCamera implements Camera {
         // No rotation yet...
         return new Ray(
                 new ImmutableVector3(position),
-                new ImmutableVector3((x - shiftX) * pixelSizeX, (y - shiftY) * pixelSizeY, focalDistance).normalize());
+                new ImmutableVector3((x - shiftX) * pixelSizeX, (y - shiftY) * pixelSizeY, -focalDistance).normalize());
     }
 
     //taken from Chroma V1
