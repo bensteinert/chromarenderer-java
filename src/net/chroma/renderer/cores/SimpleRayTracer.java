@@ -30,7 +30,7 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
     public SimpleRayTracer(int imageWidth, int imageHeight) {
         super(imageWidth, imageHeight);
         createSomeTriangles();
-        camera = new PinholeCamera(new ImmutableVector3(0.0f, 0.0f, 16.0f), 0.1f, 0.0001f, 0.0001f, imageWidth, imageHeight);
+        camera = new PinholeCamera(new ImmutableVector3(0.0f, 0.0f, 8.0f), 0.1f, 0.0001f, 0.0001f, imageWidth, imageHeight);
         completed = false;
     }
 
@@ -62,7 +62,7 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
 
                     for (Geometry geometry : scene) {
                         float distance = geometry.intersect(ray);
-                        if (distance > 0.0f && distance < hitDistance) {
+                        if (distance > ray.getTMin() && distance < hitDistance) {
                             hitGeometry = geometry;
                             hitDistance = distance;
                         }
@@ -75,13 +75,13 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
                         //hitpoint = hitpoint.plus(hitpointNormal.mult(Constants.FLT_EPSILON));
                         color = hitpointNormal.abs();
                         ImmutableVector3 direction = pointLight.subtract(hitpoint);
-                        Ray shadowRay = new Ray(hitpoint, direction.normalize(), Constants.FLT_EPSILON, direction.length());
+                        float distToLightSource = direction.length();
+                        Ray shadowRay = new Ray(hitpoint, direction.normalize(), 2*Constants.FLT_EPSILON, distToLightSource);
 
-                        boolean shadowed = false;
                         for (Geometry geometry : scene) {
+                            //TODO: self intersection test for solids. According to normal or stuff like that
                             float distance = geometry.intersect(shadowRay);
-                            if (distance > 0.0f) {
-                                shadowed = true;
+                            if (distance > shadowRay.getTMin() && distance < shadowRay.getTMax()) {
                                 color = COLORS.DARK_BLUE;
                                 break;
                             }
