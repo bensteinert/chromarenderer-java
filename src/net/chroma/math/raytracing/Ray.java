@@ -49,4 +49,8 @@ public class Ray {
     public ImmutableVector3 onRay(float t){
         return origin.plus(direction.mult(t));
     }
+
+    public boolean isOnRay(float distance) {
+        return distance > getTMin() && distance <= getTMax();
+    }
 }

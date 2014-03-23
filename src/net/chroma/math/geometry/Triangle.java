@@ -1,5 +1,6 @@
 package net.chroma.math.geometry;
 
+import net.chroma.math.Constants;
 import net.chroma.math.ImmutableArrayMatrix3x3;
 import net.chroma.math.ImmutableVector3;
 import net.chroma.math.Vector3;
@@ -47,7 +48,7 @@ public class Triangle implements Geometry {
         det = E1.dot(P);
 
         /* if determinant is near zero, ray lies in plane of triangle */
-        if(det > -EPSILON && det < EPSILON){
+        if(det > -Constants.DBL_EPSILON && det < Constants.DBL_EPSILON){
             return 0.f;
         }
 
@@ -99,9 +100,9 @@ public class Triangle implements Geometry {
 	    /* calculate t, ray intersects triangle */
         float distance = E2.dot(Q) * invDet;
 
-        if(ray.getTMin() > distance || ray.getTMax() < distance) {
-            return 0.f;
-        }
+//        if(ray.getTMin() > distance || ray.getTMax() < distance) {
+//            return 0.f;
+//        }
 
         return distance ;
     }
@@ -119,6 +120,11 @@ public class Triangle implements Geometry {
     @Override
     public ImmutableVector3 getNormal(ImmutableVector3 hitpoint) {
         return n;
+    }
+
+    @Override
+    public final boolean isPlane() {
+        return true;
     }
 
     private ImmutableVector3 e2() {

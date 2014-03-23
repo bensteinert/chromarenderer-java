@@ -17,4 +17,6 @@ public interface Geometry {
     Geometry rotate(ImmutableArrayMatrix3x3 rotationY);
 
     ImmutableVector3 getNormal(ImmutableVector3 hitpoint);
+
+    boolean isPlane();
 }

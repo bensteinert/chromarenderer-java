@@ -88,4 +88,9 @@ public class Sphere implements Geometry{
     public ImmutableVector3 getNormal(ImmutableVector3 hitpoint) {
         return hitpoint.subtract(center).normalize();
     }
+
+    @Override
+    public final boolean isPlane() {
+        return false;
+    }
 }

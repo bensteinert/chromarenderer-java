@@ -1,7 +1,11 @@
 package net.chroma.main;
 
+import net.chroma.renderer.ChromaRenderMode;
 import net.chroma.renderer.Renderer;
 import net.chroma.renderer.cores.ColorCubeRenderer;
+import net.chroma.renderer.cores.MovingAverageRenderer;
+import net.chroma.renderer.cores.SimpleRayTracer;
+import net.chroma.renderer.diag.ChromaStatistics;
 import sun.misc.Unsafe;
 import utils.FpsCounter;
 
@@ -27,11 +31,11 @@ public class Chroma2 implements Runnable {
     }
 
 
-    private FpsCounter fpsCounter;
     private Renderer renderer;
     private int imgWidth;
     private int imgHeight;
 
+    private final ChromaStatistics statistics;
     private boolean running = true;
     private boolean changed = false;
     private CountDownLatch renderLatch;
@@ -39,14 +43,12 @@ public class Chroma2 implements Runnable {
 
 
     public Chroma2(int width, int height) {
-        fpsCounter = new FpsCounter();
+        statistics = new ChromaStatistics();
         imgWidth = width;
         imgHeight = height;
-        renderer = new ColorCubeRenderer(imgWidth, imgHeight);
-    }
+        //renderer = new ColorCubeRenderer(imgWidth, imgHeight);
+        renderer = new SimpleRayTracer(imgWidth, imgHeight, statistics);
 
-    public float getFps() {
-        return fpsCounter.getFps();
     }
 
     public byte[] getCurrentFrame() {
@@ -60,7 +62,7 @@ public class Chroma2 implements Runnable {
             do {
                 renderer.renderNextImage(imgWidth, imgHeight);
                 changed = true;
-                fpsCounter.frame();
+                statistics.frame();
             } while (renderer.isContinuous() && running);
 
             try {
@@ -83,6 +85,7 @@ public class Chroma2 implements Runnable {
     }
 
     public void restart() {
+        statistics.reset();
         if (renderLatch != null) {
             renderLatch.countDown();
         }
@@ -92,7 +95,29 @@ public class Chroma2 implements Runnable {
         return changed;
     }
 
-    public void setRenderer(Renderer renderer) {
+    private void setRenderer(Renderer renderer) {
         this.renderer = renderer;
+    }
+
+    public void init(ChromaRenderMode chromaRenderMode, int imgWidth, int imgHeight) {
+        switch (chromaRenderMode) {
+            case SIMPLE:
+                setRenderer(new SimpleRayTracer(imgWidth, imgHeight, statistics));
+                break;
+            case AVG:
+                setRenderer(new MovingAverageRenderer(imgWidth, imgHeight));
+                break;
+            case COLOR_CUBE:
+                setRenderer(new ColorCubeRenderer(imgWidth, imgHeight));
+                break;
+            case WHITTED:
+                break;
+            default:
+                break;
+        }
+    }
+
+    public ChromaStatistics getStatistics() {
+        return statistics;
     }
 }

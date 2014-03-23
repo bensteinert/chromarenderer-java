@@ -12,6 +12,7 @@ import net.chroma.math.raytracing.Ray;
 import net.chroma.renderer.Renderer;
 import net.chroma.renderer.cameras.Camera;
 import net.chroma.renderer.cameras.PinholeCamera;
+import net.chroma.renderer.diag.ChromaStatistics;
 import utils.ChromaCanvas;
 
 import java.util.ArrayList;
@@ -22,20 +23,22 @@ import java.util.List;
  */
 public class SimpleRayTracer extends ChromaCanvas implements Renderer {
 
-    private List<Geometry> scene;
-    ImmutableVector3 pointLight = new ImmutableVector3(0.0f, 1.5f, 0.0f);
+    private final List<Geometry> scene;
+    private final ImmutableVector3 pointLight = new ImmutableVector3(0.0f, 1.5f, 0.0f);
     private boolean completed;
-    Camera camera;
+    private final Camera camera;
+    private final ChromaStatistics statistics;
 
-    public SimpleRayTracer(int imageWidth, int imageHeight) {
+    public SimpleRayTracer(int imageWidth, int imageHeight, ChromaStatistics statistics) {
         super(imageWidth, imageHeight);
+        this.statistics = statistics;
+        scene = new ArrayList<>();
         createSomeTriangles();
         camera = new PinholeCamera(new ImmutableVector3(0.0f, 0.0f, 8.0f), 0.1f, 0.0001f, 0.0001f, imageWidth, imageHeight);
         completed = false;
     }
 
     private void createSomeTriangles() {
-        scene = new ArrayList<>();
 
         scene.add(new Sphere(new ImmutableVector3(0.0f, 0.0f, 0.0f), 0.2));
         scene.add(new Sphere(new ImmutableVector3(-1.0f, 1.0f, -1.0f), 0.2));
@@ -44,44 +47,43 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
         scene.add(new Sphere(new ImmutableVector3(-1.0f, 1.7f, -1.0f), 0.2));
         scene.add(new Sphere(new ImmutableVector3(1.0f, -1.7f, -1.0f), 0.2));
 
-
-
         scene.addAll(SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2));
     }
 
 
     @Override
     public void renderNextImage(int imgWidth, int imgHeight) {
-        if(!completed){
-            for (int j = 0; j < height; j+=1) {
-                for (int i = 0; i < width; i+=1) {
-                    Ray ray = camera.getRay(i, j);
+        if (!completed) {
+            for (int j = 0; j < height; j += 1) {
+                for (int i = 0; i < width; i += 1) {
+                    Ray cameraRay = camera.getRay(i, j);
 
                     float hitDistance = Float.MAX_VALUE;
                     Geometry hitGeometry = null;
 
                     for (Geometry geometry : scene) {
-                        float distance = geometry.intersect(ray);
-                        if (distance > ray.getTMin() && distance < hitDistance) {
+                        float distance = geometry.intersect(cameraRay);
+                        if (cameraRay.isOnRay(distance) && distance < hitDistance) {
                             hitGeometry = geometry;
                             hitDistance = distance;
                         }
                     }
 
                     Vector3 color;
-                    if(hitGeometry != null){
-                        ImmutableVector3 hitpoint = ray.onRay((hitDistance));
+                    if (hitGeometry != null) {
+                        ImmutableVector3 hitpoint = cameraRay.onRay(hitDistance);
+                        hitpoint = increaseHitpointPrecision(cameraRay, hitGeometry, hitpoint);
+
                         Vector3 hitpointNormal = hitGeometry.getNormal(hitpoint);
-                        //hitpoint = hitpoint.plus(hitpointNormal.mult(Constants.FLT_EPSILON));
+                        hitpoint = hitpoint.plus(hitpointNormal.mult(Constants.FLT_EPSILON));
                         color = hitpointNormal.abs();
                         ImmutableVector3 direction = pointLight.subtract(hitpoint);
                         float distToLightSource = direction.length();
-                        Ray shadowRay = new Ray(hitpoint, direction.normalize(), 2*Constants.FLT_EPSILON, distToLightSource);
+                        Ray shadowRay = new Ray(hitpoint, direction.normalize(), 0.0f, distToLightSource);
 
-                        for (Geometry geometry : scene) {
-                            //TODO: self intersection test for solids. According to normal or stuff like that
-                            float distance = geometry.intersect(shadowRay);
-                            if (distance > shadowRay.getTMin() && distance < shadowRay.getTMax()) {
+                        for (Geometry shadowGeometry : scene) {
+                            float distance = shadowGeometry.intersect(shadowRay);
+                            if (shadowRay.isOnRay(distance)) {
                                 color = COLORS.DARK_BLUE;
                                 break;
                             }
@@ -91,11 +93,21 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
                     }
 
                     pixels[width * j + i] = new MutableVector3(color);
-
                 }
             }
             completed = true;
         }
+    }
+
+    private ImmutableVector3 increaseHitpointPrecision(Ray cameraRay, Geometry hitGeometry, ImmutableVector3 hitpoint) {
+        Ray reverseRay = new Ray(hitpoint, cameraRay.getDirection().mult(-1.0f));
+        float reverseDistance = hitGeometry.intersect(reverseRay);
+        if (reverseDistance > 0) {
+            return reverseRay.onRay(reverseDistance);
+        } else {
+            statistics.reverseRayMissed();
+        }
+        return hitpoint;
     }
 
     @Override

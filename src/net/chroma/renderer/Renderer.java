@@ -1,5 +1,7 @@
 package net.chroma.renderer;
 
+import net.chroma.renderer.diag.ChromaStatistics;
+
 /**
  * @author steinerb
  */
@@ -10,4 +12,5 @@ public interface Renderer {
     boolean isContinuous();
 
     byte[] get8BitRGBSnapshot();
+
 }

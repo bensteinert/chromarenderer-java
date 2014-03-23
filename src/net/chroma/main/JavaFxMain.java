@@ -2,8 +2,10 @@ package net.chroma.main;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
@@ -11,13 +13,16 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import net.chroma.renderer.ChromaRenderMode;
 import net.chroma.renderer.cores.ColorCubeRenderer;
 import net.chroma.renderer.cores.MovingAverageRenderer;
 import net.chroma.renderer.cores.SimpleRayTracer;
+import net.chroma.renderer.diag.ChromaStatistics;
 
 public class JavaFxMain extends Application {
 
@@ -37,8 +42,11 @@ public class JavaFxMain extends Application {
 
     private Stage statusWindow() {
         StackPane secondaryLayout = new StackPane();
+
         Text fps = new Text();
-        secondaryLayout.getChildren().add(fps);
+        Text reverseRaysMissed = new Text();
+        VBox vbox = new VBox(20, fps, reverseRaysMissed);
+        secondaryLayout.getChildren().add(vbox);
 
         Scene secondScene = new Scene(secondaryLayout, 400, 400);
         Stage secondStage = new Stage(StageStyle.UNDECORATED);
@@ -52,7 +60,9 @@ public class JavaFxMain extends Application {
         new AnimationTimer() {
             @Override
             public void handle(long now) {
-               fps.setText(String.valueOf(chroma.getFps()));
+                ChromaStatistics statistics = chroma.getStatistics();
+                fps.setText(String.valueOf(statistics.getFps()));
+                reverseRaysMissed.setText(String.valueOf(statistics.getReverseRaysMissedCount()));
             }
         }.start();
 
@@ -99,13 +109,13 @@ public class JavaFxMain extends Application {
         return event -> {
             switch (event.getCode()) {
                 case F5:
-                    chroma.setRenderer(new MovingAverageRenderer(imgWidth, imgHeight));
+                    chroma.init(ChromaRenderMode.AVG, imgWidth, imgHeight);
                     break;
                 case F6:
-                    chroma.setRenderer(new ColorCubeRenderer(imgWidth, imgHeight));
+                    chroma.init(ChromaRenderMode.COLOR_CUBE, imgWidth, imgHeight);
                     break;
                 case F7:
-                    chroma.setRenderer(new SimpleRayTracer(imgWidth, imgHeight));
+                    chroma.init(ChromaRenderMode.SIMPLE, imgWidth, imgHeight);
                     break;
             }
             chroma.restart();
