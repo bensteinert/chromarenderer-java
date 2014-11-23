@@ -35,7 +35,7 @@ public class MovingAverageRenderer implements Renderer {
 
 
     @Override
-    public byte[] get8BitRGBSnapshot() {
+    public byte[] get8BitRgbSnapshot() {
         return buffer.toByteImage();
     }
 

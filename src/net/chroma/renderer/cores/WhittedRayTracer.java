@@ -18,7 +18,7 @@ public class WhittedRayTracer implements Renderer {
     }
 
     @Override
-    public byte[] get8BitRGBSnapshot() {
+    public byte[] get8BitRgbSnapshot() {
         return new byte[0];
     }
 }

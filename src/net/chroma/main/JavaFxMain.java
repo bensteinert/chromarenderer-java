@@ -2,10 +2,8 @@ package net.chroma.main;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
@@ -19,9 +17,6 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.chroma.renderer.ChromaRenderMode;
-import net.chroma.renderer.cores.ColorCubeRenderer;
-import net.chroma.renderer.cores.MovingAverageRenderer;
-import net.chroma.renderer.cores.SimpleRayTracer;
 import net.chroma.renderer.diag.ChromaStatistics;
 
 public class JavaFxMain extends Application {
@@ -117,8 +112,11 @@ public class JavaFxMain extends Application {
                 case F7:
                     chroma.init(ChromaRenderMode.SIMPLE, imgWidth, imgHeight);
                     break;
+                case ENTER:
+                    chroma.restart();
+                    break;
             }
-            chroma.restart();
+
         };
     }
 
@@ -126,7 +124,7 @@ public class JavaFxMain extends Application {
         Thread thread = new Thread(chroma);
         thread.start();
         launch(JavaFxMain.class, args);
-        chroma.shutDown();
+        thread.interrupt();
         try {
             thread.join();
         } catch (InterruptedException e) {

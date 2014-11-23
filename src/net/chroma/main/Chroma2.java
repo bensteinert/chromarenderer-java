@@ -7,7 +7,6 @@ import net.chroma.renderer.cores.MovingAverageRenderer;
 import net.chroma.renderer.cores.SimpleRayTracer;
 import net.chroma.renderer.diag.ChromaStatistics;
 import sun.misc.Unsafe;
-import utils.FpsCounter;
 
 import java.lang.reflect.Field;
 import java.util.concurrent.CountDownLatch;
@@ -18,6 +17,7 @@ import java.util.concurrent.CountDownLatch;
 public class Chroma2 implements Runnable {
 
     public static Unsafe UNSAFE;
+
 
     static {
         try {
@@ -36,53 +36,46 @@ public class Chroma2 implements Runnable {
     private int imgHeight;
 
     private final ChromaStatistics statistics;
-    private boolean running = true;
     private boolean changed = false;
+    private boolean restart = false;
     private CountDownLatch renderLatch;
-    private boolean shutDown;
 
 
     public Chroma2(int width, int height) {
         statistics = new ChromaStatistics();
         imgWidth = width;
         imgHeight = height;
-        //renderer = new ColorCubeRenderer(imgWidth, imgHeight);
         renderer = new SimpleRayTracer(imgWidth, imgHeight, statistics);
-
     }
+
 
     public byte[] getCurrentFrame() {
         changed = false;
-        return renderer.get8BitRGBSnapshot();
+        return renderer.get8BitRgbSnapshot();
     }
+
 
     @Override
     public void run() {
-        while (running) {
-            do {
-                renderer.renderNextImage(imgWidth, imgHeight);
-                changed = true;
-                statistics.frame();
-            } while (renderer.isContinuous() && running);
-
+        while (!Thread.currentThread().isInterrupted()) {
             try {
-                if (!shutDown) {
-                    renderLatch = new CountDownLatch(1);
-                    renderLatch.await();
-                }
+                renderLatch = new CountDownLatch(1);
+                renderLatch.await();
+                restart = false;
+
+                do {
+                    renderer.renderNextImage(imgWidth, imgHeight);
+                    changed = true;
+                    statistics.frame();
+                } while (renderer.isContinuous() && !Thread.currentThread().isInterrupted() && !restart);
+
+
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
         }
     }
 
-    public void shutDown() {
-        running = false;
-        shutDown = true;
-        if (renderLatch != null) {
-            renderLatch.countDown();
-        }
-    }
 
     public void restart() {
         statistics.reset();
@@ -91,13 +84,17 @@ public class Chroma2 implements Runnable {
         }
     }
 
+
     public boolean hasChanges() {
         return changed;
     }
 
+
     private void setRenderer(Renderer renderer) {
+        restart = true;
         this.renderer = renderer;
     }
+
 
     public void init(ChromaRenderMode chromaRenderMode, int imgWidth, int imgHeight) {
         switch (chromaRenderMode) {
@@ -116,6 +113,7 @@ public class Chroma2 implements Runnable {
                 break;
         }
     }
+
 
     public ChromaStatistics getStatistics() {
         return statistics;
