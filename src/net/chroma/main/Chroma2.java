@@ -1,7 +1,10 @@
 package net.chroma.main;
 
+import net.chroma.math.ImmutableVector3;
 import net.chroma.renderer.ChromaRenderMode;
 import net.chroma.renderer.Renderer;
+import net.chroma.renderer.cameras.Camera;
+import net.chroma.renderer.cameras.PinholeCamera;
 import net.chroma.renderer.cores.ColorCubeRenderer;
 import net.chroma.renderer.cores.MovingAverageRenderer;
 import net.chroma.renderer.cores.SimpleRayTracer;
@@ -32,9 +35,10 @@ public class Chroma2 implements Runnable {
 
 
     private Renderer renderer;
-    private int imgWidth;
-    private int imgHeight;
+    private final int imgWidth;
+    private final int imgHeight;
 
+    private final Camera camera;
     private final ChromaStatistics statistics;
     private boolean changed = false;
     private boolean restart = false;
@@ -45,7 +49,8 @@ public class Chroma2 implements Runnable {
         statistics = new ChromaStatistics();
         imgWidth = width;
         imgHeight = height;
-        renderer = new SimpleRayTracer(imgWidth, imgHeight, statistics);
+        camera = new PinholeCamera(new ImmutableVector3(0.0f, 0.0f, 8.0f), 0.1f, 0.0001f, 0.0001f, width, height);
+        renderer = new SimpleRayTracer(imgWidth, imgHeight, camera, statistics);
     }
 
 
@@ -64,7 +69,7 @@ public class Chroma2 implements Runnable {
                 restart = false;
 
                 do {
-                    renderer.renderNextImage(imgWidth, imgHeight);
+                    renderer.renderNextImage(imgWidth, imgHeight, 0, 0);
                     changed = true;
                     statistics.frame();
                 } while (renderer.isContinuous() && !Thread.currentThread().isInterrupted() && !restart);
@@ -99,7 +104,7 @@ public class Chroma2 implements Runnable {
     public void init(ChromaRenderMode chromaRenderMode, int imgWidth, int imgHeight) {
         switch (chromaRenderMode) {
             case SIMPLE:
-                setRenderer(new SimpleRayTracer(imgWidth, imgHeight, statistics));
+                setRenderer(new SimpleRayTracer(imgWidth, imgHeight, camera, statistics));
                 break;
             case AVG:
                 setRenderer(new MovingAverageRenderer(imgWidth, imgHeight));

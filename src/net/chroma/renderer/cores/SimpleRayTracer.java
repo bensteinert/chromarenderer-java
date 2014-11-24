@@ -11,7 +11,6 @@ import net.chroma.math.geometry.Sphere;
 import net.chroma.math.raytracing.Ray;
 import net.chroma.renderer.Renderer;
 import net.chroma.renderer.cameras.Camera;
-import net.chroma.renderer.cameras.PinholeCamera;
 import net.chroma.renderer.diag.ChromaStatistics;
 import utils.ChromaCanvas;
 
@@ -29,14 +28,16 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
     private final Camera camera;
     private final ChromaStatistics statistics;
 
-    public SimpleRayTracer(int imageWidth, int imageHeight, ChromaStatistics statistics) {
+
+    public SimpleRayTracer(int imageWidth, int imageHeight, Camera camera, ChromaStatistics statistics) {
         super(imageWidth, imageHeight);
+        this.camera = camera;
         this.statistics = statistics;
         scene = new ArrayList<>();
         createSomeTriangles();
-        camera = new PinholeCamera(new ImmutableVector3(0.0f, 0.0f, 8.0f), 0.1f, 0.0001f, 0.0001f, imageWidth, imageHeight);
         completed = false;
     }
+
 
     private void createSomeTriangles() {
 
@@ -52,15 +53,16 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
 
 
     @Override
-    public void renderNextImage(int imgWidth, int imgHeight) {
+    public void renderNextImage(int imgWidth, int imgHeight, int widthOffset, int heightOffset) {
         if (!completed) {
-            for (int j = 0; j < height; j += 1) {
-                for (int i = 0; i < width; i += 1) {
+            for (int j = heightOffset; j < imgHeight; j += 1) {
+                for (int i = widthOffset; i < imgWidth; i += 1) {
                     Ray cameraRay = camera.getRay(i, j);
 
                     float hitDistance = Float.MAX_VALUE;
                     Geometry hitGeometry = null;
 
+                    // scene intersection
                     for (Geometry geometry : scene) {
                         float distance = geometry.intersect(cameraRay);
                         if (cameraRay.isOnRay(distance) && distance < hitDistance) {
@@ -69,7 +71,8 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
                         }
                     }
 
-                    Vector3 color;
+                    // shading
+                    Vector3 color = COLORS.GREY;
                     if (hitGeometry != null) {
                         ImmutableVector3 hitpoint = cameraRay.onRay(hitDistance);
                         hitpoint = increaseHitpointPrecision(cameraRay, hitGeometry, hitpoint);
@@ -77,6 +80,8 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
                         Vector3 hitpointNormal = hitGeometry.getNormal(hitpoint);
                         hitpoint = hitpoint.plus(hitpointNormal.mult(Constants.FLT_EPSILON));
                         color = hitpointNormal.abs();
+
+                        // Shadow ray computation
                         ImmutableVector3 direction = pointLight.subtract(hitpoint);
                         float distToLightSource = direction.length();
                         Ray shadowRay = new Ray(hitpoint, direction.normalize(), 0.0f, distToLightSource);
@@ -88,8 +93,6 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
                                 break;
                             }
                         }
-                    } else {
-                        color = COLORS.GREY;
                     }
 
                     pixels[width * j + i] = new MutableVector3(color);

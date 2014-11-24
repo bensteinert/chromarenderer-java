@@ -33,14 +33,15 @@ public class ChromaCanvas {
     public byte[] toByteImage() {
         int pixelCount = width * height;
         byte[] result = new byte[pixelCount * 3];
-        for (int i = 0, j = 0; i < pixelCount; i+=1, j+=3) {
-            result[j]     = (byte) (255.0f * (pixels[i].getX()));
+        for (int i = 0, j = 0; i < pixelCount; i += 1, j += 3) {
+            result[j] = (byte) (255.0f * (pixels[i].getX()));
             result[j + 1] = (byte) (255.0f * (pixels[i].getY()));
             result[j + 2] = (byte) (255.0f * (pixels[i].getZ()));
         }
 
         return result;
     }
+
 
     public MutableVector3[] getPixels() {
         return pixels;

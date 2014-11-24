@@ -22,7 +22,7 @@ public class MovingAverageRenderer implements Renderer {
 
 
     @Override
-    public void renderNextImage(int imgWidth, int imgHeight) {
+    public void renderNextImage(int imgWidth, int imgHeight, int widthOffset, int heightOffset) {
         generator.randomFloatPixels(nextImage.getPixels());
         buffer.accumulate(nextImage.getPixels());
     }

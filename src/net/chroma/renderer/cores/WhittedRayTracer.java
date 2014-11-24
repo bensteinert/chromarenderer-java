@@ -8,7 +8,7 @@ import net.chroma.renderer.Renderer;
 public class WhittedRayTracer implements Renderer {
 
     @Override
-    public void renderNextImage(int imgWidth, int imgHeight) {
+    public void renderNextImage(int imgWidth, int imgHeight, int widthOffset, int heightOffset) {
 
     }
 
