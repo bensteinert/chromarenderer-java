@@ -3,11 +3,11 @@ package net.chroma.main;
 import net.chroma.math.ImmutableVector3;
 import net.chroma.renderer.ChromaRenderMode;
 import net.chroma.renderer.Renderer;
-import net.chroma.renderer.cameras.Camera;
-import net.chroma.renderer.cameras.PinholeCamera;
-import net.chroma.renderer.cores.ColorCubeRenderer;
-import net.chroma.renderer.cores.MovingAverageRenderer;
-import net.chroma.renderer.cores.SimpleRayTracer;
+import net.chroma.renderer.camera.Camera;
+import net.chroma.renderer.camera.PinholeCamera;
+import net.chroma.renderer.core.ColorCubeRenderer;
+import net.chroma.renderer.core.MovingAverageRenderer;
+import net.chroma.renderer.core.SimpleRayTracer;
 import net.chroma.renderer.diag.ChromaStatistics;
 import sun.misc.Unsafe;
 

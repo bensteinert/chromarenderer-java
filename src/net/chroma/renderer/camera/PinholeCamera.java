@@ -1,4 +1,4 @@
-package net.chroma.renderer.cameras;
+package net.chroma.renderer.camera;
 
 import net.chroma.math.ImmutableVector3;
 import net.chroma.math.Vector3;

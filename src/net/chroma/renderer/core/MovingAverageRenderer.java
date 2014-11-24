@@ -1,4 +1,4 @@
-package net.chroma.renderer.cores;
+package net.chroma.renderer.core;
 
 import net.chroma.renderer.Renderer;
 import utils.AccumulationBuffer;

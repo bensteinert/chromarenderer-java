@@ -1,4 +1,4 @@
-package net.chroma.renderer.cores;
+package net.chroma.renderer.core;
 
 import net.chroma.math.COLORS;
 import net.chroma.math.Constants;
@@ -10,7 +10,7 @@ import net.chroma.math.geometry.SceneFactory;
 import net.chroma.math.geometry.Sphere;
 import net.chroma.math.raytracing.Ray;
 import net.chroma.renderer.Renderer;
-import net.chroma.renderer.cameras.Camera;
+import net.chroma.renderer.camera.Camera;
 import net.chroma.renderer.diag.ChromaStatistics;
 import utils.ChromaCanvas;
 
