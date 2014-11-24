@@ -44,7 +44,7 @@ public class JavaFxMain extends Application {
         secondaryLayout.getChildren().add(vbox);
 
         Scene secondScene = new Scene(secondaryLayout, 400, 400);
-        Stage secondStage = new Stage(StageStyle.UNDECORATED);
+        Stage secondStage = new Stage(StageStyle.UTILITY);
         secondStage.setTitle("Chroma Info and Controls");
         secondStage.setScene(secondScene);
 
@@ -56,7 +56,7 @@ public class JavaFxMain extends Application {
             @Override
             public void handle(long now) {
                 ChromaStatistics statistics = chroma.getStatistics();
-                fps.setText(String.valueOf(statistics.getFps()));
+                fps.setText(String.format("%.2f FPS",statistics.getFps()));
                 reverseRaysMissed.setText(String.valueOf(statistics.getReverseRaysMissedCount()));
             }
         }.start();

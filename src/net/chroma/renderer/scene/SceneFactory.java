@@ -1,8 +1,10 @@
-package net.chroma.math.geometry;
+package net.chroma.renderer.scene;
 
 import net.chroma.math.ImmutableArrayMatrix3x3;
 import net.chroma.math.ImmutableVector3;
 import net.chroma.math.Vector3;
+import net.chroma.math.geometry.Geometry;
+import net.chroma.math.geometry.Triangle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +14,9 @@ import java.util.List;
  */
 public class SceneFactory {
 
-    public static List<Geometry> cornellBox(ImmutableVector3 center, float halfDimension){
+    public static GeometryScene cornellBox(ImmutableVector3 center, float halfDimension, List<Geometry> content){
 
-        List<Geometry> result = new ArrayList<>(10);
+        List<Geometry> result = new ArrayList<>(10 + content.size());
 
         Vector3 shiftX = new ImmutableVector3(halfDimension, 0.0f, 0.0f);
         Vector3 shiftY = new ImmutableVector3(0.0f, halfDimension, 0.0f);
@@ -63,6 +65,8 @@ public class SceneFactory {
         result.add(t4.transpose(minusCenter).rotate(rotationZ90).transpose(center));
         result.add(t5.transpose(minusCenter).rotate(rotationZ90).transpose(center));
 
-        return result;
+        result.addAll(content);
+
+        return new GeometryScene(result);
     }
 }

@@ -1,17 +1,18 @@
 package net.chroma.renderer.core;
 
 import net.chroma.math.COLORS;
-import net.chroma.math.Constants;
 import net.chroma.math.ImmutableVector3;
 import net.chroma.math.MutableVector3;
 import net.chroma.math.Vector3;
 import net.chroma.math.geometry.Geometry;
-import net.chroma.math.geometry.SceneFactory;
 import net.chroma.math.geometry.Sphere;
+import net.chroma.math.raytracing.Hitpoint;
 import net.chroma.math.raytracing.Ray;
 import net.chroma.renderer.Renderer;
 import net.chroma.renderer.camera.Camera;
 import net.chroma.renderer.diag.ChromaStatistics;
+import net.chroma.renderer.scene.GeometryScene;
+import net.chroma.renderer.scene.SceneFactory;
 import utils.ChromaCanvas;
 
 import java.util.ArrayList;
@@ -22,8 +23,7 @@ import java.util.List;
  */
 public class SimpleRayTracer extends ChromaCanvas implements Renderer {
 
-    private final List<Geometry> scene;
-    private final ImmutableVector3 pointLight = new ImmutableVector3(0.0f, 1.5f, 0.0f);
+    private final GeometryScene scene;
     private boolean completed;
     private final Camera camera;
     private final ChromaStatistics statistics;
@@ -33,22 +33,20 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
         super(imageWidth, imageHeight);
         this.camera = camera;
         this.statistics = statistics;
-        scene = new ArrayList<>();
-        createSomeTriangles();
+        scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, createSomeSpheres());
         completed = false;
     }
 
 
-    private void createSomeTriangles() {
+    private List<Geometry> createSomeSpheres() {
+        List<Geometry> result = new ArrayList<>();
+        result.add(new Sphere(new ImmutableVector3(0.0f, 0.0f, 0.0f), 0.2));
+        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.0f, -1.0f), 0.2));
+        result.add(new Sphere(new ImmutableVector3(1.0f, -1.0f, 1.0f), 0.2));
 
-        scene.add(new Sphere(new ImmutableVector3(0.0f, 0.0f, 0.0f), 0.2));
-        scene.add(new Sphere(new ImmutableVector3(-1.0f, 1.0f, -1.0f), 0.2));
-        scene.add(new Sphere(new ImmutableVector3(1.0f, -1.0f, 1.0f), 0.2));
-
-        scene.add(new Sphere(new ImmutableVector3(-1.0f, 1.7f, -1.0f), 0.2));
-        scene.add(new Sphere(new ImmutableVector3(1.0f, -1.7f, -1.0f), 0.2));
-
-        scene.addAll(SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2));
+        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.7f, -1.0f), 0.2));
+        result.add(new Sphere(new ImmutableVector3(1.0f, -1.7f, -1.0f), 0.2));
+        return result;
     }
 
 
@@ -59,63 +57,27 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
                 for (int i = widthOffset; i < imgWidth; i += 1) {
                     Ray cameraRay = camera.getRay(i, j);
 
-                    float hitDistance = Float.MAX_VALUE;
-                    Geometry hitGeometry = null;
-
                     // scene intersection
-                    for (Geometry geometry : scene) {
-                        float distance = geometry.intersect(cameraRay);
-                        if (cameraRay.isOnRay(distance) && distance < hitDistance) {
-                            hitGeometry = geometry;
-                            hitDistance = distance;
-                        }
-                    }
+                    Hitpoint hitpoint = scene.intersect(cameraRay);
 
-                    // shading
                     Vector3 color = COLORS.GREY;
-                    if (hitGeometry != null) {
-                        ImmutableVector3 hitpoint = cameraRay.onRay(hitDistance);
-                        hitpoint = increaseHitpointPrecision(cameraRay, hitGeometry, hitpoint);
-
-                        Vector3 hitpointNormal = hitGeometry.getNormal(hitpoint);
-                        hitpoint = hitpoint.plus(hitpointNormal.mult(Constants.FLT_EPSILON));
-                        color = hitpointNormal.abs();
-
-                        // Shadow ray computation
-                        ImmutableVector3 direction = pointLight.subtract(hitpoint);
-                        float distToLightSource = direction.length();
-                        Ray shadowRay = new Ray(hitpoint, direction.normalize(), 0.0f, distToLightSource);
-
-                        for (Geometry shadowGeometry : scene) {
-                            float distance = shadowGeometry.intersect(shadowRay);
-                            if (shadowRay.isOnRay(distance)) {
-                                color = COLORS.DARK_BLUE;
-                                break;
-                            }
-                        }
+                    // shading
+                    if (hitpoint.hit()) {
+                        color = hitpoint.getHitpointNormal().abs().mult(scene.enlighten(hitpoint));
                     }
 
                     pixels[width * j + i] = new MutableVector3(color);
                 }
             }
-            completed = true;
+            completed = !isContinuous();
         }
     }
 
-    private ImmutableVector3 increaseHitpointPrecision(Ray cameraRay, Geometry hitGeometry, ImmutableVector3 hitpoint) {
-        Ray reverseRay = new Ray(hitpoint, cameraRay.getDirection().mult(-1.0f));
-        float reverseDistance = hitGeometry.intersect(reverseRay);
-        if (reverseDistance > 0) {
-            return reverseRay.onRay(reverseDistance);
-        } else {
-            statistics.reverseRayMissed();
-        }
-        return hitpoint;
-    }
+
 
     @Override
     public boolean isContinuous() {
-        return false;
+        return true;
     }
 
     @Override

@@ -9,6 +9,8 @@ public class COLORS {
 
     public static Vector3 BLACK = new ImmutableVector3(.0f, .0f, .0f);
 
+    public static Vector3 WHITE = new ImmutableVector3(1.0f, 1.0f, 1.0f);
+
     public static Vector3 RED = new ImmutableVector3(0.8f, .0f, .0f);
 
     public static Vector3 GREEN = new ImmutableVector3(.0f, 0.8f, .0f);
