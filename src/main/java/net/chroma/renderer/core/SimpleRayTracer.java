@@ -10,11 +10,11 @@ import net.chroma.math.raytracing.Hitpoint;
 import net.chroma.math.raytracing.Ray;
 import net.chroma.renderer.Renderer;
 import net.chroma.renderer.camera.Camera;
+import net.chroma.renderer.canvas.ChromaCanvas;
 import net.chroma.renderer.diag.ChromaStatistics;
 import net.chroma.renderer.scene.GeometryScene;
 import net.chroma.renderer.scene.Light;
 import net.chroma.renderer.scene.SceneFactory;
-import utils.ChromaCanvas;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +79,7 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
 
     @Override
     public boolean isContinuous() {
-        return false;
+        return true;
     }
 
     @Override

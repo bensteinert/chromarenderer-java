@@ -1,9 +1,9 @@
 package net.chroma.renderer.core;
 
 import net.chroma.renderer.Renderer;
-import utils.AccumulationBuffer;
-import utils.ChromaCanvas;
-import utils.MultiThreadedAccumulationBuffer;
+import net.chroma.renderer.canvas.AccumulationBuffer;
+import net.chroma.renderer.canvas.ChromaCanvas;
+import net.chroma.renderer.canvas.MultiThreadedAccumulationBuffer;
 
 /**
  * @author steinerb

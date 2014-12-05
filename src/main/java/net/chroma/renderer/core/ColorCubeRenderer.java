@@ -1,9 +1,9 @@
 package net.chroma.renderer.core;
 
-import net.chroma.renderer.Renderer;
 import net.chroma.math.COLORS;
 import net.chroma.math.Vector3;
-import utils.ChromaCanvas;
+import net.chroma.renderer.Renderer;
+import net.chroma.renderer.canvas.ChromaCanvas;
 
 /**
  * @author steinerb
