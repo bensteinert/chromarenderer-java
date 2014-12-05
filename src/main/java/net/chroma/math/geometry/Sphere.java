@@ -9,12 +9,13 @@ import net.chroma.math.raytracing.Ray;
 /**
  * @author steinerb
  */
-public class Sphere implements Geometry{
+public class Sphere extends AbstractGeometry {
 
     private final Vector3 center;
     private final double radius;
 
-    public Sphere(Vector3 center, double radius) {
+    public Sphere(Vector3 center, double radius, Vector3 color) {
+        super(color);
         this.center = center;
         this.radius = radius;
     }

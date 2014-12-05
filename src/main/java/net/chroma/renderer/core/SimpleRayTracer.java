@@ -12,6 +12,7 @@ import net.chroma.renderer.Renderer;
 import net.chroma.renderer.camera.Camera;
 import net.chroma.renderer.diag.ChromaStatistics;
 import net.chroma.renderer.scene.GeometryScene;
+import net.chroma.renderer.scene.Light;
 import net.chroma.renderer.scene.SceneFactory;
 import utils.ChromaCanvas;
 
@@ -40,12 +41,11 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
 
     private List<Geometry> createSomeSpheres() {
         List<Geometry> result = new ArrayList<>();
-        result.add(new Sphere(new ImmutableVector3(0.0f, 0.0f, 0.0f), 0.2));
-        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.0f, -1.0f), 0.2));
-        result.add(new Sphere(new ImmutableVector3(1.0f, -1.0f, 1.0f), 0.2));
-
-        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.7f, -1.0f), 0.2));
-        result.add(new Sphere(new ImmutableVector3(1.0f, -1.7f, -1.0f), 0.2));
+        result.add(new Sphere(new ImmutableVector3(0.0f, 0.0f, 0.0f), 0.2, COLORS.PURPLE));
+        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.0f, -1.0f), 0.2 , COLORS.RED));
+        result.add(new Sphere(new ImmutableVector3(1.0f, -1.0f, 1.0f), 0.2 , COLORS.BLUE));
+        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.7f, -1.0f), 0.2, COLORS.GREY));
+        result.add(new Sphere(new ImmutableVector3(1.0f, -1.7f, -1.0f), 0.2, COLORS.GREEN));
         return result;
     }
 
@@ -63,7 +63,9 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
                     Vector3 color = COLORS.GREY;
                     // shading
                     if (hitpoint.hit()) {
-                        color = hitpoint.getHitpointNormal().abs().mult(scene.enlighten(hitpoint));
+                        Light light = scene.enlighten(hitpoint);
+                        float cosTheta = light.getLightRay().getDirection().dot(hitpoint.getHitpointNormal());
+                        color = hitpoint.getHitGeometry().getColor().mult(light.getColor()).mult(cosTheta);
                     }
 
                     pixels[width * j + i] = new MutableVector3(color);
@@ -77,7 +79,7 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
 
     @Override
     public boolean isContinuous() {
-        return true;
+        return false;
     }
 
     @Override

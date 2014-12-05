@@ -31,6 +31,10 @@ public class ImmutableVector3 implements Vector3 {
         );
     }
 
+    public float dot(Vector3 input){
+        return x*input.getX() + y*input.getY() + z*input.getZ();
+    }
+
     public ImmutableVector3 plus(Vector3 input){
         return new ImmutableVector3(
                 x + input.getX(),

@@ -61,7 +61,7 @@ public class GeometryScene {
     }
 
 
-    public Vector3 enlighten(Hitpoint hitpoint) {
+    public Light enlighten(Hitpoint hitpoint) {
         ImmutableVector3 point = hitpoint.getPoint();
         ImmutableVector3 direction = pointLight.subtract(point);
 
@@ -79,6 +79,6 @@ public class GeometryScene {
             }
         }
 
-        return resultLight;
+        return new Light(resultLight, shadowRay);
     }
 }

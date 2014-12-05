@@ -19,4 +19,6 @@ public interface Geometry {
     ImmutableVector3 getNormal(ImmutableVector3 hitpoint);
 
     boolean isPlane();
+
+    Vector3 getColor();
 }

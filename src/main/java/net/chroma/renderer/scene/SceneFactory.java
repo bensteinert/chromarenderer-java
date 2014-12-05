@@ -1,5 +1,6 @@
 package net.chroma.renderer.scene;
 
+import net.chroma.math.COLORS;
 import net.chroma.math.ImmutableArrayMatrix3x3;
 import net.chroma.math.ImmutableVector3;
 import net.chroma.math.Vector3;
@@ -38,8 +39,8 @@ public class SceneFactory {
         ImmutableVector3 p2x1 = new ImmutableVector3(center.subtract(shiftX).plus(shiftY).subtract(shiftZ));
         ImmutableVector3 p3x1 = new ImmutableVector3(center.subtract(shiftX).plus(shiftY).plus(shiftZ));
 
-        Triangle t0 = new Triangle(p0x1, p1x1, p2x1);
-        Triangle t1 = new Triangle(p3x1, p0x1, p2x1);
+        Triangle t0 = new Triangle(p0x1, p1x1, p2x1, COLORS.WALL);
+        Triangle t1 = new Triangle(p3x1, p0x1, p2x1, COLORS.WALL);
 
         //left
         result.add(t0);
