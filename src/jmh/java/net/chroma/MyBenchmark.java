@@ -22,16 +22,16 @@
 // * or visit www.oracle.com if you need additional information or have any
 // * questions.
 // */
-//
-//package net.chroma;
-//
-//import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
-//
-//public class MyBenchmark {
-//
-//    @GenerateMicroBenchmark
-//    public void testMethod() {
-//        // place your benchmarked code here
-//    }
-//
-//}
+
+package net.chroma;
+
+import org.openjdk.jmh.annotations.Benchmark;
+
+public class MyBenchmark {
+
+    @Benchmark
+    public void testMethod() {
+        // place your benchmarked code here
+    }
+
+}
