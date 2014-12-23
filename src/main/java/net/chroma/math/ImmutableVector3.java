@@ -1,7 +1,5 @@
 package net.chroma.math;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 /**
 * @author steinerb
 */
@@ -75,17 +73,17 @@ public class ImmutableVector3 implements Vector3 {
 
     @Override
     public void reset() {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void set(Vector3 input) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void set(float x, float y, float z) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override

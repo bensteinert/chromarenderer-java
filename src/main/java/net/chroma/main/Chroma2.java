@@ -9,9 +9,7 @@ import net.chroma.renderer.core.ColorCubeRenderer;
 import net.chroma.renderer.core.MovingAverageRenderer;
 import net.chroma.renderer.core.SimpleRayTracer;
 import net.chroma.renderer.diag.ChromaStatistics;
-import sun.misc.Unsafe;
 
-import java.lang.reflect.Field;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -19,19 +17,19 @@ import java.util.concurrent.CountDownLatch;
  */
 public class Chroma2 implements Runnable {
 
-    public static Unsafe UNSAFE;
-
-
-    static {
-        try {
-            Field f;
-            f = Unsafe.class.getDeclaredField("theUnsafe");
-            f.setAccessible(true);
-            UNSAFE = (Unsafe) f.get(null);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
+//    public static Unsafe UNSAFE;
+//
+//
+//    static {
+//        try {
+//            Field f;
+//            f = Unsafe.class.getDeclaredField("theUnsafe");
+//            f.setAccessible(true);
+//            UNSAFE = (Unsafe) f.get(null);
+//        } catch (NoSuchFieldException | IllegalAccessException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 
     private Renderer renderer;
