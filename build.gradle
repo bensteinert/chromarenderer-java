@@ -1,7 +1,7 @@
 apply plugin: 'idea'
 apply plugin: 'java'
 
-group = 'net.chroma'
+group = 'net.chromarenderer'
 version = '0.0.1-SNAPSHOT'
 
 sourceCompatibility = 1.8
