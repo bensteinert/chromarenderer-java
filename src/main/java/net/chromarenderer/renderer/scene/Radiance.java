@@ -6,13 +6,13 @@ import net.chromarenderer.math.raytracing.Ray;
 /**
  * @author steinerb
  */
-public class Light {
+public class Radiance {
 
     private final Vector3 color;
     private final Ray lightRay;
 
 
-    public Light(Vector3 color, Ray lightRay) {
+    public Radiance(Vector3 color, Ray lightRay) {
         this.color = color;
         this.lightRay = lightRay;
     }

@@ -9,5 +9,5 @@ public interface AccumulationBuffer {
 
     AccumulationBuffer accumulate(Vector3[] input);
 
-    byte[] toByteImage();
+    byte[] to8BitImage();
 }

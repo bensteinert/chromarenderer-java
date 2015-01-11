@@ -112,6 +112,9 @@ public class JavaFxMain extends Application {
                 case F7:
                     chroma.init(ChromaRenderMode.SIMPLE, imgWidth, imgHeight);
                     break;
+                case F8:
+                    chroma.init(ChromaRenderMode.DISTRIBUTION, imgWidth, imgHeight);
+                    break;
                 case ENTER:
                     chroma.restart();
                     break;

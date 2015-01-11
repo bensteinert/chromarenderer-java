@@ -8,29 +8,25 @@ import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.renderer.Renderer;
 import net.chromarenderer.renderer.camera.Camera;
 import net.chromarenderer.renderer.canvas.ChromaCanvas;
-import net.chromarenderer.renderer.diag.ChromaStatistics;
 import net.chromarenderer.renderer.scene.GeometryScene;
 import net.chromarenderer.renderer.scene.Radiance;
 
 /**
  * @author steinerb
  */
-public class SimpleRayTracer extends ChromaCanvas implements Renderer {
+public class DistributionRayTracer extends ChromaCanvas implements Renderer {
 
     private final GeometryScene scene;
     private boolean completed;
     private final Camera camera;
-    private final ChromaStatistics statistics;
 
 
-    public SimpleRayTracer(int imageWidth, int imageHeight, GeometryScene scene, Camera camera, ChromaStatistics statistics) {
+    public DistributionRayTracer(int imageWidth, int imageHeight, GeometryScene scene, Camera camera) {
         super(imageWidth, imageHeight);
         this.scene = scene;
         this.camera = camera;
-        this.statistics = statistics;
         completed = false;
     }
-
 
 
     @Override
@@ -43,12 +39,12 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
                     // scene intersection
                     Hitpoint hitpoint = scene.intersect(cameraRay);
 
-                    Vector3 color = COLORS.BLACK;
-
+                    Vector3 color = COLORS.GREY;
                     // shading
                     if (hitpoint.hit()) {
                         Radiance radiance = scene.getRadianceSample(hitpoint);
-                        color = radiance.getColor();
+                        //float cosTheta = light.getLightRay().getDirection().dot(hitpoint.getHitpointNormal());
+                        color = hitpoint.getHitGeometry().getColor().mult(radiance.getColor());
                     }
 
                     pixels[width * j + i] = new MutableVector3(color);
@@ -59,11 +55,11 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
     }
 
 
-
     @Override
     public boolean isContinuous() {
-        return true;
+        return false;
     }
+
 
     @Override
     public byte[] get8BitRgbSnapshot() {

@@ -135,4 +135,5 @@ public class ImmutableVector3 implements Vector3 {
     public ImmutableVector3 abs() {
         return new ImmutableVector3(Math.abs(x), Math.abs(y), Math.abs(z));
     }
+
 }

@@ -42,9 +42,7 @@ public class GeometryScene {
             Vector3 hitpointNormal = hitGeometry.getNormal(hitpoint);
             hitpoint = hitpoint.plus(hitpointNormal.mult(Constants.FLT_EPSILON));
             return new Hitpoint(hitGeometry, hitpoint, hitDistance, hitpointNormal);
-        }
-
-        else return Hitpoint.INFINITY;
+        } else return Hitpoint.INFINITY;
 
     }
 
@@ -61,24 +59,35 @@ public class GeometryScene {
     }
 
 
-    public Light enlighten(Hitpoint hitpoint) {
+    public Radiance getRadianceSample(Hitpoint hitpoint) {
         ImmutableVector3 point = hitpoint.getPoint();
         ImmutableVector3 direction = pointLight.subtract(point);
-
-        // currently light is always WHITE
-        Vector3 resultLight = COLORS.WHITE;
 
         float distToLightSource = direction.length();
         Ray shadowRay = new Ray(point, direction.normalize(), 0.0f, distToLightSource);
 
-        for (Geometry shadowGeometry : geometryList) {
-            float distance = shadowGeometry.intersect(shadowRay);
-            if (shadowRay.isOnRay(distance)) {
-                resultLight = COLORS.BLACK;
-                break;
+        float cosThetaSceneHit = direction.dot(hitpoint.getHitpointNormal());
+
+        //geometry hit from correct side?
+        if (cosThetaSceneHit > 0.0f) {
+            for (Geometry shadowGeometry : geometryList) {
+                float distance = shadowGeometry.intersect(shadowRay);
+                if (shadowRay.isOnRay(distance)) {
+                    new Radiance(COLORS.BLACK, shadowRay);
+                }
             }
         }
+        else {
+            return new Radiance(COLORS.BLACK, shadowRay);
+        }
 
-        return new Light(resultLight, shadowRay);
+        float geomTerm =  (cosThetaSceneHit) / (distToLightSource*distToLightSource);
+        Vector3 rhoDiffuse = hitpoint.getHitGeometry().getColor();
+        float precisionBound = 10.0f/(rhoDiffuse.getMaxValue()); 														// bound can include brdf which can soften the geometric term
+        Vector3 result = rhoDiffuse.div(Constants.PI_f).mult(Math.min(precisionBound, geomTerm));
+
+        return new Radiance(result.mult(2.0f), shadowRay);
     }
+
+
 }

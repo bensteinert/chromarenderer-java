@@ -45,4 +45,9 @@ public interface Vector3 {
     Vector3 normalize();
 
     Vector3 abs();
+
+    default public float getMaxValue() {
+        return Math.max(getZ(), Math.max(getX(), getY()));
+    }
+
 }

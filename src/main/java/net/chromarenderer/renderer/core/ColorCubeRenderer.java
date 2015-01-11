@@ -27,7 +27,7 @@ public class ColorCubeRenderer extends ChromaCanvas implements Renderer {
 
     @Override
     public byte[] get8BitRgbSnapshot() {
-        return toByteImage();
+        return to8BitImage();
     }
 
     public static void createCubes(Vector3[] pixels, int imgWidth, int imgHeight) {

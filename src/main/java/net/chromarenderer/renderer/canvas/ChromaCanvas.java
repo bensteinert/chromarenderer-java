@@ -30,13 +30,13 @@ public class ChromaCanvas {
     }
 
 
-    public byte[] toByteImage() {
+    public byte[] to8BitImage() {
         int pixelCount = width * height;
         byte[] result = new byte[pixelCount * 3];
         for (int i = 0, j = 0; i < pixelCount; i += 1, j += 3) {
-            result[j] = (byte) (255.0f * (pixels[i].getX()));
-            result[j + 1] = (byte) (255.0f * (pixels[i].getY()));
-            result[j + 2] = (byte) (255.0f * (pixels[i].getZ()));
+            result[j] =     (byte) (255.0f * (Math.min(pixels[i].getX(), 1.0f)));
+            result[j + 1] = (byte) (255.0f * (Math.min(pixels[i].getY(), 1.0f)));
+            result[j + 2] = (byte) (255.0f * (Math.min(pixels[i].getZ(), 1.0f)));
         }
 
         return result;
