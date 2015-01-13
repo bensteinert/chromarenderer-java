@@ -21,12 +21,16 @@ import net.chromarenderer.renderer.diag.ChromaStatistics;
 
 public class JavaFxMain extends Application {
 
-    private static int imgWidth = 1024;
-    private static int imgHeight = 1024;
-    private static int scanlineStride = imgWidth * 3;
+    private static final ChromaSettings settings;
+    private static final Chroma chroma;
 
-    private static Chroma chroma = new Chroma(imgWidth, imgHeight);
-    private Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
+    static {
+        settings = new ChromaSettings();
+        chroma = new Chroma();
+        chroma.init(settings);
+    }
+
+    private final Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
     private Stage utilityStage;
 
     @Override
@@ -66,7 +70,7 @@ public class JavaFxMain extends Application {
 
     private void mainRenderWindow(final Stage primaryStage) {
         Pane root = new Pane();
-        Scene scene = new Scene(root, imgWidth, imgHeight);
+        Scene scene = new Scene(root, settings.getImgWidth(), settings.getImgHeight());
         primaryStage.setScene(scene);
         primaryStage.setX(visualBounds.getMinX());
         primaryStage.setX(visualBounds.getMinY());
@@ -81,7 +85,7 @@ public class JavaFxMain extends Application {
         }));
 
         primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, getKeyPressedEventHandler());
-        final WritableImage img = new WritableImage(imgWidth, imgHeight);
+        final WritableImage img = new WritableImage(settings.getImgWidth(), settings.getImgHeight());
 
         ImageView imageView = new ImageView();
         imageView.setScaleY(-1.0);
@@ -92,8 +96,8 @@ public class JavaFxMain extends Application {
             @Override
             public void handle(long now) {
                 if(chroma.hasChanges()) {
-                    img.getPixelWriter().setPixels(0, 0, imgWidth, imgHeight, PixelFormat.getByteRgbInstance(),
-                            chroma.getCurrentFrame(), 0, scanlineStride);
+                    img.getPixelWriter().setPixels(0, 0, settings.getImgWidth(), settings.getImgHeight(),
+                            PixelFormat.getByteRgbInstance(), chroma.getCurrentFrame(), 0, settings.getImgHeight() * 3);
 
                 }
             }
@@ -102,22 +106,28 @@ public class JavaFxMain extends Application {
 
     private EventHandler<KeyEvent> getKeyPressedEventHandler() {
         return event -> {
+            boolean reinitNeeded = false;
             switch (event.getCode()) {
                 case F5:
-                    chroma.init(ChromaRenderMode.AVG, imgWidth, imgHeight);
+                    settings.setMode(ChromaRenderMode.AVG);
+                    reinitNeeded = true;
                     break;
                 case F6:
-                    chroma.init(ChromaRenderMode.COLOR_CUBE, imgWidth, imgHeight);
+                    settings.setMode(ChromaRenderMode.COLOR_CUBE);
+                    reinitNeeded = true;
                     break;
                 case F7:
-                    chroma.init(ChromaRenderMode.SIMPLE, imgWidth, imgHeight);
-                    break;
-                case F8:
-                    chroma.init(ChromaRenderMode.DISTRIBUTION, imgWidth, imgHeight);
+                    settings.setMode(ChromaRenderMode.SIMPLE);
+                    reinitNeeded = true;
                     break;
                 case ENTER:
                     chroma.restart();
                     break;
+            }
+
+            if (reinitNeeded) {
+                chroma.init(settings);
+                reinitNeeded = false;
             }
 
         };

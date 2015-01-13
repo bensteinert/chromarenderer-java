@@ -4,7 +4,6 @@ import net.chromarenderer.math.COLORS;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.geometry.Geometry;
 import net.chromarenderer.math.geometry.Sphere;
-import net.chromarenderer.renderer.ChromaRenderMode;
 import net.chromarenderer.renderer.Renderer;
 import net.chromarenderer.renderer.camera.Camera;
 import net.chromarenderer.renderer.camera.PinholeCamera;
@@ -39,28 +38,19 @@ public class Chroma implements Runnable {
 //        }
 //    }
 
-
     private Renderer renderer;
-    private final int imgWidth;
-    private final int imgHeight;
 
-    private final Camera camera;
-    private final GeometryScene scene;
     private final ChromaStatistics statistics;
     private boolean changed = false;
     private boolean restart = false;
     private CountDownLatch renderLatch;
+    private ChromaSettings settings;
 
 
-    public Chroma(int width, int height) {
+    public Chroma() {
         statistics = new ChromaStatistics();
-        imgWidth = width;
-        imgHeight = height;
-        scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, createSomeSpheres());
-        //RHS with depth along negative z-axis
-        camera = new PinholeCamera(new ImmutableVector3(0.0f, 0.0f, 6.0f), 0.1f, 0.00009f, 0.00009f, width, height);
-        renderer = new SimpleRayTracer(imgWidth, imgHeight, scene, camera, statistics);
     }
+
 
     private List<Geometry> createSomeSpheres() {
         List<Geometry> result = new ArrayList<>();
@@ -88,7 +78,7 @@ public class Chroma implements Runnable {
                 restart = false;
 
                 do {
-                    renderer.renderNextImage(imgWidth, imgHeight, 0, 0);
+                    renderer.renderNextImage(settings.getImgWidth(), settings.getImgWidth(), 0, 0);
                     changed = true;
                     statistics.frame();
                 } while (renderer.isContinuous() && !Thread.currentThread().isInterrupted() && !restart);
@@ -120,8 +110,16 @@ public class Chroma implements Runnable {
     }
 
 
-    public void init(ChromaRenderMode chromaRenderMode, int imgWidth, int imgHeight) {
-        switch (chromaRenderMode) {
+    public void init(ChromaSettings settings) {
+        this.settings = new ChromaSettings(settings);
+        int imgWidth = this.settings.getImgWidth();
+        int imgHeight = this.settings.getImgHeight();
+
+        //RHS with depth along negative z-axis
+        Camera camera = new PinholeCamera(new ImmutableVector3(0.0f, 0.0f, 6.0f), 0.1f, 0.00009f, 0.00009f, imgWidth, imgHeight);
+        GeometryScene scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, createSomeSpheres());
+
+        switch (settings.getMode()) {
             case SIMPLE:
                 setRenderer(new SimpleRayTracer(imgWidth, imgHeight, scene, camera, statistics));
                 break;

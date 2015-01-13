@@ -38,6 +38,8 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
         if (!completed) {
             for (int j = heightOffset; j < imgHeight; j += 1) {
                 for (int i = widthOffset; i < imgWidth; i += 1) {
+                    ChromaThreadContext.setX(i);
+                    ChromaThreadContext.setY(j);
                     Ray cameraRay = camera.getRay(i, j);
 
                     // scene intersection
