@@ -7,13 +7,17 @@ import net.chromarenderer.renderer.ChromaRenderMode;
  */
 public class ChromaSettings {
 
-    private int imgWidth = 1024;
-    private int imgHeight = 1024;
-    private ChromaRenderMode mode = ChromaRenderMode.SIMPLE;
-    private boolean forceContinuousRender = false;
+    private final int imgWidth;
+    private final int imgHeight;
+    private final ChromaRenderMode mode;
+    private final boolean forceContinuousRender;
 
 
-    public ChromaSettings() {
+    public ChromaSettings(int imgWidth, int imgHeight, ChromaRenderMode mode, boolean forceContinuousRender) {
+        this.imgWidth = imgWidth;
+        this.imgHeight = imgHeight;
+        this.mode = mode;
+        this.forceContinuousRender = forceContinuousRender;
     }
 
 
@@ -22,16 +26,6 @@ public class ChromaSettings {
         this.imgHeight = settings.getImgHeight();
         this.mode = settings.getMode();
         this.forceContinuousRender = settings.isForceContinuousRender();
-    }
-
-
-    public void setImgWidth(int imgWidth) {
-        this.imgWidth = imgWidth;
-    }
-
-
-    public void setImgHeight(int imgHeight) {
-        this.imgHeight = imgHeight;
     }
 
 
@@ -50,17 +44,18 @@ public class ChromaSettings {
     }
 
 
-    public void setMode(ChromaRenderMode mode) {
-        this.mode = mode;
-    }
-
-
     public boolean isForceContinuousRender() {
         return forceContinuousRender;
     }
 
 
-    public void setForceContinuousRender(boolean forceContinuousRender) {
-        this.forceContinuousRender = forceContinuousRender;
+    public ChromaSettings changeMode(ChromaRenderMode mode) {
+        return new ChromaSettings(imgWidth, imgHeight, mode, forceContinuousRender);
+    }
+
+
+    public ChromaSettings changeContinuousRender(boolean isContinuousRender) {
+        return new ChromaSettings(imgWidth, imgHeight, mode, isContinuousRender);
+
     }
 }

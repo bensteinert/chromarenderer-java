@@ -110,8 +110,8 @@ public class Chroma implements Runnable {
     }
 
 
-    public void init(ChromaSettings settings) {
-        this.settings = new ChromaSettings(settings);
+    public void init(ChromaSettings settingsIn) {
+        this.settings = new ChromaSettings(settingsIn);
         int imgWidth = this.settings.getImgWidth();
         int imgHeight = this.settings.getImgHeight();
 
@@ -121,16 +121,16 @@ public class Chroma implements Runnable {
 
         switch (settings.getMode()) {
             case SIMPLE:
-                setRenderer(new SimpleRayTracer(imgWidth, imgHeight, scene, camera, statistics));
+                setRenderer(new SimpleRayTracer(settings, scene, camera, statistics));
                 break;
             case AVG:
-                setRenderer(new MovingAverageRenderer(imgWidth, imgHeight));
+                setRenderer(new MovingAverageRenderer(settings));
                 break;
             case COLOR_CUBE:
-                setRenderer(new ColorCubeRenderer(imgWidth, imgHeight));
+                setRenderer(new ColorCubeRenderer(settings));
                 break;
             case DISTRIBUTION:
-                setRenderer(new DistributionRayTracer(imgWidth, imgHeight, scene, camera));
+                setRenderer(new DistributionRayTracer(settings, scene, camera));
                 break;
             default:
                 break;

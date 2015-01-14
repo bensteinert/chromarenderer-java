@@ -1,5 +1,6 @@
 package net.chromarenderer.renderer.core;
 
+import net.chromarenderer.main.ChromaSettings;
 import net.chromarenderer.math.COLORS;
 import net.chromarenderer.math.MutableVector3;
 import net.chromarenderer.math.Vector3;
@@ -17,20 +18,21 @@ import net.chromarenderer.renderer.scene.Radiance;
  */
 public class SimpleRayTracer extends ChromaCanvas implements Renderer {
 
+    private final ChromaSettings settings;
     private final GeometryScene scene;
     private boolean completed;
     private final Camera camera;
     private final ChromaStatistics statistics;
 
 
-    public SimpleRayTracer(int imageWidth, int imageHeight, GeometryScene scene, Camera camera, ChromaStatistics statistics) {
-        super(imageWidth, imageHeight);
+    public SimpleRayTracer(ChromaSettings settings, GeometryScene scene, Camera camera, ChromaStatistics statistics) {
+        super(settings.getImgWidth(), settings.getImgHeight());
+        this.settings = settings;
         this.scene = scene;
         this.camera = camera;
         this.statistics = statistics;
         completed = false;
     }
-
 
 
     @Override
@@ -45,9 +47,9 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
                     // scene intersection
                     Hitpoint hitpoint = scene.intersect(cameraRay);
 
-                    Vector3 color = COLORS.BLACK;
 
                     // shading
+                    Vector3 color = COLORS.BLACK;
                     if (hitpoint.hit()) {
                         Radiance radiance = scene.getRadianceSample(hitpoint);
                         color = radiance.getColor();
@@ -61,11 +63,11 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
     }
 
 
-
     @Override
     public boolean isContinuous() {
-        return true;
+        return settings.isForceContinuousRender();
     }
+
 
     @Override
     public byte[] get8BitRgbSnapshot() {

@@ -1,5 +1,6 @@
 package net.chromarenderer.renderer.core;
 
+import net.chromarenderer.main.ChromaSettings;
 import net.chromarenderer.math.COLORS;
 import net.chromarenderer.math.MutableVector3;
 import net.chromarenderer.math.Vector3;
@@ -21,8 +22,8 @@ public class DistributionRayTracer extends ChromaCanvas implements Renderer {
     private final Camera camera;
 
 
-    public DistributionRayTracer(int imageWidth, int imageHeight, GeometryScene scene, Camera camera) {
-        super(imageWidth, imageHeight);
+    public DistributionRayTracer(ChromaSettings settings, GeometryScene scene, Camera camera) {
+        super(settings.getImgWidth(), settings.getImgHeight());
         this.scene = scene;
         this.camera = camera;
         completed = false;

@@ -12,6 +12,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -21,17 +22,12 @@ import net.chromarenderer.renderer.diag.ChromaStatistics;
 
 public class JavaFxMain extends Application {
 
-    private static final ChromaSettings settings;
-    private static final Chroma chroma;
-
-    static {
-        settings = new ChromaSettings();
-        chroma = new Chroma();
-        chroma.init(settings);
-    }
+    private static final Chroma chroma = new Chroma();
+    private static ChromaSettings settings;
 
     private final Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
     private Stage utilityStage;
+
 
     @Override
     public void start(final Stage primaryStage) throws Exception {
@@ -42,9 +38,15 @@ public class JavaFxMain extends Application {
     private Stage statusWindow() {
         StackPane secondaryLayout = new StackPane();
 
+        Font monaco = Font.font("Monaco", 14);
         Text fps = new Text();
+        fps.setFont(monaco);
         Text reverseRaysMissed = new Text();
-        VBox vbox = new VBox(20, fps, reverseRaysMissed);
+        reverseRaysMissed.setFont(monaco);
+        Text isContuousActive = new Text();
+        isContuousActive.setFont(monaco);
+
+        VBox vbox = new VBox(20, fps, isContuousActive, reverseRaysMissed);
         secondaryLayout.getChildren().add(vbox);
 
         Scene secondScene = new Scene(secondaryLayout, 400, 400);
@@ -60,8 +62,9 @@ public class JavaFxMain extends Application {
             @Override
             public void handle(long now) {
                 ChromaStatistics statistics = chroma.getStatistics();
-                fps.setText(String.format("%.2f FPS",statistics.getFps()));
                 reverseRaysMissed.setText(String.valueOf(statistics.getReverseRaysMissedCount()));
+                fps.setText(             String.format("FPS:        %.2f", statistics.getFps()));
+                isContuousActive.setText(String.format("Continuous: %s",  Boolean.toString(settings.isForceContinuousRender())));
             }
         }.start();
 
@@ -108,16 +111,20 @@ public class JavaFxMain extends Application {
         return event -> {
             boolean reinitNeeded = false;
             switch (event.getCode()) {
+                case C:
+                    settings = settings.changeContinuousRender(!settings.isForceContinuousRender());
+                    reinitNeeded = true;
+                    break;
                 case F5:
-                    settings.setMode(ChromaRenderMode.AVG);
+                    settings = settings.changeMode(ChromaRenderMode.AVG);
                     reinitNeeded = true;
                     break;
                 case F6:
-                    settings.setMode(ChromaRenderMode.COLOR_CUBE);
+                    settings = settings.changeMode(ChromaRenderMode.COLOR_CUBE);
                     reinitNeeded = true;
                     break;
                 case F7:
-                    settings.setMode(ChromaRenderMode.SIMPLE);
+                    settings = settings.changeMode(ChromaRenderMode.SIMPLE);
                     reinitNeeded = true;
                     break;
                 case ENTER:
@@ -129,12 +136,14 @@ public class JavaFxMain extends Application {
                 chroma.init(settings);
                 reinitNeeded = false;
             }
-
         };
     }
 
     public static void main(String[] args) {
         Thread thread = new Thread(chroma);
+        settings = new ChromaSettings(1024, 1024, ChromaRenderMode.SIMPLE, false);
+        chroma.init(settings);
+
         thread.start();
         launch(JavaFxMain.class, args);
         thread.interrupt();

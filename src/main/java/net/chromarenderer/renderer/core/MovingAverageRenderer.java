@@ -1,5 +1,6 @@
 package net.chromarenderer.renderer.core;
 
+import net.chromarenderer.main.ChromaSettings;
 import net.chromarenderer.renderer.Renderer;
 import net.chromarenderer.renderer.canvas.AccumulationBuffer;
 import net.chromarenderer.renderer.canvas.ChromaCanvas;
@@ -15,9 +16,9 @@ public class MovingAverageRenderer implements Renderer {
     private final RandomPixelGenerator generator = new RandomPixelGenerator(13499);
 
 
-    public MovingAverageRenderer(int imgWidth, int imgHeight) {
-        buffer = new MultiThreadedAccumulationBuffer(imgWidth, imgHeight);
-        nextImage = new ChromaCanvas(imgWidth, imgHeight);
+    public MovingAverageRenderer(ChromaSettings settings) {
+        buffer = new MultiThreadedAccumulationBuffer(settings.getImgWidth(), settings.getImgHeight());
+        nextImage = new ChromaCanvas(settings.getImgWidth(), settings.getImgHeight());
     }
 
 
