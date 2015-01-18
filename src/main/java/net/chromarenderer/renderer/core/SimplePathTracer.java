@@ -2,7 +2,6 @@ package net.chromarenderer.renderer.core;
 
 import net.chromarenderer.main.ChromaSettings;
 import net.chromarenderer.math.COLORS;
-import net.chromarenderer.math.MutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
@@ -48,9 +47,7 @@ public class SimplePathTracer extends ChromaCanvas implements Renderer {
                     ChromaThreadContext.setX(i);
                     ChromaThreadContext.setY(j);
                     Ray cameraRay = camera.getRay(i, j);
-                    Vector3 color = recursiveKernel(cameraRay, 0);
-
-                    pixels[width * j + i] = new MutableVector3(color);
+                    pixels[width * j + i].set(recursiveKernel(cameraRay, 0));
                 }
             }
             buffer.accumulate(getPixels());
@@ -71,7 +68,7 @@ public class SimplePathTracer extends ChromaCanvas implements Renderer {
             color = radiance.getColor();
             if (settings.getMaxRayDepth() > depth) {
                 Ray ray = scene.getNextEventRay(hitpoint);
-                color = color.plus(recursiveKernel(ray, depth + 1));
+                color = color.plus(hitpoint.getHitGeometry().getColor().mult(recursiveKernel(ray, depth + 1)));
             }
         }
 

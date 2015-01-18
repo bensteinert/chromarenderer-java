@@ -2,7 +2,6 @@ package net.chromarenderer.renderer.core;
 
 import net.chromarenderer.main.ChromaSettings;
 import net.chromarenderer.math.COLORS;
-import net.chromarenderer.math.MutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
@@ -55,7 +54,7 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
                         color = radiance.getColor();
                     }
 
-                    pixels[width * j + i] = new MutableVector3(color);
+                    pixels[width * j + i].set(color);
                 }
             }
             completed = !isContinuous();
