@@ -100,11 +100,19 @@ public class MutableVector3 implements Vector3 {
         values[2] = z;
     }
 
+    public void setValue(int index, float value){
+        values[index] = value;
+    }
+
+
     @Override
     public MutableVector3 crossProduct(Vector3 input) {
-        values[0] = this.getY() * input.getZ() - this.getZ() * input.getY();
-        values[1] = this.getZ() * input.getX() - this.getX() * input.getZ();
-        values[2] = this.getX() * input.getY() - this.getY() * input.getX();
+        float x = values[0];
+        float y = values[1];
+        float z = values[2];
+        values[0] = y * input.getZ() - z * input.getY();
+        values[1] = z * input.getX() - x * input.getZ();
+        values[2] = x * input.getY() - y * input.getX();
         return this;
     }
 

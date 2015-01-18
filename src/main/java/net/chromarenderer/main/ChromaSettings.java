@@ -11,6 +11,7 @@ public class ChromaSettings {
     private final int imgHeight;
     private final ChromaRenderMode mode;
     private final boolean forceContinuousRender;
+    private final int maxRayDepth = 3;
 
 
     public ChromaSettings(int imgWidth, int imgHeight, ChromaRenderMode mode, boolean forceContinuousRender) {
@@ -57,5 +58,9 @@ public class ChromaSettings {
     public ChromaSettings changeContinuousRender(boolean isContinuousRender) {
         return new ChromaSettings(imgWidth, imgHeight, mode, isContinuousRender);
 
+    }
+
+    public int getMaxRayDepth() {
+        return maxRayDepth;
     }
 }

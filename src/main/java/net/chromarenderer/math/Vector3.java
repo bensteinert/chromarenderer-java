@@ -50,4 +50,16 @@ public interface Vector3 {
         return Math.max(getZ(), Math.max(getX(), getY()));
     }
 
+    default public int getMinIndexAbs() {
+        float absX = Math.abs(getX());
+        float absY = Math.abs(getY());
+        float absZ = Math.abs(getZ());
+        if(absX < absY) {
+            return (absZ < absX) ? 2 : 0;
+        }
+        else {
+            return (absZ < absY) ? 2 : 1;
+        }
+    }
+
 }

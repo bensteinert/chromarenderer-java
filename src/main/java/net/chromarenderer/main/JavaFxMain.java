@@ -127,6 +127,10 @@ public class JavaFxMain extends Application {
                     settings = settings.changeMode(ChromaRenderMode.SIMPLE);
                     reinitNeeded = true;
                     break;
+                case F8:
+                    settings = settings.changeMode(ChromaRenderMode.SIMPLE_PT);
+                    reinitNeeded = true;
+                    break;
                 case ENTER:
                     chroma.restart();
                     break;

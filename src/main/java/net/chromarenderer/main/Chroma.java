@@ -7,9 +7,10 @@ import net.chromarenderer.math.geometry.Sphere;
 import net.chromarenderer.renderer.Renderer;
 import net.chromarenderer.renderer.camera.Camera;
 import net.chromarenderer.renderer.camera.PinholeCamera;
+import net.chromarenderer.renderer.core.ChromaThreadContext;
 import net.chromarenderer.renderer.core.ColorCubeRenderer;
-import net.chromarenderer.renderer.core.DistributionRayTracer;
 import net.chromarenderer.renderer.core.MovingAverageRenderer;
+import net.chromarenderer.renderer.core.SimplePathTracer;
 import net.chromarenderer.renderer.core.SimpleRayTracer;
 import net.chromarenderer.renderer.diag.ChromaStatistics;
 import net.chromarenderer.renderer.scene.GeometryScene;
@@ -71,6 +72,8 @@ public class Chroma implements Runnable {
 
     @Override
     public void run() {
+        ChromaThreadContext.init();
+
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 renderLatch = new CountDownLatch(1);
@@ -129,8 +132,8 @@ public class Chroma implements Runnable {
             case COLOR_CUBE:
                 setRenderer(new ColorCubeRenderer(settings));
                 break;
-            case DISTRIBUTION:
-                setRenderer(new DistributionRayTracer(settings, scene, camera));
+            case SIMPLE_PT:
+                setRenderer(new SimplePathTracer(settings, scene, camera, statistics));
                 break;
             default:
                 break;
