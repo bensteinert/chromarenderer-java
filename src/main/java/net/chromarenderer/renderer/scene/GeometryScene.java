@@ -76,7 +76,7 @@ public class GeometryScene {
             for (Geometry shadowGeometry : geometryList) {
                 float distance = shadowGeometry.intersect(shadowRay);
                 if (shadowRay.isOnRay(distance)) {
-                    new Radiance(COLORS.BLACK, shadowRay);
+                    return new Radiance(COLORS.BLACK, shadowRay);
                 }
             }
         } else {
