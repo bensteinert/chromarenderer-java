@@ -8,7 +8,9 @@ import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.renderer.Renderer;
 import net.chromarenderer.renderer.camera.Camera;
+import net.chromarenderer.renderer.canvas.AccumulationBuffer;
 import net.chromarenderer.renderer.canvas.ChromaCanvas;
+import net.chromarenderer.renderer.canvas.SingleThreadedAccumulationBuffer;
 import net.chromarenderer.renderer.diag.ChromaStatistics;
 import net.chromarenderer.renderer.scene.GeometryScene;
 import net.chromarenderer.renderer.scene.Radiance;
@@ -18,6 +20,7 @@ import net.chromarenderer.renderer.scene.Radiance;
  */
 public class SimplePathTracer extends ChromaCanvas implements Renderer {
 
+    private final AccumulationBuffer buffer;
     private final ChromaSettings settings;
     private final GeometryScene scene;
     private boolean completed;
@@ -32,11 +35,13 @@ public class SimplePathTracer extends ChromaCanvas implements Renderer {
         this.camera = camera;
         this.statistics = statistics;
         completed = false;
+        buffer = new SingleThreadedAccumulationBuffer(settings.getImgWidth(), settings.getImgHeight());
     }
 
 
     @Override
     public void renderNextImage(int imgWidth, int imgHeight, int widthOffset, int heightOffset) {
+
         if (!completed) {
             for (int j = heightOffset; j < imgHeight; j += 1) {
                 for (int i = widthOffset; i < imgWidth; i += 1) {
@@ -45,10 +50,10 @@ public class SimplePathTracer extends ChromaCanvas implements Renderer {
                     Ray cameraRay = camera.getRay(i, j);
                     Vector3 color = recursiveKernel(cameraRay, 0);
 
-
                     pixels[width * j + i] = new MutableVector3(color);
                 }
             }
+            buffer.accumulate(getPixels());
             completed = !isContinuous();
         }
     }
@@ -83,7 +88,7 @@ public class SimplePathTracer extends ChromaCanvas implements Renderer {
 
     @Override
     public byte[] get8BitRgbSnapshot() {
-        return to8BitImage();
+        return buffer.to8BitImage();
     }
 
 }
