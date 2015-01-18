@@ -43,10 +43,10 @@ public class JavaFxMain extends Application {
         fps.setFont(monaco);
         Text reverseRaysMissed = new Text();
         reverseRaysMissed.setFont(monaco);
-        Text isContuousActive = new Text();
-        isContuousActive.setFont(monaco);
+        Text isContinuousActive = new Text();
+        isContinuousActive.setFont(monaco);
 
-        VBox vbox = new VBox(20, fps, isContuousActive, reverseRaysMissed);
+        VBox vbox = new VBox(10, fps, isContinuousActive, reverseRaysMissed);
         secondaryLayout.getChildren().add(vbox);
 
         Scene secondScene = new Scene(secondaryLayout, 400, 400);
@@ -63,8 +63,8 @@ public class JavaFxMain extends Application {
             public void handle(long now) {
                 ChromaStatistics statistics = chroma.getStatistics();
                 reverseRaysMissed.setText(String.valueOf(statistics.getReverseRaysMissedCount()));
-                fps.setText(             String.format("FPS:        %.2f", statistics.getFps()));
-                isContuousActive.setText(String.format("Continuous: %s",  Boolean.toString(settings.isForceContinuousRender())));
+                fps.setText(             String.format("FPS:        %.2f [frames total: %s]", statistics.getFps(), statistics.getTotalFrameCount()));
+                isContinuousActive.setText(String.format("Continuous: %s", Boolean.toString(settings.isForceContinuousRender())));
             }
         }.start();
 

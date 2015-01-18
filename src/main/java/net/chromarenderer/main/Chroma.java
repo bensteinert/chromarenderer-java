@@ -99,6 +99,7 @@ public class Chroma implements Runnable {
         if (renderLatch != null) {
             renderLatch.countDown();
         }
+        statistics.start();
     }
 
 
