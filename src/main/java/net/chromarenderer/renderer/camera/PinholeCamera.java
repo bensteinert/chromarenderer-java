@@ -3,36 +3,41 @@ package net.chromarenderer.renderer.camera;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Ray;
+import net.chromarenderer.renderer.core.ChromaThreadContext;
 
 /**
  * @author steinerb
  */
 public class PinholeCamera implements Camera {
 
-    private final int shiftX;
-    private final int shiftY;
-    Vector3 position;
-    float focalDistance;
+    private final float shiftX;
+    private final float shiftY;
 
-    float pixelSizeX;
-    float pixelSizeY;
+    private Vector3 position;
 
-    public PinholeCamera(Vector3 position, float focalDistance, float pixelSizeX, float pixelSizeY, int imgWidth, int imgHeight) {
+    private float focalDistance;
+    private float pixelSizeX;
+    private float pixelSizeY;
+
+    public PinholeCamera(Vector3 position, float focalDistance, float pixelSizeX, float pixelSizeY, int pixelsX, int pixelsY) {
         this.position = position;
         this.focalDistance = focalDistance;
         this.pixelSizeX = pixelSizeX;
         this.pixelSizeY = pixelSizeY;
-        this.shiftX = imgWidth / 2;
-        this.shiftY = imgHeight / 2;
+        this.shiftX = (pixelsX / 2) * pixelSizeX;
+        this.shiftY = (pixelsY / 2) * pixelSizeY;
 
     }
 
     @Override
     public Ray getRay(int x, int y){
         // No rotation yet...
+        float subSampleX = ChromaThreadContext.randomFloat();
+        float subSampleY = ChromaThreadContext.randomFloat();
+
         return new Ray(
                 new ImmutableVector3(position),
-                new ImmutableVector3((x - shiftX) * pixelSizeX, (y - shiftY) * pixelSizeY, -focalDistance).normalize(),
+                new ImmutableVector3(((x + subSampleX) * pixelSizeX) - shiftX, ((y + subSampleY) * pixelSizeY) - shiftY, -focalDistance).normalize(),
                 0,
                 Float.MAX_VALUE);
     }

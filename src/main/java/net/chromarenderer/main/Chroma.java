@@ -117,11 +117,11 @@ public class Chroma implements Runnable {
 
     public void init(ChromaSettings settingsIn) {
         this.settings = new ChromaSettings(settingsIn);
-        int imgWidth = this.settings.getImgWidth();
-        int imgHeight = this.settings.getImgHeight();
+        int pixelsX = this.settings.getImgWidth();
+        int pixelsY = this.settings.getImgHeight();
 
         //RHS with depth along negative z-axis
-        Camera camera = new PinholeCamera(new ImmutableVector3(0.0f, 0.0f, 6.0f), 0.1f, 0.00009f, 0.00009f, imgWidth, imgHeight);
+        Camera camera = new PinholeCamera(new ImmutableVector3(0.0f, 0.0f, 6.0f), 100.0f, 0.09f, 0.09f, pixelsX, pixelsY);   // pixelsize, focal dist in mm!  // pos in world coords!
         GeometryScene scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, createSomeSpheres());
         ShaderEngine.scene = scene;
 
