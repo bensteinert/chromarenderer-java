@@ -1,22 +1,22 @@
 package net.chromarenderer.math.geometry;
 
-import net.chromarenderer.math.Vector3;
+import net.chromarenderer.math.shader.Material;
 
 /**
  * @author steinerb
  */
 public abstract class AbstractGeometry implements Geometry {
 
-    private final Vector3 color;
+    private final Material material;
 
 
-    protected AbstractGeometry(Vector3 color) {
-        this.color = color;
+    protected AbstractGeometry(Material material) {
+        this.material = material;
     }
 
 
     @Override
-    public Vector3 getColor() {
-        return color;
+    public Material getMaterial() {
+        return material;
     }
 }

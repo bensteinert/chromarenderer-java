@@ -4,6 +4,7 @@ import net.chromarenderer.math.ImmutableArrayMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Ray;
+import net.chromarenderer.math.shader.Material;
 
 /**
  * @author steinerb
@@ -20,5 +21,5 @@ public interface Geometry {
 
     boolean isPlane();
 
-    Vector3 getColor();
+    Material getMaterial();
 }

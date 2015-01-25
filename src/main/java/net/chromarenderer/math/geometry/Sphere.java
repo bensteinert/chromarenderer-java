@@ -5,6 +5,7 @@ import net.chromarenderer.math.ImmutableArrayMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Ray;
+import net.chromarenderer.math.shader.Material;
 
 /**
  * @author steinerb
@@ -14,8 +15,8 @@ public class Sphere extends AbstractGeometry {
     private final Vector3 center;
     private final double radius;
 
-    public Sphere(Vector3 center, double radius, Vector3 color) {
-        super(color);
+    public Sphere(Vector3 center, double radius, Material material) {
+        super(material);
         this.center = center;
         this.radius = radius;
     }

@@ -5,6 +5,7 @@ import net.chromarenderer.math.ImmutableArrayMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Ray;
+import net.chromarenderer.math.shader.Material;
 
 /**
  * Chroma uses the right-hand-coordinate system. Think about three vertices specified counterclockwise on the floor.
@@ -16,21 +17,28 @@ public class Triangle extends AbstractGeometry {
     private final ImmutableVector3 p0, p1, p2;
     private final ImmutableVector3 n;
 
-    public Triangle(ImmutableVector3 p0, ImmutableVector3 p1, ImmutableVector3 p2, ImmutableVector3 n, Vector3 color) {
-        super(color);
+    public Triangle(ImmutableVector3 p0, ImmutableVector3 p1, ImmutableVector3 p2, ImmutableVector3 n, Material material) {
+        super(material);
         this.p0 = p0;
         this.p1 = p1;
         this.p2 = p2;
         this.n = n;
-
     }
 
-    public Triangle(ImmutableVector3 p0, ImmutableVector3 p1, ImmutableVector3 p2, Vector3 color) {
-        super(color);
+    public Triangle(ImmutableVector3 p0, ImmutableVector3 p1, ImmutableVector3 p2, ImmutableVector3 n) {
+        this(p0, p1, p2, n, Material.NULL);
+    }
+
+    public Triangle(ImmutableVector3 p0, ImmutableVector3 p1, ImmutableVector3 p2, Material material) {
+        super(material);
         this.p0 = p0;
         this.p1 = p1;
         this.p2 = p2;
         this.n = e1().crossProduct(e2()).normalize();
+    }
+
+    public Triangle(ImmutableVector3 p0, ImmutableVector3 p1, ImmutableVector3 p2) {
+        this(p0, p1, p2, Material.NULL);
     }
 
     @Override
@@ -109,12 +117,12 @@ public class Triangle extends AbstractGeometry {
 
     @Override
     public Geometry transpose(Vector3 transpose) {
-        return new Triangle(p0.plus(transpose), p1.plus(transpose), p2.plus(transpose), getColor());
+        return new Triangle(p0.plus(transpose), p1.plus(transpose), p2.plus(transpose), getMaterial());
     }
 
     @Override
     public Geometry rotate(ImmutableArrayMatrix3x3 rotationY) {
-        return new Triangle(rotationY.mult(p0), rotationY.mult(p1), rotationY.mult(p2), getColor());
+        return new Triangle(rotationY.mult(p0), rotationY.mult(p1), rotationY.mult(p2), getMaterial());
     }
 
     @Override

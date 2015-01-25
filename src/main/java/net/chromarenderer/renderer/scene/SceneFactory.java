@@ -6,6 +6,8 @@ import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.geometry.Geometry;
 import net.chromarenderer.math.geometry.Triangle;
+import net.chromarenderer.math.shader.Material;
+import net.chromarenderer.math.shader.MaterialType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +16,9 @@ import java.util.List;
  * @author steinerb
  */
 public class SceneFactory {
+
+    public static final Material WAAL_MATERIAL = new Material(MaterialType.DIFFUSE, COLORS.WALL);
+
 
     public static GeometryScene cornellBox(ImmutableVector3 center, float halfDimension, List<Geometry> content){
 
@@ -39,8 +44,8 @@ public class SceneFactory {
         ImmutableVector3 p2x1 = new ImmutableVector3(center.subtract(shiftX).plus(shiftY).subtract(shiftZ));
         ImmutableVector3 p3x1 = new ImmutableVector3(center.subtract(shiftX).plus(shiftY).plus(shiftZ));
 
-        Triangle t0 = new Triangle(p0x1, p1x1, p2x1, COLORS.WALL);
-        Triangle t1 = new Triangle(p3x1, p0x1, p2x1, COLORS.WALL);
+        Triangle t0 = new Triangle(p0x1, p1x1, p2x1, WAAL_MATERIAL);
+        Triangle t1 = new Triangle(p3x1, p0x1, p2x1, WAAL_MATERIAL);
 
         //left
         result.add(t0);

@@ -4,6 +4,8 @@ import net.chromarenderer.math.COLORS;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.geometry.Geometry;
 import net.chromarenderer.math.geometry.Sphere;
+import net.chromarenderer.math.shader.Material;
+import net.chromarenderer.math.shader.MaterialType;
 import net.chromarenderer.renderer.Renderer;
 import net.chromarenderer.renderer.camera.Camera;
 import net.chromarenderer.renderer.camera.PinholeCamera;
@@ -56,11 +58,11 @@ public class Chroma implements Runnable {
 
     private List<Geometry> createSomeSpheres() {
         List<Geometry> result = new ArrayList<>();
-        result.add(new Sphere(new ImmutableVector3(0.0f, 0.0f, 0.0f), 0.2, COLORS.PURPLE));
-        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.0f, -1.0f), 0.2 , COLORS.RED));
-        result.add(new Sphere(new ImmutableVector3(1.0f, -1.0f, 1.0f), 0.2 , COLORS.BLUE));
-        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.7f, -1.0f), 0.2, COLORS.GREY));
-        result.add(new Sphere(new ImmutableVector3(1.0f, -1.7f, -1.0f), 0.2, COLORS.GREEN));
+        result.add(new Sphere(new ImmutableVector3(0.0f, 0.0f, 0.0f), 0.2,   new Material(MaterialType.PLASTIC, COLORS.PURPLE)));
+        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.0f, -1.0f), 0.2, new Material(MaterialType.PLASTIC, COLORS.RED)));
+        result.add(new Sphere(new ImmutableVector3(1.0f, -1.0f, 1.0f), 0.2 , new Material(MaterialType.PLASTIC, COLORS.BLUE)));
+        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.7f, -1.0f), 0.2, new Material(MaterialType.PLASTIC, COLORS.GREY)));
+        result.add(new Sphere(new ImmutableVector3(1.0f, -1.7f, -1.0f), 0.2, new Material(MaterialType.PLASTIC, COLORS.GREEN)));
         return result;
     }
 
@@ -123,7 +125,7 @@ public class Chroma implements Runnable {
         //RHS with depth along negative z-axis
         Camera camera = new PinholeCamera(new ImmutableVector3(0.0f, 0.0f, 6.0f), 100.0f, 0.09f, 0.09f, pixelsX, pixelsY);   // pixelsize, focal dist in mm!  // pos in world coords!
         GeometryScene scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, createSomeSpheres());
-        ShaderEngine.scene = scene;
+        ShaderEngine.setScene(scene);
 
         switch (settings.getMode()) {
             case SIMPLE:

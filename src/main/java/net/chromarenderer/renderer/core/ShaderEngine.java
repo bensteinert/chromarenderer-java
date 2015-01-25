@@ -17,7 +17,7 @@ import net.chromarenderer.renderer.scene.Radiance;
  */
 public class ShaderEngine {
 
-    public static GeometryScene scene;
+    private static GeometryScene scene;
 
     public static Radiance getDirectRadianceSample(Hitpoint hitpoint) {
 
@@ -42,7 +42,7 @@ public class ShaderEngine {
         }
 
         float geomTerm = (cosThetaSceneHit) / (distToLightSource * distToLightSource);
-        Vector3 rhoDiffuse = hitpoint.getHitGeometry().getColor();
+        Vector3 rhoDiffuse = hitpoint.getHitGeometry().getMaterial().getColor();
         float precisionBound = 10.0f / (rhoDiffuse.getMaxValue());                                                        // bound can include brdf which can soften the geometric term
         Vector3 result = rhoDiffuse.div(Constants.PI_f).mult(Math.min(precisionBound, geomTerm));
 
@@ -71,6 +71,12 @@ public class ShaderEngine {
     }
 
     public static Vector3 brdf(Hitpoint hitpoint, Radiance directRadianceSample, Radiance indirectRadianceSample) {
-        return hitpoint.getHitGeometry().getColor().mult(indirectRadianceSample.getColor().plus(directRadianceSample.getColor()));
+        return hitpoint.getHitGeometry().getMaterial().getColor().mult(indirectRadianceSample.getColor().plus(directRadianceSample.getColor()));
+    }
+
+
+    public static void setScene(GeometryScene scene) {
+        ShaderEngine.scene = scene;
+
     }
 }
