@@ -47,7 +47,7 @@ public class SimplePathTracer extends ChromaCanvas implements Renderer {
                     ChromaThreadContext.setX(i);
                     ChromaThreadContext.setY(j);
                     Ray cameraRay = camera.getRay(i, j);
-                    pixels[width * j + i].set(recursiveKernel(cameraRay, 0));
+                    pixels[width * j + i].set(recursiveKernel(cameraRay, 0).getColor());
                 }
             }
             buffer.accumulate(getPixels());
@@ -56,24 +56,23 @@ public class SimplePathTracer extends ChromaCanvas implements Renderer {
     }
 
 
-    private Vector3 recursiveKernel(Ray cameraRay, int depth) {
+    private Radiance recursiveKernel(Ray incomingRay, int depth) {
         // scene intersection
-        Hitpoint hitpoint = scene.intersect(cameraRay);
-
+        Hitpoint hitpoint = scene.intersect(incomingRay);
 
         // shading
         Vector3 color = COLORS.BLACK;
         if (hitpoint.hit()) {
-            Radiance radiance = scene.getRadianceSample(hitpoint);
-            color = radiance.getColor();
+            Radiance directRadianceSample = ShaderEngine.getDirectRadianceSample(hitpoint);
+
             if (settings.getMaxRayDepth() > depth) {
-                Ray ray = scene.getNextEventRay(hitpoint);
-                color = color.plus(hitpoint.getHitGeometry().getColor().mult(recursiveKernel(ray, depth + 1)));
+                Ray ray = ShaderEngine.getRecursiveRaySample(hitpoint);
+                Radiance indirectRadianceSample = recursiveKernel(ray, depth + 1);
+                color = ShaderEngine.brdf(hitpoint, directRadianceSample, indirectRadianceSample);
             }
         }
 
-
-        return color;
+        return new Radiance(color, incomingRay);
     }
 
 

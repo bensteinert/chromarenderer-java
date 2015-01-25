@@ -50,7 +50,7 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
                     // shading
                     Vector3 color = COLORS.BLACK;
                     if (hitpoint.hit()) {
-                        Radiance radiance = scene.getRadianceSample(hitpoint);
+                        Radiance radiance = ShaderEngine.getDirectRadianceSample(hitpoint);
                         color = radiance.getColor();
                     }
 

@@ -10,6 +10,7 @@ import net.chromarenderer.renderer.camera.PinholeCamera;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
 import net.chromarenderer.renderer.core.ColorCubeRenderer;
 import net.chromarenderer.renderer.core.MovingAverageRenderer;
+import net.chromarenderer.renderer.core.ShaderEngine;
 import net.chromarenderer.renderer.core.SimplePathTracer;
 import net.chromarenderer.renderer.core.SimpleRayTracer;
 import net.chromarenderer.renderer.diag.ChromaStatistics;
@@ -122,6 +123,7 @@ public class Chroma implements Runnable {
         //RHS with depth along negative z-axis
         Camera camera = new PinholeCamera(new ImmutableVector3(0.0f, 0.0f, 6.0f), 0.1f, 0.00009f, 0.00009f, imgWidth, imgHeight);
         GeometryScene scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, createSomeSpheres());
+        ShaderEngine.scene = scene;
 
         switch (settings.getMode()) {
             case SIMPLE:
