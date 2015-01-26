@@ -5,7 +5,8 @@ import net.chromarenderer.math.COLORS;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
-import net.chromarenderer.renderer.Renderer;
+import net.chromarenderer.math.shader.ShaderEngine;
+import net.chromarenderer.renderer.RecursiveRenderer;
 import net.chromarenderer.renderer.camera.Camera;
 import net.chromarenderer.renderer.canvas.AccumulationBuffer;
 import net.chromarenderer.renderer.canvas.ChromaCanvas;
@@ -17,7 +18,7 @@ import net.chromarenderer.renderer.scene.Radiance;
 /**
  * @author steinerb
  */
-public class SimplePathTracer extends ChromaCanvas implements Renderer {
+public class SimplePathTracer extends ChromaCanvas implements RecursiveRenderer {
 
     private final AccumulationBuffer buffer;
     private final ChromaSettings settings;
@@ -56,7 +57,7 @@ public class SimplePathTracer extends ChromaCanvas implements Renderer {
     }
 
 
-    private Radiance recursiveKernel(Ray incomingRay, int depth) {
+    public Radiance recursiveKernel(Ray incomingRay, int depth) {
         // scene intersection
         Hitpoint hitpoint = scene.intersect(incomingRay);
 
@@ -66,8 +67,7 @@ public class SimplePathTracer extends ChromaCanvas implements Renderer {
             Radiance directRadianceSample = ShaderEngine.getDirectRadianceSample(incomingRay, hitpoint);
 
             if (settings.getMaxRayDepth() > depth) {
-                Ray ray = ShaderEngine.getRecursiveRaySample(incomingRay, hitpoint);
-                Radiance indirectRadianceSample = recursiveKernel(ray, depth + 1);
+                Radiance indirectRadianceSample = ShaderEngine.getIndirectRadianceSample(incomingRay, hitpoint, this, depth);
                 color = ShaderEngine.brdf(hitpoint, directRadianceSample, indirectRadianceSample);
             }
         }

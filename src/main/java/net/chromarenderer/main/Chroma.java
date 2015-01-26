@@ -12,7 +12,7 @@ import net.chromarenderer.renderer.camera.PinholeCamera;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
 import net.chromarenderer.renderer.core.ColorCubeRenderer;
 import net.chromarenderer.renderer.core.MovingAverageRenderer;
-import net.chromarenderer.renderer.core.ShaderEngine;
+import net.chromarenderer.math.shader.ShaderEngine;
 import net.chromarenderer.renderer.core.SimplePathTracer;
 import net.chromarenderer.renderer.core.SimpleRayTracer;
 import net.chromarenderer.renderer.diag.ChromaStatistics;

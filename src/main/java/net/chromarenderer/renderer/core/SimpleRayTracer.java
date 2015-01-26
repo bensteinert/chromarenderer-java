@@ -5,6 +5,7 @@ import net.chromarenderer.math.COLORS;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
+import net.chromarenderer.math.shader.ShaderEngine;
 import net.chromarenderer.renderer.Renderer;
 import net.chromarenderer.renderer.camera.Camera;
 import net.chromarenderer.renderer.canvas.ChromaCanvas;
