@@ -88,7 +88,7 @@ public class Triangle extends AbstractGeometry {
         float invDet = 1.0f / det;
 
 	    /* calculate distance from vert0 to ray origin */
-        T = ray.getOrigin().subtract(p0);
+        T = ray.getOrigin().minus(p0);
 
 	    /* calculate U parameter and test bounds */
         float u = T.dot(P) * invDet;
@@ -136,10 +136,10 @@ public class Triangle extends AbstractGeometry {
     }
 
     private ImmutableVector3 e2() {
-        return new ImmutableVector3(p2).subtract(p0);
+        return new ImmutableVector3(p2).minus(p0);
     }
 
     private ImmutableVector3 e1() {
-        return new ImmutableVector3(p1).subtract(p0);
+        return new ImmutableVector3(p1).minus(p0);
     }
 }

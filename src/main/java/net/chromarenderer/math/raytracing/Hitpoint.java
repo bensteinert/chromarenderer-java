@@ -15,10 +15,10 @@ public class Hitpoint {
     private final Geometry hitGeometry;
     private final ImmutableVector3 point;
     private final float distance;
-    private final Vector3 hitpointNormal;
+    private final ImmutableVector3 hitpointNormal;
 
 
-    public Hitpoint(Geometry hitGeometry, ImmutableVector3 point, float distance, Vector3 hitpointNormal) {
+    public Hitpoint(Geometry hitGeometry, ImmutableVector3 point, float distance, ImmutableVector3 hitpointNormal) {
         this.hitGeometry = hitGeometry;
         this.point = point;
         this.distance = distance;
@@ -36,7 +36,7 @@ public class Hitpoint {
     }
 
 
-    public Vector3 getHitpointNormal() {
+    public ImmutableVector3 getHitpointNormal() {
         return hitpointNormal;
     }
 

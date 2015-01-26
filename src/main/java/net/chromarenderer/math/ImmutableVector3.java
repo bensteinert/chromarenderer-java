@@ -47,7 +47,7 @@ public class ImmutableVector3 implements Vector3 {
     }
 
     @Override
-    public ImmutableVector3 subtract(Vector3 input) {
+    public ImmutableVector3 minus(Vector3 input) {
         return new ImmutableVector3(
                 x - input.getX(),
                 y - input.getY(),
@@ -136,4 +136,8 @@ public class ImmutableVector3 implements Vector3 {
         return new ImmutableVector3(Math.abs(x), Math.abs(y), Math.abs(z));
     }
 
+
+    public ImmutableVector3 inverse() {
+        return new ImmutableVector3(1.f / this.getX(), 1.f/this.getY(), 1.f/this.getZ()).normalize();
+    }
 }

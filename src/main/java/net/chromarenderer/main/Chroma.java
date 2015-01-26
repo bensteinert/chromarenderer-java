@@ -58,11 +58,11 @@ public class Chroma implements Runnable {
 
     private List<Geometry> createSomeSpheres() {
         List<Geometry> result = new ArrayList<>();
-        result.add(new Sphere(new ImmutableVector3(0.0f, 0.0f, 0.0f), 0.2,   new Material(MaterialType.PLASTIC, COLORS.PURPLE)));
-        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.0f, -1.0f), 0.2, new Material(MaterialType.PLASTIC, COLORS.RED)));
-        result.add(new Sphere(new ImmutableVector3(1.0f, -1.0f, 1.0f), 0.2 , new Material(MaterialType.PLASTIC, COLORS.BLUE)));
-        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.7f, -1.0f), 0.2, new Material(MaterialType.PLASTIC, COLORS.GREY)));
-        result.add(new Sphere(new ImmutableVector3(1.0f, -1.7f, -1.0f), 0.2, new Material(MaterialType.PLASTIC, COLORS.GREEN)));
+        result.add(new Sphere(new ImmutableVector3(0.0f, 0.0f, 0.0f), 0.2,   new Material(MaterialType.DIFFUSE, COLORS.BLUE)));
+        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.0f, -1.0f), 0.2, new Material(MaterialType.DIFFUSE, COLORS.RED)));
+        result.add(new Sphere(new ImmutableVector3(1.0f, -0.4f, 1.0f), 0.2 , new Material(MaterialType.DIFFUSE, COLORS.PURPLE)));
+        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.7f, -1.0f), 0.2, new Material(MaterialType.DIFFUSE, COLORS.GREY)));
+        result.add(new Sphere(new ImmutableVector3(1.0f, -1.5f, -1.0f), 0.4, new Material(MaterialType.MIRROR, COLORS.WHITE)));
         return result;
     }
 

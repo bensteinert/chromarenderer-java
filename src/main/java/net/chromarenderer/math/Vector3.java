@@ -16,7 +16,7 @@ public interface Vector3 {
 
     Vector3 div(float val);
 
-    Vector3 subtract(Vector3 input);
+    Vector3 minus(Vector3 input);
 
     default float dot(Vector3 input) {
         return getX() * input.getX() + getY() * input.getY() + getZ() * input.getZ();

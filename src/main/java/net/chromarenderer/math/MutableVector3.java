@@ -51,7 +51,7 @@ public class MutableVector3 implements Vector3 {
     }
 
     @Override
-    public MutableVector3 subtract(Vector3 input) {
+    public MutableVector3 minus(Vector3 input) {
         values[0] -= input.getX();
         values[1] -= input.getY();
         values[2] -= input.getZ();

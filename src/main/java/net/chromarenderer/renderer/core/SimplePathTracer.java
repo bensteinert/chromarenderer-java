@@ -63,10 +63,10 @@ public class SimplePathTracer extends ChromaCanvas implements Renderer {
         // shading
         Vector3 color = COLORS.BLACK;
         if (hitpoint.hit()) {
-            Radiance directRadianceSample = ShaderEngine.getDirectRadianceSample(hitpoint);
+            Radiance directRadianceSample = ShaderEngine.getDirectRadianceSample(incomingRay, hitpoint);
 
             if (settings.getMaxRayDepth() > depth) {
-                Ray ray = ShaderEngine.getRecursiveRaySample(hitpoint);
+                Ray ray = ShaderEngine.getRecursiveRaySample(incomingRay, hitpoint);
                 Radiance indirectRadianceSample = recursiveKernel(ray, depth + 1);
                 color = ShaderEngine.brdf(hitpoint, directRadianceSample, indirectRadianceSample);
             }

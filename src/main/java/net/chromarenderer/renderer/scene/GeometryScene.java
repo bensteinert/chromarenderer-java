@@ -2,7 +2,6 @@ package net.chromarenderer.renderer.scene;
 
 import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.ImmutableVector3;
-import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.geometry.Geometry;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
@@ -38,7 +37,7 @@ public class GeometryScene {
         if (hitGeometry != null) {
             hitpoint = ray.onRay(hitDistance);
             hitpoint = increaseHitpointPrecision(ray, hitGeometry, hitpoint);
-            Vector3 hitpointNormal = hitGeometry.getNormal(hitpoint);
+            ImmutableVector3 hitpointNormal = hitGeometry.getNormal(hitpoint);
             hitpoint = hitpoint.plus(hitpointNormal.mult(Constants.FLT_EPSILON));
             return new Hitpoint(hitGeometry, hitpoint, hitDistance, hitpointNormal);
         } else return Hitpoint.INFINITY;

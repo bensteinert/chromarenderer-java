@@ -28,7 +28,7 @@ public class Sphere extends AbstractGeometry {
      */
     @Override
     public float intersect(Ray ray) {
-        ImmutableVector3 OminusC = ray.getOrigin().subtract(center);
+        ImmutableVector3 OminusC = ray.getOrigin().minus(center);
 
         double a = ray.getDirection().dot(ray.getDirection());
         double b = ray.getDirection().dot(OminusC) * 2.0;
@@ -88,7 +88,7 @@ public class Sphere extends AbstractGeometry {
 
     @Override
     public ImmutableVector3 getNormal(ImmutableVector3 hitpoint) {
-        return hitpoint.subtract(center).normalize();
+        return hitpoint.minus(center).normalize();
     }
 
     @Override

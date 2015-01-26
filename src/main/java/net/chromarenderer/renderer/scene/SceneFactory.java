@@ -39,10 +39,10 @@ public class SceneFactory {
                                                                            0, 0, 1);
 
 
-        ImmutableVector3 p0x1 = new ImmutableVector3(center.subtract(shiftX).subtract(shiftY).plus(shiftZ));
-        ImmutableVector3 p1x1 = new ImmutableVector3(center.subtract(shiftX).subtract(shiftY).subtract(shiftZ));
-        ImmutableVector3 p2x1 = new ImmutableVector3(center.subtract(shiftX).plus(shiftY).subtract(shiftZ));
-        ImmutableVector3 p3x1 = new ImmutableVector3(center.subtract(shiftX).plus(shiftY).plus(shiftZ));
+        ImmutableVector3 p0x1 = new ImmutableVector3(center.minus(shiftX).minus(shiftY).plus(shiftZ));
+        ImmutableVector3 p1x1 = new ImmutableVector3(center.minus(shiftX).minus(shiftY).minus(shiftZ));
+        ImmutableVector3 p2x1 = new ImmutableVector3(center.minus(shiftX).plus(shiftY).minus(shiftZ));
+        ImmutableVector3 p3x1 = new ImmutableVector3(center.minus(shiftX).plus(shiftY).plus(shiftZ));
 
         Triangle t0 = new Triangle(p0x1, p1x1, p2x1, WAAL_MATERIAL);
         Triangle t1 = new Triangle(p3x1, p0x1, p2x1, WAAL_MATERIAL);

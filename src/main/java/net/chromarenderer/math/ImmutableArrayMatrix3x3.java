@@ -42,11 +42,11 @@ public class ImmutableArrayMatrix3x3 {
     public ImmutableArrayMatrix3x3 orthogonalize() {
         ImmutableVector3 tempA2, tempA3;
         ImmutableVector3 newCol1 = col1().normalize();
-        tempA2 = col2().subtract(newCol1.mult(newCol1.dot(col2())));
+        tempA2 = col2().minus(newCol1.mult(newCol1.dot(col2())));
         ImmutableVector3 newCol2 = tempA2.normalize();
         ImmutableVector3 projNewCol1 = newCol1.mult(newCol1.dot(col3()));
         ImmutableVector3 projNewCol2 = newCol2.mult(newCol2.dot(col3()));
-        tempA3 = col3().subtract(projNewCol1).subtract(projNewCol2);
+        tempA3 = col3().minus(projNewCol1).minus(projNewCol2);
         ImmutableVector3 newCol3 = tempA3.normalize();      
         return new ImmutableArrayMatrix3x3(newCol1.getX(), newCol2.getX(), newCol3.getX(),
                                            newCol1.getY(), newCol2.getY(), newCol3.getY(),
