@@ -1,11 +1,13 @@
 package net.chromarenderer.math.shader;
 
+import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.VectorUtils;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.renderer.RecursiveRenderer;
+import net.chromarenderer.renderer.core.ChromaThreadContext;
 import net.chromarenderer.renderer.scene.GeometryScene;
 import net.chromarenderer.renderer.scene.Radiance;
 
@@ -17,14 +19,14 @@ public class ShaderEngine {
     private static GeometryScene scene;
 
 
-    public static Radiance getDirectRadianceSample(Ray incomingRay, Hitpoint hitpoint) {
+    public static Radiance getDirectRadianceSample(Ray incomingRay, Hitpoint hitpoint, float pathWeight) {
 
 
         Material material = hitpoint.getHitGeometry().getMaterial();
 
         switch (material.getType()) {
             case DIFFUSE: {
-                return DiffuseShader.getDirectRadianceSample(hitpoint);
+                return DiffuseShader.getDirectRadianceSample(hitpoint, pathWeight);
             }
 
             case MIRROR: {
@@ -71,8 +73,13 @@ public class ShaderEngine {
     }
 
 
-    public static Radiance getIndirectRadianceSample(Ray incomingRay, Hitpoint hitpoint, RecursiveRenderer simplePathTracer, int depth) {
-        Ray recursiveRaySample = getRecursiveRaySample(incomingRay, hitpoint);
-        return simplePathTracer.recursiveKernel(recursiveRaySample, depth + 1);
+    public static Radiance getIndirectRadianceSample(Ray incomingRay, Hitpoint hitpoint, RecursiveRenderer simplePathTracer, int depth, float pathWeight) {
+        float russianRoulette = ChromaThreadContext.randomFloat();
+        if (russianRoulette > Constants.RR_LIMIT) {
+            return Radiance.NO_CONTRIBUTION;
+        } else {
+            Ray recursiveRaySample = getRecursiveRaySample(incomingRay, hitpoint);
+            return simplePathTracer.recursiveKernel(recursiveRaySample, depth + 1, pathWeight / Constants.RR_LIMIT);
+        }
     }
 }

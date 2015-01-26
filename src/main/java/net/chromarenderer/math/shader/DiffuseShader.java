@@ -21,7 +21,7 @@ public class DiffuseShader {
     static GeometryScene scene;
 
 
-    public static Radiance getDirectRadianceSample(Hitpoint hitpoint) {
+    public static Radiance getDirectRadianceSample(Hitpoint hitpoint, float pathWeight) {
 
         ImmutableVector3 point = hitpoint.getPoint();
         ImmutableVector3 direction = scene.pointLight.minus(point);
@@ -48,7 +48,7 @@ public class DiffuseShader {
         float precisionBound = 10.0f / (rhoDiffuse.getMaxValue());                                                        // bound can include brdf which can soften the geometric term
         Vector3 result = rhoDiffuse.div(Constants.PI_f).mult(Math.min(precisionBound, geomTerm));
 
-        return new Radiance(result.mult(2.0f), shadowRay);
+        return new Radiance(result.mult(2.0f*pathWeight), shadowRay);
     }
 
 

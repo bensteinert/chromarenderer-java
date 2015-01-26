@@ -10,4 +10,5 @@ public class Constants {
     public static final float SPHERE_NAN_LIMIT = 1000000.0f;
     public static final float PI_f = 3.141593f;
     public static final float TWO_PI_f = 6.2831854f;
+    public static final float RR_LIMIT = 0.66f;
 }

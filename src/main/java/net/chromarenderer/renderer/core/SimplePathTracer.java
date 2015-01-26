@@ -2,6 +2,7 @@ package net.chromarenderer.renderer.core;
 
 import net.chromarenderer.main.ChromaSettings;
 import net.chromarenderer.math.COLORS;
+import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
@@ -48,7 +49,7 @@ public class SimplePathTracer extends ChromaCanvas implements RecursiveRenderer 
                     ChromaThreadContext.setX(i);
                     ChromaThreadContext.setY(j);
                     Ray cameraRay = camera.getRay(i, j);
-                    pixels[width * j + i].set(recursiveKernel(cameraRay, 0).getColor());
+                    pixels[width * j + i].set(recursiveKernel(cameraRay, 0, 1.0f).getColor());
                 }
             }
             buffer.accumulate(getPixels());
@@ -57,17 +58,17 @@ public class SimplePathTracer extends ChromaCanvas implements RecursiveRenderer 
     }
 
 
-    public Radiance recursiveKernel(Ray incomingRay, int depth) {
+    public Radiance recursiveKernel(Ray incomingRay, int depth, float pathWeight) {
         // scene intersection
         Hitpoint hitpoint = scene.intersect(incomingRay);
 
         // shading
         Vector3 color = COLORS.BLACK;
         if (hitpoint.hit()) {
-            Radiance directRadianceSample = ShaderEngine.getDirectRadianceSample(incomingRay, hitpoint);
+            Radiance directRadianceSample = ShaderEngine.getDirectRadianceSample(incomingRay, hitpoint, pathWeight);
 
-            if (settings.getMaxRayDepth() > depth) {
-                Radiance indirectRadianceSample = ShaderEngine.getIndirectRadianceSample(incomingRay, hitpoint, this, depth);
+            if (settings.getMaxRayDepth() > depth && pathWeight > Constants.FLT_EPSILON) {
+                Radiance indirectRadianceSample = ShaderEngine.getIndirectRadianceSample(incomingRay, hitpoint, this, depth, pathWeight);
                 color = ShaderEngine.brdf(hitpoint, directRadianceSample, indirectRadianceSample);
             }
         }

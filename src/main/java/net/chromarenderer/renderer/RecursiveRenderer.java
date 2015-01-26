@@ -8,5 +8,5 @@ import net.chromarenderer.renderer.scene.Radiance;
  */
 public interface RecursiveRenderer extends Renderer {
 
-    Radiance recursiveKernel(Ray incomingRay, int depth);
+    Radiance recursiveKernel(Ray incomingRay, int depth, float pathWeight);
 }
