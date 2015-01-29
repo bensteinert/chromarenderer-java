@@ -61,6 +61,7 @@ public class SimplePathTracer extends ChromaCanvas implements RecursiveRenderer 
     public Radiance recursiveKernel(Ray incomingRay, int depth, float pathWeight) {
         // scene intersection
         Hitpoint hitpoint = scene.intersect(incomingRay);
+        statistics.ray();
 
         // shading
         Vector3 color = COLORS.BLACK;

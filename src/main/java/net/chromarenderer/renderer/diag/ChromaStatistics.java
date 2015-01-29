@@ -10,12 +10,14 @@ public class ChromaStatistics {
 
     private final AtomicInteger reverseRaysMissed;
     private final AtomicInteger totalFrames;
+    private final AtomicInteger rayCount;
     private final FpsCounter fpsCounter;
 
 
     public ChromaStatistics() {
         reverseRaysMissed = new AtomicInteger(0);
         totalFrames = new AtomicInteger(0);
+        rayCount = new AtomicInteger(0);
         fpsCounter = new FpsCounter();
     }
 
@@ -45,6 +47,14 @@ public class ChromaStatistics {
     public void frame() {
         totalFrames.incrementAndGet();
         fpsCounter.frame();
+    }
+
+    public void ray(){
+        rayCount.incrementAndGet();
+    }
+
+    public int getRayCountAndFlush(){
+        return rayCount.getAndSet(0);
     }
 
 

@@ -45,8 +45,10 @@ public class JavaFxMain extends Application {
         reverseRaysMissed.setFont(monaco);
         Text isContinuousActive = new Text();
         isContinuousActive.setFont(monaco);
+        Text rayCount = new Text();
+        rayCount.setFont(monaco);
 
-        VBox vbox = new VBox(10, fps, isContinuousActive, reverseRaysMissed);
+        VBox vbox = new VBox(10, fps, rayCount, isContinuousActive, reverseRaysMissed);
         secondaryLayout.getChildren().add(vbox);
 
         Scene secondScene = new Scene(secondaryLayout, 400, 400);
@@ -59,11 +61,21 @@ public class JavaFxMain extends Application {
         secondStage.show();
 
         new AnimationTimer() {
+            long lastTimeStamp = System.nanoTime();
             @Override
             public void handle(long now) {
-                ChromaStatistics statistics = chroma.getStatistics();
-                reverseRaysMissed.setText(String.valueOf(statistics.getReverseRaysMissedCount()));
-                fps.setText(             String.format("FPS:        %.2f [frames total: %s]", statistics.getFps(), statistics.getTotalFrameCount()));
+
+                // updates just every second is fine
+                float delta = (now - lastTimeStamp) / 1000000.f;
+                if(delta > 1000.f) {
+                    ChromaStatistics statistics = chroma.getStatistics();
+                    reverseRaysMissed.setText(String.valueOf(statistics.getReverseRaysMissedCount()));
+                    reverseRaysMissed.setText(String.valueOf(statistics.getReverseRaysMissedCount()));
+                    rayCount.setText(        String.format("Rays/ms:    %.2f", statistics.getRayCountAndFlush() / delta));
+                    fps.setText(             String.format("Frames/s:   %.2f [frames total: %s]", statistics.getFps(), statistics.getTotalFrameCount()));
+                    lastTimeStamp = now;
+                }
+
                 isContinuousActive.setText(String.format("Continuous: %s", Boolean.toString(settings.isForceContinuousRender())));
             }
         }.start();
