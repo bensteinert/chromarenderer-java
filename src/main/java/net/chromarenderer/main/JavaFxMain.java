@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -17,12 +18,18 @@ import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import net.chromarenderer.math.ImmutableVector3;
+import net.chromarenderer.math.Vector3;
 import net.chromarenderer.renderer.ChromaRenderMode;
 import net.chromarenderer.renderer.diag.ChromaStatistics;
+import net.chromarenderer.utils.BufferPressedKeysEventHandler;
+
+import java.util.Set;
 
 public class JavaFxMain extends Application {
 
     private static final Chroma chroma = new Chroma();
+
     private static ChromaSettings settings;
 
     private final Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
@@ -34,6 +41,7 @@ public class JavaFxMain extends Application {
         mainRenderWindow(primaryStage);
         utilityStage = statusWindow();
     }
+
 
     private Stage statusWindow() {
         StackPane secondaryLayout = new StackPane();
@@ -62,17 +70,19 @@ public class JavaFxMain extends Application {
 
         new AnimationTimer() {
             long lastTimeStamp = System.nanoTime();
+
+
             @Override
             public void handle(long now) {
 
                 // updates just every second is fine
                 float delta = (now - lastTimeStamp) / 1000000.f;
-                if(delta > 1000.f) {
+                if (delta > 1000.f) {
                     ChromaStatistics statistics = chroma.getStatistics();
                     reverseRaysMissed.setText(String.valueOf(statistics.getReverseRaysMissedCount()));
                     reverseRaysMissed.setText(String.valueOf(statistics.getReverseRaysMissedCount()));
-                    rayCount.setText(        String.format("Rays/ms:    %.2f", statistics.getRayCountAndFlush() / delta));
-                    fps.setText(             String.format("Frames/s:   %.2f [frames total: %s]", statistics.getFps(), statistics.getTotalFrameCount()));
+                    rayCount.setText(String.format("Rays/ms:    %.2f", statistics.getRayCountAndFlush() / delta));
+                    fps.setText(String.format("Frames/s:   %.2f [frames total: %s]", statistics.getFps(), statistics.getTotalFrameCount()));
                     lastTimeStamp = now;
                 }
 
@@ -82,6 +92,7 @@ public class JavaFxMain extends Application {
 
         return secondStage;
     }
+
 
     private void mainRenderWindow(final Stage primaryStage) {
         Pane root = new Pane();
@@ -99,7 +110,10 @@ public class JavaFxMain extends Application {
             primaryStage.close();
         }));
 
-        primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, getKeyPressedEventHandler());
+        BufferPressedKeysEventHandler bufferPressedKeysEventHandler = new BufferPressedKeysEventHandler();
+        primaryStage.addEventHandler(KeyEvent.ANY, bufferPressedKeysEventHandler);
+        primaryStage.addEventHandler(KeyEvent.KEY_RELEASED, getKeyTypedEventHandler());
+
         final WritableImage img = new WritableImage(settings.getImgWidth(), settings.getImgHeight());
 
         ImageView imageView = new ImageView();
@@ -110,18 +124,55 @@ public class JavaFxMain extends Application {
         new AnimationTimer() {
             @Override
             public void handle(long now) {
-                if(chroma.hasChanges()) {
+                if (chroma.hasChanges()) {
                     img.getPixelWriter().setPixels(0, 0, settings.getImgWidth(), settings.getImgHeight(),
                             PixelFormat.getByteRgbInstance(), chroma.getCurrentFrame(), 0, settings.getImgHeight() * 3);
 
                 }
+                chroma.moveCamera(getTranslationVector(bufferPressedKeysEventHandler.getPressedKeys()));
             }
         }.start();
     }
 
-    private EventHandler<KeyEvent> getKeyPressedEventHandler() {
+
+    private Vector3 getTranslationVector(Set<KeyCode> pressedKeys) {
+
+        float moveX = 0.0f;
+        float moveY = 0.0f;
+        float moveZ = 0.0f;
+
+        // camera along negative z axis!
+        for (KeyCode pressedKey : pressedKeys) {
+            switch (pressedKey) {
+                case LEFT:
+                    moveX -= 0.1f;
+                    break;
+                case RIGHT:
+                    moveX += 0.1f;
+                    break;
+                case UP:
+                    moveZ -= 0.1f;
+                    break;
+                case DOWN:
+                    moveZ += 0.1f;
+                    break;
+                case PAGE_DOWN:
+                    moveY -= 0.1f;
+                    break;
+                case PAGE_UP:
+                    moveY += 0.1f;
+                    break;
+            }
+        }
+
+        return new ImmutableVector3(moveX, moveY, moveZ);
+    }
+
+
+    private EventHandler<KeyEvent> getKeyTypedEventHandler() {
         return event -> {
             boolean reinitNeeded = false;
+
             switch (event.getCode()) {
                 case C:
                     settings = settings.changeContinuousRender(!settings.isForceContinuousRender());
@@ -155,9 +206,10 @@ public class JavaFxMain extends Application {
         };
     }
 
+
     public static void main(String[] args) {
         Thread thread = new Thread(chroma);
-        settings = new ChromaSettings(1024, 1024, ChromaRenderMode.SIMPLE, false);
+        settings = new ChromaSettings(768, 768, ChromaRenderMode.SIMPLE, false);
         chroma.init(settings);
 
         thread.start();

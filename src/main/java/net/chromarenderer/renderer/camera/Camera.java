@@ -1,5 +1,7 @@
 package net.chromarenderer.renderer.camera;
 
+import net.chromarenderer.math.ImmutableVector3;
+import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Ray;
 
 /**
@@ -13,5 +15,11 @@ import net.chromarenderer.math.raytracing.Ray;
  */
 public interface Camera {
 
+    public static final ImmutableVector3 MOVER_Z = new ImmutableVector3(0.0f, 0.0f, -0.1f);
+    public static final ImmutableVector3 MOVER_X = new ImmutableVector3(-0.1f, 0.0f, 0.0f);
+    public static final ImmutableVector3 MOVER_Y = new ImmutableVector3(0.0f, 0.1f, 0.0f);
+
     Ray getRay(int x, int y);
+
+    void move(Vector3 mutableVector3);
 }

@@ -19,7 +19,7 @@ public class PinholeCamera implements Camera {
     private float pixelSizeX;
     private float pixelSizeY;
 
-    public PinholeCamera(Vector3 position, float focalDistance, float pixelSizeX, float pixelSizeY, int pixelsX, int pixelsY) {
+    public PinholeCamera(ImmutableVector3 position, float focalDistance, float pixelSizeX, float pixelSizeY, int pixelsX, int pixelsY) {
         this.position = position;
         this.focalDistance = focalDistance;
         this.pixelSizeX = pixelSizeX;
@@ -40,6 +40,12 @@ public class PinholeCamera implements Camera {
                 new ImmutableVector3(((x + subSampleX) * pixelSizeX) - shiftX, ((y + subSampleY) * pixelSizeY) - shiftY, -focalDistance).normalize(),
                 0,
                 Float.MAX_VALUE);
+    }
+
+
+    @Override
+    public void move(Vector3 mover) {
+        position = position.plus(mover);
     }
 
     //taken from Chroma V1
