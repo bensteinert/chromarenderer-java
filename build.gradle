@@ -23,5 +23,6 @@ repositories {
 
 dependencies {
     compile 'com.google.guava:guava:18.0'
+    compile 'org.apache.commons:commons-math3:3.4.1'
     testCompile 'junit:junit:4.11'
 }

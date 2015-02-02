@@ -50,6 +50,10 @@ public interface Vector3 {
         return Math.max(getZ(), Math.max(getX(), getY()));
     }
 
+    default public boolean nonZero() {
+        return getX() != 0.0f || getY() != 0.0f || getZ() != 0.0f;
+    }
+
     default public int getMinIndexAbs() {
         float absX = Math.abs(getX());
         float absY = Math.abs(getY());

@@ -129,9 +129,36 @@ public class JavaFxMain extends Application {
                             PixelFormat.getByteRgbInstance(), chroma.getCurrentFrame(), 0, settings.getImgHeight() * 3);
 
                 }
-                chroma.moveCamera(getTranslationVector(bufferPressedKeysEventHandler.getPressedKeys()));
+                Set<KeyCode> pressedKeys = bufferPressedKeysEventHandler.getPressedKeys();
+                chroma.moveCamera(getTranslationVector(pressedKeys), getRotationVector(pressedKeys));
             }
         }.start();
+    }
+
+
+    private Vector3 getRotationVector(Set<KeyCode> pressedKeys) {
+        float rotX = 0.0f;
+        float rotY = 0.0f;
+        //float rotZ = 0.0f;
+
+        for (KeyCode pressedKey : pressedKeys) {
+            switch (pressedKey) {
+                case NUMPAD7:
+                    rotY -= 0.02f;
+                    break;
+                case NUMPAD9:
+                    rotY += 0.02f;
+                    break;
+                case NUMPAD1:
+                    rotX -= 0.02f;
+                    break;
+                case NUMPAD3:
+                    rotX += 0.02f;
+                    break;
+            }
+        }
+
+        return new ImmutableVector3(rotX, rotY, 0.0f);
     }
 
 
@@ -144,16 +171,16 @@ public class JavaFxMain extends Application {
         // camera along negative z axis!
         for (KeyCode pressedKey : pressedKeys) {
             switch (pressedKey) {
-                case LEFT:
+                case NUMPAD4:
                     moveX -= 0.1f;
                     break;
-                case RIGHT:
+                case NUMPAD6:
                     moveX += 0.1f;
                     break;
-                case UP:
+                case NUMPAD8:
                     moveZ -= 0.1f;
                     break;
-                case DOWN:
+                case NUMPAD2:
                     moveZ += 0.1f;
                     break;
                 case PAGE_DOWN:

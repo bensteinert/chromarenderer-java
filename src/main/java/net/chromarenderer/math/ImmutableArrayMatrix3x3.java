@@ -22,6 +22,18 @@ public class ImmutableArrayMatrix3x3 {
         this.m33 = m33;
     }
 
+    public ImmutableArrayMatrix3x3(Vector3 col1, Vector3 col2, Vector3 col3) {
+        this.m11 = col1.getX();
+        this.m12 = col2.getX();
+        this.m13 = col3.getX();
+        this.m21 = col1.getY();
+        this.m22 = col2.getY();
+        this.m23 = col3.getY();
+        this.m31 = col1.getZ();
+        this.m32 = col2.getZ();
+        this.m33 = col3.getZ();
+    }
+
 
     public ImmutableArrayMatrix3x3 invert() {
         float invDet = 1.f/(m11*m22*m33 + m12*m23*m31 + m13*m21*m32 - m12*m21*m33 - m13*m22*m31 - m11*m23*m32);
@@ -67,7 +79,7 @@ public class ImmutableArrayMatrix3x3 {
     }
 
 
-    public ImmutableVector3 mult(ImmutableVector3 input) {
+    public ImmutableVector3 mult(Vector3 input) {
         return new ImmutableVector3( col1().dot(input), col2().dot(input), col3().dot(input) );
     }
 
@@ -134,5 +146,13 @@ public class ImmutableArrayMatrix3x3 {
         return  "m11=" + m11 + " | m12=" + m12 + " | m13=" + m13 + "\n" +
                 "m21=" + m21 + " | m22=" + m22 + " | m23=" + m23 + "\n" +
                 "m31=" + m31 + " | m32=" + m32 + " | m33=" + m33 + "\n";
+    }
+
+
+    public ImmutableArrayMatrix3x3 normalizeCols() {
+        Vector3 normalizedCol1 = col1().normalize();
+        Vector3 normalizedCol2 = col2().normalize();
+        Vector3 normalizedCol3 = col3().normalize();
+        return new ImmutableArrayMatrix3x3(normalizedCol1, normalizedCol2, normalizedCol3);
     }
 }
