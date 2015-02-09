@@ -1,8 +1,8 @@
 package net.chromarenderer.math.geometry;
 
-import junit.framework.Assert;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.raytracing.Ray;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**

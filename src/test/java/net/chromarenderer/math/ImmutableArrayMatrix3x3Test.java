@@ -1,6 +1,6 @@
 package net.chromarenderer.math;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
