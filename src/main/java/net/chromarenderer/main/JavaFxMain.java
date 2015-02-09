@@ -14,6 +14,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -40,6 +41,7 @@ public class JavaFxMain extends Application {
     public void start(final Stage primaryStage) throws Exception {
         mainRenderWindow(primaryStage);
         utilityStage = statusWindow();
+        primaryStage.setOnCloseRequest(event -> utilityStage.close());
     }
 
 
@@ -47,6 +49,9 @@ public class JavaFxMain extends Application {
         StackPane secondaryLayout = new StackPane();
 
         Font monaco = Font.font("Monaco", 14);
+        Font monacoBold = Font.font("Monaco", FontWeight.BOLD, 16);
+        Text intro = new Text("Chroma Info and Controls");
+        intro.setFont(monacoBold);
         Text fps = new Text();
         fps.setFont(monaco);
         Text reverseRaysMissed = new Text();
@@ -56,12 +61,11 @@ public class JavaFxMain extends Application {
         Text rayCount = new Text();
         rayCount.setFont(monaco);
 
-        VBox vbox = new VBox(10, fps, rayCount, isContinuousActive, reverseRaysMissed);
+        VBox vbox = new VBox(10, intro, fps, rayCount, isContinuousActive, reverseRaysMissed);
         secondaryLayout.getChildren().add(vbox);
 
         Scene secondScene = new Scene(secondaryLayout, 400, 400);
-        Stage secondStage = new Stage(StageStyle.UTILITY);
-        secondStage.setTitle("Chroma Info and Controls");
+        Stage secondStage = new Stage(StageStyle.UNDECORATED);
         secondStage.setScene(secondScene);
 
         secondStage.setX(visualBounds.getMaxX() - 400);
