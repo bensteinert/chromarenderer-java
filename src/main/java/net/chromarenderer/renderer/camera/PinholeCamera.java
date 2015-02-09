@@ -60,7 +60,6 @@ public class PinholeCamera implements Camera {
                                                                        -sin_p*cos_t, sin_t, cos_t*cos_p);
 
         this.coordinateSystem = rotation.mult(coordinateSystem).normalizeCols();
-        System.out.println(this.coordinateSystem);
     }
 
 }

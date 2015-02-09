@@ -39,8 +39,8 @@ public class JavaFxMain extends Application {
 
     @Override
     public void start(final Stage primaryStage) throws Exception {
-        mainRenderWindow(primaryStage);
         utilityStage = statusWindow();
+        mainRenderWindow(primaryStage);
         primaryStage.setOnCloseRequest(event -> utilityStage.close());
     }
 
@@ -240,10 +240,11 @@ public class JavaFxMain extends Application {
 
     public static void main(String[] args) {
         Thread thread = new Thread(chroma);
-        settings = new ChromaSettings(768, 768, ChromaRenderMode.SIMPLE, false);
+        settings = new ChromaSettings(768, 768, ChromaRenderMode.SIMPLE, true);
         chroma.init(settings);
 
         thread.start();
+
         launch(JavaFxMain.class, args);
         thread.interrupt();
         try {
