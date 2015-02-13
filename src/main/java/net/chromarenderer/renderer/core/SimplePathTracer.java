@@ -52,6 +52,7 @@ public class SimplePathTracer extends ChromaCanvas implements RecursiveRenderer 
                     pixels[width * j + i].set(recursiveKernel(cameraRay, 0, 1.0f).getColor());
                 }
             }
+            //TODO ConcurrencyIssue: That will cause trouble when fork/joining image!
             buffer.accumulate(getPixels());
             completed = !isContinuous();
         }

@@ -205,6 +205,9 @@ public class JavaFxMain extends Application {
             boolean reinitNeeded = false;
 
             switch (event.getCode()) {
+                case F12:
+                    chroma.takeScreenShot();
+                    break;
                 case C:
                     settings = settings.changeContinuousRender(!settings.isForceContinuousRender());
                     reinitNeeded = true;
@@ -240,7 +243,7 @@ public class JavaFxMain extends Application {
 
     public static void main(String[] args) {
         Thread thread = new Thread(chroma);
-        settings = new ChromaSettings(768, 768, ChromaRenderMode.SIMPLE, true);
+        settings = new ChromaSettings(1024, 1024, ChromaRenderMode.SIMPLE_PT, true, 2);
         chroma.init(settings);
 
         thread.start();

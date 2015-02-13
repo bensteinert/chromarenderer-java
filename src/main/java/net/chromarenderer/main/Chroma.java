@@ -19,6 +19,7 @@ import net.chromarenderer.renderer.core.SimpleRayTracer;
 import net.chromarenderer.renderer.diag.ChromaStatistics;
 import net.chromarenderer.renderer.scene.GeometryScene;
 import net.chromarenderer.renderer.scene.SceneFactory;
+import net.chromarenderer.utils.TgaImageWriter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -157,5 +158,11 @@ public class Chroma implements Runnable {
 
     public ChromaStatistics getStatistics() {
         return statistics;
+    }
+
+
+    public void takeScreenShot() {
+        TgaImageWriter.writeTga(getCurrentFrame(), settings.getImgWidth(), settings.getImgHeight(), "/tmp/chroma/", "screenshot.tga");
+
     }
 }
