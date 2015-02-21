@@ -36,7 +36,7 @@ public class GeometryScene {
 
         if (hitGeometry != null) {
             hitpoint = ray.onRay(hitDistance);
-            hitpoint = increaseHitpointPrecision(ray, hitGeometry, hitpoint);
+            hitpoint = increaseHitpointPrecision(ray, hitGeometry, hitpoint, hitDistance);
             ImmutableVector3 hitpointNormal = hitGeometry.getNormal(hitpoint);
             hitpoint = hitpoint.plus(hitpointNormal.mult(Constants.FLT_EPSILON));
             return new Hitpoint(hitGeometry, hitpoint, hitDistance, hitpointNormal);
@@ -45,15 +45,14 @@ public class GeometryScene {
     }
 
 
-    private ImmutableVector3 increaseHitpointPrecision(Ray cameraRay, Geometry hitGeometry, ImmutableVector3 hitpoint) {
-        Ray reverseRay = new Ray(hitpoint, cameraRay.getDirection().mult(-1.0f));
+    private ImmutableVector3 increaseHitpointPrecision(Ray ray, Geometry hitGeometry, ImmutableVector3 hitpoint, float hitDistance) {
+        Ray reverseRay = new Ray(hitpoint, ray.getDirection().mult(-1.0f), 0.0f, hitDistance - Constants.FLT_EPSILON);
         float reverseDistance = hitGeometry.intersect(reverseRay);
         if (reverseDistance > 0) {
             return reverseRay.onRay(reverseDistance);
         } else {
-//            statistics.reverseRayMissed();
+            return hitpoint;
         }
-        return hitpoint;
     }
 
 }

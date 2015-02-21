@@ -47,6 +47,12 @@ public class Triangle extends AbstractGeometry {
         ImmutableVector3 P, Q, T;
         float det;
 
+        /* if we hit the triangle from the back, it is not a valid intersection! */
+        float backFaceCulling = ray.getDirection().dot(n);
+        if (backFaceCulling > 0.0f) {
+            return 0.f;
+        }
+
         ImmutableVector3 E1 = e1();
         ImmutableVector3 E2 = e2();
 
@@ -56,34 +62,9 @@ public class Triangle extends AbstractGeometry {
         det = E1.dot(P);
 
         /* if determinant is near zero, ray lies in plane of triangle */
-        if(det > -Constants.DBL_EPSILON && det < Constants.DBL_EPSILON){
+        if(det > -Constants.FLT_EPSILON && det < Constants.FLT_EPSILON){
             return 0.f;
         }
-
-        // backface culling?
-//      #ifdef BACKFACECULLING
-//    /* calculate distance from vert0 to ray origin */
-//        T = ray->origin - p0;
-//
-//    /* calculate U parameter and test bounds */
-//        u = T * P;
-//        if(u < 0.0f || u > det)
-//            return 0;
-//
-//    /* prepare to test V parameter */
-//        Q = T % E1;
-//
-//    /* calculate V parameter and test bounds */
-//        v = ray->direction * Q;
-//        if(v < 0.0f || u + v > det)
-//            return 0;
-//
-//        det = 1./det;
-//        u *= det;
-//        v *= det;
-//    /* calculate t, scale parameters, ray intersects triangle */
-//        return E2 * Q * det;
-//        #else
 
         float invDet = 1.0f / det;
 
@@ -105,12 +86,12 @@ public class Triangle extends AbstractGeometry {
             return 0.f;
         }
 
-	    /* calculate t, ray intersects triangle */
+	    /* calculate distance, ray intersects triangle */
         float distance = E2.dot(Q) * invDet;
 
-//        if(ray.getTMin() > distance || ray.getTMax() < distance) {
-//            return 0.f;
-//        }
+        if(ray.getTMin() > distance || ray.getTMax() < distance) {
+            return 0.f;
+        }
 
         return distance ;
     }
@@ -136,10 +117,10 @@ public class Triangle extends AbstractGeometry {
     }
 
     private ImmutableVector3 e2() {
-        return new ImmutableVector3(p2).minus(p0);
+        return (p2).minus(p0);
     }
 
     private ImmutableVector3 e1() {
-        return new ImmutableVector3(p1).minus(p0);
+        return (p1).minus(p0);
     }
 }
