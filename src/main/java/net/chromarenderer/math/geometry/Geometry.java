@@ -3,6 +3,7 @@ package net.chromarenderer.math.geometry;
 import net.chromarenderer.math.ImmutableArrayMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
+import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.math.shader.Material;
 
@@ -22,4 +23,8 @@ public interface Geometry {
     boolean isPlane();
 
     Material getMaterial();
+
+    float getArea();
+
+    ImmutableVector3 getUnifDistrSample();
 }

@@ -24,10 +24,11 @@ public class DiffuseShader {
     public static Radiance getDirectRadianceSample(Hitpoint hitpoint, float pathWeight) {
 
         ImmutableVector3 point = hitpoint.getPoint();
-        ImmutableVector3 direction = scene.pointLight.minus(point);
+        Hitpoint lightSourceSample = scene.getLightSourceSample();
+        ImmutableVector3 direction = lightSourceSample.getPoint().minus(point);
 
-        float distToLightSource = direction.length();
-        Ray shadowRay = new Ray(point, direction.normalize(), 0.0f, distToLightSource);
+        float distToLight = direction.length();
+        Ray shadowRay = new Ray(point, direction.normalize(), Constants.FLT_EPSILON, distToLight - Constants.FLT_EPSILON);
 
         float cosThetaSceneHit = direction.dot(hitpoint.getHitpointNormal());
 
@@ -43,18 +44,19 @@ public class DiffuseShader {
             return new Radiance(COLORS.BLACK, shadowRay);
         }
 
-        float geomTerm = (cosThetaSceneHit) / (distToLightSource * distToLightSource);
+        float geomTerm = (cosThetaSceneHit) / (distToLight * distToLight);
         Vector3 rhoDiffuse = hitpoint.getHitGeometry().getMaterial().getColor();
         float precisionBound = 10.0f / (rhoDiffuse.getMaxValue());                                                        // bound can include brdf which can soften the geometric term
-        Vector3 result = rhoDiffuse.div(Constants.PI_f).mult(Math.min(precisionBound, geomTerm));
+        Vector3 lightSourceEmission = lightSourceSample.getHitGeometry().getMaterial().getColor();
+        Vector3 result = lightSourceEmission.mult(rhoDiffuse.div(Constants.PI_f).mult(Math.min(precisionBound, geomTerm)).mult(lightSourceSample.getInverseSampleWeight()));
 
-        return new Radiance(result.mult(2.0f*pathWeight), shadowRay);
+        return new Radiance(result.mult(2.0f * pathWeight), shadowRay);
     }
 
 
     public static Ray getRecursiceRaySample(Ray incomingRay, Hitpoint hitpoint) {
-        float u = ChromaThreadContext.randomFloat();
-        float v = ChromaThreadContext.randomFloat();
+        float u = ChromaThreadContext.randomFloatClosedOpen();
+        float v = ChromaThreadContext.randomFloatClosedOpen();
         float sqrtU = (float) Math.sqrt(u);
         float v2pi = v * Constants.TWO_PI_f;
 

@@ -5,6 +5,7 @@ package net.chromarenderer.math;
  */
 public interface Vector3 {
 
+    public static Vector3 ONE = new ImmutableVector3(1.0f, 1.0f, 1.0f);
     public static Vector3 X_AXIS = new ImmutableVector3(1.0f, 0.0f, 0.0f);
     public static Vector3 Y_AXIS = new ImmutableVector3(0.0f, 1.0f, 0.0f);
     public static Vector3 Z_AXIS = new ImmutableVector3(0.0f, 0.0f, 1.0f);
@@ -66,4 +67,7 @@ public interface Vector3 {
         }
     }
 
+    default public boolean isNaN(){
+        return Float.isNaN(getX()) || Float.isNaN(getY()) ||Float.isNaN(getZ());
+    }
 }

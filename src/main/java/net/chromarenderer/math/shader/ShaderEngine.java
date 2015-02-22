@@ -25,9 +25,13 @@ public class ShaderEngine {
         Material material = hitpoint.getHitGeometry().getMaterial();
 
         switch (material.getType()) {
-            case DIFFUSE: {
+            case DIFFUSE:
                 return DiffuseShader.getDirectRadianceSample(hitpoint, pathWeight);
-            }
+
+            case EMITTING:
+                // temporary handling of emitting materials in order to let them participate in reflections
+                return DiffuseShader.getDirectRadianceSample(hitpoint, pathWeight);
+
 
             case MIRROR: {
                 // As long as we use point lights, there is no chance to hit it by mirroring...
@@ -45,18 +49,20 @@ public class ShaderEngine {
 
         Material material = hitpoint.getHitGeometry().getMaterial();
 
-        switch  (material.getType()) {
-            case DIFFUSE:{
+        switch (material.getType()) {
+            case DIFFUSE:
                 return DiffuseShader.getRecursiceRaySample(incomingRay, hitpoint);
 
-            }
-            case MIRROR: {
+            case EMITTING:
+                // temporary handling of emitting materials in order to let them participate in reflections
+                return DiffuseShader.getRecursiceRaySample(incomingRay, hitpoint);
+
+            case MIRROR:
                 Vector3 mirrorDirection = VectorUtils.mirror(incomingRay.getDirection().mult(-1.0f), hitpoint.getHitpointNormal());
                 return new Ray(hitpoint.getPoint(), new ImmutableVector3(mirrorDirection));
-            }
 
             default:
-                return null;
+                throw new RuntimeException("Unknown MaterialType");
 
         }
     }
@@ -74,7 +80,7 @@ public class ShaderEngine {
 
 
     public static Radiance getIndirectRadianceSample(Ray incomingRay, Hitpoint hitpoint, RecursiveRenderer simplePathTracer, int depth, float pathWeight) {
-        float russianRoulette = ChromaThreadContext.randomFloat();
+        float russianRoulette = ChromaThreadContext.randomFloatClosedOpen();
         if (russianRoulette > Constants.RR_LIMIT) {
             return Radiance.NO_CONTRIBUTION;
         } else {

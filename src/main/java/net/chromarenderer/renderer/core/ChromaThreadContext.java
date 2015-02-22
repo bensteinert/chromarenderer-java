@@ -33,7 +33,20 @@ public class ChromaThreadContext {
     }
 
 
-    public static float randomFloat() {
+    public static float randomFloatClosedOpen() {
         return mt.get().nextFloat();
     }
+
+    public static float randomFloatOpenOpen() {
+        return mt.get().nextFloat(false, false);
+    }
+
+    public static double randomDoubleClosedOpen() {
+        return mt.get().nextDouble();
+    }
+
+    public static double randomDoubleOpenOpen() {
+        return mt.get().nextDouble(false, false);
+    }
+
 }

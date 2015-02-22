@@ -4,18 +4,20 @@ import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.ImmutableArrayMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
+import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.math.shader.Material;
+import net.chromarenderer.renderer.core.ChromaThreadContext;
 
 /**
  * @author steinerb
  */
 public class Sphere extends AbstractGeometry {
 
-    private final Vector3 center;
+    private final ImmutableVector3 center;
     private final double radius;
 
-    public Sphere(Vector3 center, double radius, Material material) {
+    public Sphere(ImmutableVector3 center, double radius, Material material) {
         super(material);
         this.center = center;
         this.radius = radius;
@@ -23,6 +25,7 @@ public class Sphere extends AbstractGeometry {
 
     /**
      * Adapted from <a href="http://wiki.cgsociety.org/index.php/Ray_Sphere_Intersection">http://wiki.cgsociety.org/index.php/Ray_Sphere_Intersection</a>
+     *
      * @param ray to intersect with
      * @return distance to first hit.
      */
@@ -43,7 +46,7 @@ public class Sphere extends AbstractGeometry {
 
         // compute q as described above
         double distSqrt = Math.sqrt(disc);
-        double q = b<0 ? (-b - distSqrt)*0.5 : (-b + distSqrt)*0.5;
+        double q = b < 0 ? (-b - distSqrt) * 0.5 : (-b + distSqrt) * 0.5;
 
         // compute t0 and t1
         double t0 = q / a;
@@ -57,7 +60,7 @@ public class Sphere extends AbstractGeometry {
         }
 
         // ignore imprecision flaws.....
-        if(!(t0 < Constants.SPHERE_NAN_LIMIT) || !(t1 < Constants.SPHERE_NAN_LIMIT)){
+        if (!(t0 < Constants.SPHERE_NAN_LIMIT) || !(t1 < Constants.SPHERE_NAN_LIMIT)) {
             return 0.0f;
         }
 
@@ -95,4 +98,21 @@ public class Sphere extends AbstractGeometry {
     public final boolean isPlane() {
         return false;
     }
+
+    @Override
+    public float getArea() {
+        return (float) (4.0f * Constants.PI_f * radius * radius);
+    }
+
+    @Override
+    public ImmutableVector3 getUnifDistrSample() {
+        float u = (ChromaThreadContext.randomFloatOpenOpen() - 0.5f) * 2.0f;
+        float v = ChromaThreadContext.randomFloatClosedOpen();
+        float sqrtOneMinusU = (float) Math.sqrt(1.0f - u * u); // sin² + cos² = 1 -> sin = sqrt(1-cos²)
+        float vTwoPi = v * Constants.TWO_PI_f;
+
+        ImmutableVector3 unitSphereSample = new ImmutableVector3((float) (Math.cos(vTwoPi) * sqrtOneMinusU), (float) (sqrtOneMinusU * Math.sin(vTwoPi)), u);
+        return center.plus(unitSphereSample.mult((float) radius));
+    }
+
 }

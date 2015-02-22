@@ -36,8 +36,8 @@ public class PinholeCamera implements Camera {
     @Override
     public Ray getRay(int x, int y){
         // No rotation yet...
-        float subSampleX = ChromaThreadContext.randomFloat();
-        float subSampleY = ChromaThreadContext.randomFloat();
+        float subSampleX = ChromaThreadContext.randomFloatClosedOpen();
+        float subSampleY = ChromaThreadContext.randomFloatClosedOpen();
 
         ImmutableVector3 direction = new ImmutableVector3(((x + subSampleX) * pixelSizeX) - shiftX, ((y + subSampleY) * pixelSizeY) - shiftY, -focalDistance).normalize();
         Vector3 origin = position;

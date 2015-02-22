@@ -10,29 +10,31 @@ import net.chromarenderer.math.geometry.Geometry;
  */
 public class Hitpoint {
 
-    public static final Hitpoint INFINITY = new Hitpoint(null, null, Float.MAX_VALUE, null);
+    public static final Hitpoint INFINITY = new Hitpoint(null, null, null);
 
     private final Geometry hitGeometry;
     private final ImmutableVector3 point;
-    private final float distance;
     private final ImmutableVector3 hitpointNormal;
+    private final float inverseSampleWeight;
 
 
-    public Hitpoint(Geometry hitGeometry, ImmutableVector3 point, float distance, ImmutableVector3 hitpointNormal) {
+    public Hitpoint(Geometry hitGeometry, ImmutableVector3 point, ImmutableVector3 hitpointNormal) {
         this.hitGeometry = hitGeometry;
         this.point = point;
-        this.distance = distance;
         this.hitpointNormal = hitpointNormal;
+        this.inverseSampleWeight = 1.0f;
+    }
+
+    public Hitpoint(Geometry hitGeometry, ImmutableVector3 point, ImmutableVector3 hitpointNormal, float inverseSampleWeight) {
+        this.hitGeometry = hitGeometry;
+        this.point = point;
+        this.hitpointNormal = hitpointNormal;
+        this.inverseSampleWeight = inverseSampleWeight;
     }
 
 
     public ImmutableVector3 getPoint() {
         return point;
-    }
-
-
-    public float getDistance() {
-        return distance;
     }
 
 
@@ -57,5 +59,9 @@ public class Hitpoint {
 
     public boolean hit(){
         return hitGeometry != null;
+    }
+
+    public float getInverseSampleWeight() {
+        return inverseSampleWeight;
     }
 }

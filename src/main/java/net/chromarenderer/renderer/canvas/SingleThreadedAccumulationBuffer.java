@@ -19,17 +19,16 @@ public class SingleThreadedAccumulationBuffer extends ChromaCanvas implements Ac
         if (input.length != width * height) {
             throw new IllegalArgumentException("Mismatching Accumulation buffer input!");
         }
-        // maybe using collection streams?
 
         for (int i = 0; i < width * height; i++) {
-            pixels[i] =  pixels[i].mult(accCount).plus(input[i]).div(accCount+1);
+//            if (pixels[i].isNaN()){
+//                System.out.println("NAN");
+//            }
+            pixels[i] = pixels[i].mult(accCount).plus(input[i]).div(accCount + 1);
         }
 
         accCount++;
         return this;
     }
-
-
-
 
 }

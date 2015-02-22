@@ -6,10 +6,12 @@ import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.math.shader.Material;
+import net.chromarenderer.renderer.core.ChromaThreadContext;
 
 /**
  * Chroma uses the right-hand-coordinate system. Think about three vertices specified counterclockwise on the floor.
  * The normal will always point upwards!
+ *
  * @author steinerb
  */
 public class Triangle extends AbstractGeometry {
@@ -42,7 +44,7 @@ public class Triangle extends AbstractGeometry {
     }
 
     @Override
-    public float intersect(Ray ray){
+    public float intersect(Ray ray) {
 
         ImmutableVector3 P, Q, T;
         float det;
@@ -62,7 +64,7 @@ public class Triangle extends AbstractGeometry {
         det = E1.dot(P);
 
         /* if determinant is near zero, ray lies in plane of triangle */
-        if(det > -Constants.FLT_EPSILON && det < Constants.FLT_EPSILON){
+        if (det > -Constants.FLT_EPSILON && det < Constants.FLT_EPSILON) {
             return 0.f;
         }
 
@@ -89,11 +91,11 @@ public class Triangle extends AbstractGeometry {
 	    /* calculate distance, ray intersects triangle */
         float distance = E2.dot(Q) * invDet;
 
-        if(ray.getTMin() > distance || ray.getTMax() < distance) {
+        if (ray.getTMin() > distance || ray.getTMax() < distance) {
             return 0.f;
         }
 
-        return distance ;
+        return distance;
     }
 
     @Override
@@ -114,6 +116,23 @@ public class Triangle extends AbstractGeometry {
     @Override
     public final boolean isPlane() {
         return true;
+    }
+
+    @Override
+    public float getArea() {
+        ImmutableVector3 edgeCrossProduct = e1().crossProduct(e2());
+        return edgeCrossProduct.length() * 0.5f;
+    }
+
+    @Override
+    public ImmutableVector3 getUnifDistrSample() {
+        float u = ChromaThreadContext.randomFloatClosedOpen();
+        float v = ChromaThreadContext.randomFloatClosedOpen();
+        float sqrtU = (float) Math.sqrt(u);
+        float alpha = 1.0f - sqrtU;
+        float beta = (1.0f - v) * sqrtU;
+        float gamma = v * sqrtU;
+        return new ImmutableVector3(p0.mult(alpha).plus(p1.mult(beta)).plus(p2.mult(gamma)));
     }
 
     private ImmutableVector3 e2() {
