@@ -7,6 +7,7 @@ import net.chromarenderer.math.geometry.PhotonFountain;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.math.shader.MaterialType;
+import net.chromarenderer.renderer.core.ChromaThreadContext;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -101,18 +102,18 @@ public class GeometryScene {
 
 
     public Hitpoint getLightSourceSample() {
-//        float random = ChromaThreadContext.randomFloatClosedOpen();
-//
-//        int lightSourceIdx;
-//        for (lightSourceIdx = 0; lightSourceIdx < lightSources.size() && random > lightSourceDistributions[lightSourceIdx]; lightSourceIdx++)
-//            ;
-//
-//        Geometry sampledGeometry = lightSources.get(lightSourceIdx);
-//        ImmutableVector3 surfaceSample = sampledGeometry.getUnifDistrSample();
+        float random = ChromaThreadContext.randomFloatClosedOpen();
 
-//        return new Hitpoint(sampledGeometry, surfaceSample, sampledGeometry.getNormal(surfaceSample), totalLightSourceArea);
+        int lightSourceIdx;
+        for (lightSourceIdx = 0; lightSourceIdx < lightSources.size() && random > lightSourceDistributions[lightSourceIdx]; lightSourceIdx++)
+            ;
 
-        return new Hitpoint(pointLight, pointLight.getUnifDistrSample(), null, 1.0f);
+        Geometry sampledGeometry = lightSources.get(lightSourceIdx);
+        ImmutableVector3 surfaceSample = sampledGeometry.getUnifDistrSample();
+
+        return new Hitpoint(sampledGeometry, surfaceSample, sampledGeometry.getNormal(surfaceSample), totalLightSourceArea);
+
+        //return new Hitpoint(pointLight, pointLight.getUnifDistrSample(), null, 1.0f);
     }
 
 }

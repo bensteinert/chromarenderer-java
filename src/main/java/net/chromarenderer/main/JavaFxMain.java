@@ -225,8 +225,11 @@ public class JavaFxMain extends Application {
                     reinitNeeded = true;
                     break;
                 case F8:
-                    settings = settings.changeMode(ChromaRenderMode.SIMPLE_PT);
+                    settings = settings.changeMode(ChromaRenderMode.PTDL);
                     reinitNeeded = true;
+                    break;
+                case L:
+                    settings.toggleLightSourceSamplingMode();
                     break;
                 case ENTER:
                     chroma.restart();
@@ -243,7 +246,7 @@ public class JavaFxMain extends Application {
 
     public static void main(String[] args) {
         Thread thread = new Thread(chroma);
-        settings = new ChromaSettings(1024, 1024, ChromaRenderMode.SIMPLE_PT, true, 2);
+        settings = new ChromaSettings(512, 512, ChromaRenderMode.PTDL, true, 2, false);
         chroma.init(settings);
 
         thread.start();

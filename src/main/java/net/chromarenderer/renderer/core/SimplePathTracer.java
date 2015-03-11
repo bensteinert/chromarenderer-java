@@ -67,7 +67,7 @@ public class SimplePathTracer extends ChromaCanvas implements RecursiveRenderer 
         // shading
         Vector3 color = COLORS.BLACK;
         if (hitpoint.hit()) {
-            Radiance directRadianceSample = ShaderEngine.getDirectRadianceSample(incomingRay, hitpoint, pathWeight);
+            Radiance directRadianceSample = ShaderEngine.getDirectRadianceSample(incomingRay, hitpoint, pathWeight, settings);
 
             if (settings.getMaxRayDepth() > depth && pathWeight > Constants.FLT_EPSILON) {
                 Radiance indirectRadianceSample = ShaderEngine.getIndirectRadianceSample(incomingRay, hitpoint, this, depth, pathWeight);

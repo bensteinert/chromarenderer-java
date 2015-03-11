@@ -2,34 +2,35 @@ package net.chromarenderer.main;
 
 import net.chromarenderer.renderer.ChromaRenderMode;
 
-/**
- * @author steinerb
- */
+
 public class ChromaSettings {
 
     private final int threadCount;
     private final int imgWidth;
     private final int imgHeight;
-    private final ChromaRenderMode mode;
+    private final ChromaRenderMode renderMode;
     private final boolean forceContinuousRender;
     private final int maxRayDepth = 3;
+    private final boolean lightSourceSamplingMode;
 
 
-    public ChromaSettings(int imgWidth, int imgHeight, ChromaRenderMode mode, boolean forceContinuousRender, int threadCount) {
+    public ChromaSettings(int imgWidth, int imgHeight, ChromaRenderMode renderMode, boolean forceContinuousRender, int threadCount, boolean lightSourceSamplingMode) {
         this.imgWidth = imgWidth;
         this.imgHeight = imgHeight;
-        this.mode = mode;
+        this.renderMode = renderMode;
         this.forceContinuousRender = forceContinuousRender;
         this.threadCount = threadCount;
+        this.lightSourceSamplingMode = lightSourceSamplingMode;
     }
 
 
     public ChromaSettings(ChromaSettings settings) {
         this.imgWidth = settings.getImgWidth();
         this.imgHeight = settings.getImgHeight();
-        this.mode = settings.getMode();
+        this.renderMode = settings.getRenderMode();
         this.forceContinuousRender = settings.isForceContinuousRender();
         this.threadCount = settings.threadCount;
+        this.lightSourceSamplingMode = settings.lightSourceSamplingMode;
     }
 
 
@@ -43,8 +44,8 @@ public class ChromaSettings {
     }
 
 
-    public ChromaRenderMode getMode() {
-        return mode;
+    public ChromaRenderMode getRenderMode() {
+        return renderMode;
     }
 
 
@@ -54,12 +55,12 @@ public class ChromaSettings {
 
 
     public ChromaSettings changeMode(ChromaRenderMode mode) {
-        return new ChromaSettings(imgWidth, imgHeight, mode, forceContinuousRender, threadCount);
+        return new ChromaSettings(imgWidth, imgHeight, mode, forceContinuousRender, threadCount, lightSourceSamplingMode);
     }
 
 
     public ChromaSettings changeContinuousRender(boolean isContinuousRender) {
-        return new ChromaSettings(imgWidth, imgHeight, mode, isContinuousRender, threadCount);
+        return new ChromaSettings(imgWidth, imgHeight, renderMode, isContinuousRender, threadCount, lightSourceSamplingMode);
 
     }
 
@@ -70,5 +71,14 @@ public class ChromaSettings {
 
     public int getThreadCount() {
         return threadCount;
+    }
+
+
+    public ChromaSettings toggleLightSourceSamplingMode() {
+        return new ChromaSettings(imgWidth, imgHeight, renderMode, forceContinuousRender, threadCount, !lightSourceSamplingMode);
+    }
+
+    public boolean isLightSourceSamplingEnabled(){
+        return lightSourceSamplingMode;
     }
 }

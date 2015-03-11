@@ -1,5 +1,6 @@
 package net.chromarenderer.math.shader;
 
+import net.chromarenderer.main.ChromaSettings;
 import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
@@ -19,18 +20,18 @@ public class ShaderEngine {
     private static GeometryScene scene;
 
 
-    public static Radiance getDirectRadianceSample(Ray incomingRay, Hitpoint hitpoint, float pathWeight) {
+    public static Radiance getDirectRadianceSample(Ray incomingRay, Hitpoint hitpoint, float pathWeight, ChromaSettings settings) {
 
 
         Material material = hitpoint.getHitGeometry().getMaterial();
 
         switch (material.getType()) {
             case DIFFUSE:
-                return DiffuseShader.getDirectRadianceSample(hitpoint, pathWeight);
+                return DiffuseShader.getDirectRadianceSample(hitpoint, pathWeight, settings);
 
             case EMITTING:
                 // temporary handling of emitting materials in order to let them participate in reflections
-                return DiffuseShader.getDirectRadianceSample(hitpoint, pathWeight);
+                return DiffuseShader.getDirectRadianceSample(hitpoint, pathWeight, settings);
 
 
             case MIRROR: {
@@ -51,11 +52,11 @@ public class ShaderEngine {
 
         switch (material.getType()) {
             case DIFFUSE:
-                return DiffuseShader.getRecursiceRaySample(incomingRay, hitpoint);
+                return DiffuseShader.getRecursiveRaySample(incomingRay, hitpoint);
 
             case EMITTING:
                 // temporary handling of emitting materials in order to let them participate in reflections
-                return DiffuseShader.getRecursiceRaySample(incomingRay, hitpoint);
+                return DiffuseShader.getRecursiveRaySample(incomingRay, hitpoint);
 
             case MIRROR:
                 Vector3 mirrorDirection = VectorUtils.mirror(incomingRay.getDirection().mult(-1.0f), hitpoint.getHitpointNormal());

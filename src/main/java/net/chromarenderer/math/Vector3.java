@@ -5,10 +5,11 @@ package net.chromarenderer.math;
  */
 public interface Vector3 {
 
-    public static Vector3 ONE = new ImmutableVector3(1.0f, 1.0f, 1.0f);
-    public static Vector3 X_AXIS = new ImmutableVector3(1.0f, 0.0f, 0.0f);
-    public static Vector3 Y_AXIS = new ImmutableVector3(0.0f, 1.0f, 0.0f);
-    public static Vector3 Z_AXIS = new ImmutableVector3(0.0f, 0.0f, 1.0f);
+    public static final ImmutableVector3 ONE = new ImmutableVector3(1.0f, 1.0f, 1.0f);
+    public static final ImmutableVector3 X_AXIS = new ImmutableVector3(1.0f, 0.0f, 0.0f);
+    public static final ImmutableVector3 Y_AXIS = new ImmutableVector3(0.0f, 1.0f, 0.0f);
+    public static final ImmutableVector3 Z_AXIS = new ImmutableVector3(0.0f, 0.0f, 1.0f);
+    public static final ImmutableVector3 ORIGIN = new ImmutableVector3(0.0f, 0.0f, 0.0f);
 
 
     Vector3 mult(float val);

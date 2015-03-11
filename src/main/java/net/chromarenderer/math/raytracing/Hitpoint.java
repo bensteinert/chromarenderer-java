@@ -1,9 +1,11 @@
 package net.chromarenderer.math.raytracing;
 
+import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.MutableVector3;
-import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.geometry.Geometry;
+import net.chromarenderer.math.shader.MaterialType;
+import net.chromarenderer.renderer.core.ChromaThreadContext;
 
 /**
  * @author steinerb
@@ -52,8 +54,20 @@ public class Hitpoint {
         t1.setValue(t1.getMinIndexAbs(), 1.0f);
         t1.crossProduct(hitpointNormal);
         t1.normalize();
-        Vector3 t2 = hitpointNormal.crossProduct(t1).normalize();
+        ImmutableVector3 t2 = hitpointNormal.crossProduct(t1).normalize();
         return new CoordinateSystem(new ImmutableVector3(t1), t2, hitpointNormal);
+    }
+
+    public ImmutableVector3 getUniformHemisphereSample() {
+        float u = ChromaThreadContext.randomFloatClosedOpen();
+        float v = ChromaThreadContext.randomFloatClosedOpen();
+
+        float sqrtOneMinusU = (float) Math.sqrt(1.0f - u * u); // sin² + cos² = 1 -> sin = sqrt(1-cos²)
+        float vTwoPi = v * Constants.TWO_PI_f;
+
+        ImmutableVector3 unitSphereSample = new ImmutableVector3((float) (Math.cos(vTwoPi) * sqrtOneMinusU), (float) (sqrtOneMinusU * Math.sin(vTwoPi)), u);
+        CoordinateSystem coordinateSystem = getCoordinateSystem();
+        return coordinateSystem.getT1().mult(unitSphereSample.getX()).plus(coordinateSystem.getT2().mult(unitSphereSample.getY())).plus(coordinateSystem.getN().mult(unitSphereSample.getZ())).normalize();
     }
 
 
@@ -63,5 +77,10 @@ public class Hitpoint {
 
     public float getInverseSampleWeight() {
         return inverseSampleWeight;
+    }
+
+
+    public boolean isOn(MaterialType materialType) {
+        return getHitGeometry() != null && getHitGeometry().getMaterial().getType().equals(materialType);
     }
 }

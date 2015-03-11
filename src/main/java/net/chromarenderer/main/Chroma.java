@@ -1,6 +1,5 @@
 package net.chromarenderer.main;
 
-import net.chromarenderer.math.COLORS;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.geometry.Geometry;
@@ -61,12 +60,12 @@ public class Chroma implements Runnable {
 
     private List<Geometry> createSomeSpheres() {
         List<Geometry> result = new ArrayList<>();
-        result.add(new Sphere(new ImmutableVector3(0.0f, -0.3f, 0.0f), 0.1,   new Material(MaterialType.DIFFUSE, COLORS.BLUE)));
-        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.0f, -1.0f), 0.2, new Material(MaterialType.DIFFUSE, COLORS.RED)));
-        result.add(new Sphere(new ImmutableVector3(1.0f, -0.4f, 1.0f), 0.2 , new Material(MaterialType.DIFFUSE, COLORS.PURPLE)));
-        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.7f, -1.0f), 0.2, new Material(MaterialType.DIFFUSE, COLORS.GREEN)));
-        result.add(new Sphere(new ImmutableVector3(1.0f, -1.5f, -1.0f), 0.4, new Material(MaterialType.MIRROR, COLORS.WHITE)));
-        //result.add(new Sphere(new ImmutableVector3(0.0f, 1.8f, 0.0f), 0.125, new Material(MaterialType.EMITTING, new ImmutableVector3(50, 50 ,50))));
+        //result.add(new Sphere(new ImmutableVector3(0.0f, -0.3f, 0.0f), 0.1,   new Material(MaterialType.DIFFUSE, COLORS.BLUE)));
+        //result.add(new Sphere(new ImmutableVector3(-1.0f, 1.0f, -1.0f), 0.2, new Material(MaterialType.DIFFUSE, COLORS.RED)));
+        //result.add(new Sphere(new ImmutableVector3(1.0f, -0.4f, 1.0f), 0.2 , new Material(MaterialType.DIFFUSE, COLORS.PURPLE)));
+        //result.add(new Sphere(new ImmutableVector3(-1.0f, 1.7f, -1.0f), 0.2, new Material(MaterialType.DIFFUSE, COLORS.GREEN)));
+        //result.add(new Sphere(new ImmutableVector3(1.0f, -1.5f, -1.0f), 0.4, new Material(MaterialType.MIRROR, COLORS.WHITE)));
+        result.add(new Sphere(new ImmutableVector3(0.0f, 1.0f, 0.0f), 0.125, new Material(MaterialType.EMITTING, new ImmutableVector3(20, 20 ,20))));
         return result;
     }
 
@@ -132,7 +131,7 @@ public class Chroma implements Runnable {
         GeometryScene scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, createSomeSpheres());
         ShaderEngine.setScene(scene);
 
-        switch (settings.getMode()) {
+        switch (settings.getRenderMode()) {
             case SIMPLE:
                 setRenderer(new SimpleRayTracer(settings, scene, camera, statistics));
                 break;
@@ -142,7 +141,7 @@ public class Chroma implements Runnable {
             case COLOR_CUBE:
                 setRenderer(new ColorCubeRenderer(settings));
                 break;
-            case SIMPLE_PT:
+            case PTDL:
                 setRenderer(new SimplePathTracer(settings, scene, camera, statistics));
                 break;
             default:
