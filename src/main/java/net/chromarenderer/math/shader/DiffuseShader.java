@@ -25,56 +25,75 @@ public class DiffuseShader {
     public static Radiance getDirectRadianceSample(Hitpoint hitpoint, float pathWeight, ChromaSettings settings) {
 
         if (settings.isLightSourceSamplingEnabled()) {
-            ImmutableVector3 point = hitpoint.getPoint();
-            Hitpoint lightSourceSample = scene.getLightSourceSample();
-            ImmutableVector3 direction = lightSourceSample.getPoint().minus(point);
-
-            float distToLight = direction.length();
-            Ray shadowRay = new Ray(point, direction.normalize(), Constants.FLT_EPSILON, distToLight - Constants.FLT_EPSILON);
-
-            float cosThetaSceneHit = direction.dot(hitpoint.getHitpointNormal());
-
-            //geometry hit from correct side?
-            if (cosThetaSceneHit > 0.0f) {
-                for (Geometry shadowGeometry : scene.geometryList) {
-                    float distance = shadowGeometry.intersect(shadowRay);
-                    if (shadowRay.isOnRay(distance)) {
-                        return new Radiance(COLORS.BLACK, shadowRay);
-                    }
-                }
-            } else {
-                return new Radiance(COLORS.BLACK, shadowRay);
-            }
-
-            float geomTerm = (cosThetaSceneHit) / (distToLight * distToLight);
-            Vector3 rhoDiffuse = hitpoint.getHitGeometry().getMaterial().getColor();
-            float precisionBound = 10.0f / (rhoDiffuse.getMaxValue());                                                        // bound can include brdf which can soften the geometric term
-            Vector3 lightSourceEmission = lightSourceSample.getHitGeometry().getMaterial().getColor();
-            Vector3 result = lightSourceEmission.mult(rhoDiffuse.div(Constants.PI_f).mult(Math.min(precisionBound, geomTerm)).mult(lightSourceSample.getInverseSampleWeight()));
-
-            return new Radiance(result.mult(2.0f * pathWeight), shadowRay);
+            return ptdl(hitpoint, pathWeight);
         }
         else {
-            ImmutableVector3 direction = hitpoint.getUniformHemisphereSample();
-            Ray ray = new Ray(hitpoint.getPoint(), direction);
-            Hitpoint lightSourceSample = scene.intersect(ray);
-
-            if (lightSourceSample.hit() && lightSourceSample.isOn(MaterialType.EMITTING)) {
-                return new Radiance(lightSourceSample.getHitGeometry().getMaterial().getColor().mult(pathWeight), ray);
-            } else {
-                return new Radiance(COLORS.BLACK, ray);
-            }
+            return pt(hitpoint, pathWeight);
         }
-        /**
-         * Ls(ω) = ∫ Li * rho * cosθ dω
-         * MC computation with one sample replaces ∫:
-         * Ls(ω) = (Li * rho * cosθ) / p(ω) where p(ω) = cos(θ)/π
-         *
-         * Ls(ω) = Li + rho *
-         *
-         *
-         * We sample over the area of all light sources:
-         */
+    }
+
+    /**
+     * Simple path tracing with uniform hemisphere samples to determine path.
+     * Ls(ω) = ∫ Li * ρ(ωi, ωo) * cosθ dω
+     *
+     * MC computation with one sample replaces ∫:
+     *   Ls(ω) = (Li * ρ(ωi, ωo) * cosθ) / p(ω)
+     *
+     * where p(ω) = cos(θ)/π (sample weight for a uniform sample on the hemisphere - PT)
+     *   Ls(ω) = (Li * ρ(ωi, ωo)) * π
+     *
+     * Why can I neglect *π? (missing in the code)
+     *   Assume Li = 1, Ls = 0,8: (80% get reflected)
+     *   0,8 = ρ(ωi, ωo) * ∫ cosθ dω
+     *   0,8 = ρ(ωi, ωo) * π
+     *   ρ(ωi, ωo) = 0,8 / π
+     *
+     * For diffuse surfaces where p const, you can write:
+     * Ls(ω) = (Li * ρ(ωi, ωo)/π) * π
+     * Ls(ω) = Li * ρ(ωi, ωo)
+     */
+    private static Radiance pt(Hitpoint hitpoint, float pathWeight) {
+        ImmutableVector3 direction = hitpoint.getUniformHemisphereSample();
+        Ray ray = new Ray(hitpoint.getPoint(), direction);
+        Hitpoint lightSourceSample = scene.intersect(ray);
+
+        if (lightSourceSample.hit() && lightSourceSample.isOn(MaterialType.EMITTING)) {
+            return new Radiance(lightSourceSample.getHitGeometry().getMaterial().getColor().mult(pathWeight), ray);
+        } else {
+            return new Radiance(COLORS.BLACK, ray);
+        }
+    }
+
+
+    private static Radiance ptdl(Hitpoint hitpoint, float pathWeight) {
+        ImmutableVector3 point = hitpoint.getPoint();
+        Hitpoint lightSourceSample = scene.getLightSourceSample();
+        ImmutableVector3 direction = lightSourceSample.getPoint().minus(point);
+
+        float distToLight = direction.length();
+        Ray shadowRay = new Ray(point, direction.normalize(), Constants.FLT_EPSILON, distToLight - Constants.FLT_EPSILON);
+
+        float cosThetaSceneHit = direction.dot(hitpoint.getHitpointNormal());
+
+        //geometry hit from correct side?
+        if (cosThetaSceneHit > 0.0f) {
+            for (Geometry shadowGeometry : scene.geometryList) {
+                float distance = shadowGeometry.intersect(shadowRay);
+                if (shadowRay.isOnRay(distance)) {
+                    return new Radiance(COLORS.BLACK, shadowRay);
+                }
+            }
+        } else {
+            return new Radiance(COLORS.BLACK, shadowRay);
+        }
+
+        float geomTerm = (cosThetaSceneHit) / (distToLight * distToLight);
+        Vector3 rhoDiffuse = hitpoint.getHitGeometry().getMaterial().getColor();
+        float precisionBound = 10.0f / (rhoDiffuse.getMaxValue());      // bound can include brdf which can soften the geometric term
+        Vector3 lightSourceEmission = lightSourceSample.getHitGeometry().getMaterial().getColor();
+        Vector3 result = lightSourceEmission.mult(rhoDiffuse.div(Constants.PI_f).mult(Math.min(precisionBound, geomTerm)).mult(lightSourceSample.getInverseSampleWeight()));
+
+        return new Radiance(result.mult(pathWeight), shadowRay);
     }
 
 

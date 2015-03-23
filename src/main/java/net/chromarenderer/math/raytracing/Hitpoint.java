@@ -7,9 +7,7 @@ import net.chromarenderer.math.geometry.Geometry;
 import net.chromarenderer.math.shader.MaterialType;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
 
-/**
- * @author steinerb
- */
+
 public class Hitpoint {
 
     public static final Hitpoint INFINITY = new Hitpoint(null, null, null);
@@ -26,6 +24,7 @@ public class Hitpoint {
         this.hitpointNormal = hitpointNormal;
         this.inverseSampleWeight = 1.0f;
     }
+
 
     public Hitpoint(Geometry hitGeometry, ImmutableVector3 point, ImmutableVector3 hitpointNormal, float inverseSampleWeight) {
         this.hitGeometry = hitGeometry;
@@ -49,14 +48,16 @@ public class Hitpoint {
         return hitGeometry;
     }
 
-    public CoordinateSystem getCoordinateSystem () {
-        MutableVector3 t1 =  new MutableVector3(hitpointNormal);
+
+    public CoordinateSystem getCoordinateSystem() {
+        MutableVector3 t1 = new MutableVector3(hitpointNormal);
         t1.setValue(t1.getMinIndexAbs(), 1.0f);
         t1.crossProduct(hitpointNormal);
         t1.normalize();
         ImmutableVector3 t2 = hitpointNormal.crossProduct(t1).normalize();
         return new CoordinateSystem(new ImmutableVector3(t1), t2, hitpointNormal);
     }
+
 
     public ImmutableVector3 getUniformHemisphereSample() {
         float u = ChromaThreadContext.randomFloatClosedOpen();
@@ -71,9 +72,10 @@ public class Hitpoint {
     }
 
 
-    public boolean hit(){
+    public boolean hit() {
         return hitGeometry != null;
     }
+
 
     public float getInverseSampleWeight() {
         return inverseSampleWeight;

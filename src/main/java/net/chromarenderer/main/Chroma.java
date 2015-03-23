@@ -65,7 +65,7 @@ public class Chroma implements Runnable {
         //result.add(new Sphere(new ImmutableVector3(1.0f, -0.4f, 1.0f), 0.2 , new Material(MaterialType.DIFFUSE, COLORS.PURPLE)));
         //result.add(new Sphere(new ImmutableVector3(-1.0f, 1.7f, -1.0f), 0.2, new Material(MaterialType.DIFFUSE, COLORS.GREEN)));
         //result.add(new Sphere(new ImmutableVector3(1.0f, -1.5f, -1.0f), 0.4, new Material(MaterialType.MIRROR, COLORS.WHITE)));
-        result.add(new Sphere(new ImmutableVector3(0.0f, 1.0f, 0.0f), 0.125, new Material(MaterialType.EMITTING, new ImmutableVector3(20, 20 ,20))));
+        result.add(new Sphere(new ImmutableVector3(0.0f, 0.0f, 0.0f), 0.125, new Material(MaterialType.EMITTING, new ImmutableVector3(20, 20 ,20))));
         return result;
     }
 
@@ -164,5 +164,10 @@ public class Chroma implements Runnable {
     public void takeScreenShot() {
         TgaImageWriter.writeTga(getCurrentFrame(), settings.getImgWidth(), settings.getImgHeight(), "/tmp/chroma/", "screenshot.tga");
 
+    }
+
+
+    public Camera getCamera() {
+        return camera;
     }
 }

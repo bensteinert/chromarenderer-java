@@ -14,7 +14,7 @@ public class PinholeCamera implements Camera {
     private final float shiftX;
     private final float shiftY;
 
-    private Vector3 position;
+    private ImmutableVector3 position;
 
     private ImmutableArrayMatrix3x3 coordinateSystem;
 
@@ -60,6 +60,11 @@ public class PinholeCamera implements Camera {
                                                                        -sin_p*cos_t, sin_t, cos_t*cos_p);
 
         this.coordinateSystem = rotation.mult(coordinateSystem).normalizeCols();
+    }
+
+    @Override
+    public ImmutableVector3 getCurrentPosition() {
+        return position;
     }
 
 }

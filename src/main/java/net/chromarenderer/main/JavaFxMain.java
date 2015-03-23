@@ -4,6 +4,7 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
@@ -53,15 +54,19 @@ public class JavaFxMain extends Application {
         Text intro = new Text("Chroma Info and Controls");
         intro.setFont(monacoBold);
         Text fps = new Text();
-        fps.setFont(monaco);
         Text reverseRaysMissed = new Text();
-        reverseRaysMissed.setFont(monaco);
         Text isContinuousActive = new Text();
-        isContinuousActive.setFont(monaco);
+        Text isLightSourceSamplingActive = new Text();
+        Text cameraPosition = new Text();
         Text rayCount = new Text();
-        rayCount.setFont(monaco);
 
-        VBox vbox = new VBox(10, intro, fps, rayCount, isContinuousActive, reverseRaysMissed);
+        VBox vbox = new VBox(10, intro, fps, rayCount, isContinuousActive, isLightSourceSamplingActive, reverseRaysMissed, cameraPosition);
+
+        for (Node node : vbox.getChildren()) {
+            if (node instanceof Text) {
+                ((Text) node).setFont(monaco);
+            }
+        }
         secondaryLayout.getChildren().add(vbox);
 
         Scene secondScene = new Scene(secondaryLayout, 400, 400);
@@ -88,9 +93,11 @@ public class JavaFxMain extends Application {
                     rayCount.setText(String.format("Rays/ms:    %.2f", statistics.getRayCountAndFlush() / delta));
                     fps.setText(String.format("Frames/s:   %.2f [frames total: %s]", statistics.getFps(), statistics.getTotalFrameCount()));
                     lastTimeStamp = now;
+                    cameraPosition.setText(chroma.getCamera().getCurrentPosition().toString());
                 }
 
-                isContinuousActive.setText(String.format("Continuous: %s", Boolean.toString(settings.isForceContinuousRender())));
+                isContinuousActive.setText(String.format("           Continuous: %s", Boolean.toString(settings.isForceContinuousRender())));
+                isLightSourceSamplingActive.setText(String.format("Light Source Sampling: %s", Boolean.toString(settings.isLightSourceSamplingEnabled())));
             }
         }.start();
 
@@ -229,7 +236,8 @@ public class JavaFxMain extends Application {
                     reinitNeeded = true;
                     break;
                 case L:
-                    settings.toggleLightSourceSamplingMode();
+                    settings = settings.toggleLightSourceSamplingMode();
+                    reinitNeeded = true;
                     break;
                 case ENTER:
                     chroma.restart();
