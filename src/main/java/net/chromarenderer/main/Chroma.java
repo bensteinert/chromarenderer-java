@@ -1,8 +1,10 @@
 package net.chromarenderer.main;
 
+import net.chromarenderer.math.COLORS;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.geometry.Geometry;
+import net.chromarenderer.math.geometry.PhotonFountain;
 import net.chromarenderer.math.geometry.Sphere;
 import net.chromarenderer.math.shader.Material;
 import net.chromarenderer.math.shader.MaterialType;
@@ -65,7 +67,8 @@ public class Chroma implements Runnable {
         //result.add(new Sphere(new ImmutableVector3(1.0f, -0.4f, 1.0f), 0.2 , new Material(MaterialType.DIFFUSE, COLORS.PURPLE)));
         //result.add(new Sphere(new ImmutableVector3(-1.0f, 1.7f, -1.0f), 0.2, new Material(MaterialType.DIFFUSE, COLORS.GREEN)));
         //result.add(new Sphere(new ImmutableVector3(1.0f, -1.5f, -1.0f), 0.4, new Material(MaterialType.MIRROR, COLORS.WHITE)));
-        result.add(new Sphere(new ImmutableVector3(0.0f, 0.0f, 0.0f), 0.125, new Material(MaterialType.EMITTING, new ImmutableVector3(20, 20 ,20))));
+        //result.add(new Sphere(new ImmutableVector3(0.0f, 0.0f, 0.0f), 0.125, new Material(MaterialType.EMITTING, new ImmutableVector3(20, 20 ,200))));
+        result.add(new PhotonFountain(new ImmutableVector3(0.f, 0.f, 0.f), 2000.f));
         return result;
     }
 
@@ -126,7 +129,7 @@ public class Chroma implements Runnable {
 
         //RHS with depth along negative z-axis
         if (camera == null) {
-            camera = new PinholeCamera(new ImmutableVector3(0.0f, 0.0f, 6.0f), 100.0f, 0.09f, 0.09f, pixelsX, pixelsY);
+            camera = new PinholeCamera(new ImmutableVector3(0.0f, 0.0f, 10.0f), 100.0f, 0.09f, 0.09f, pixelsX, pixelsY);
         }
         GeometryScene scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, createSomeSpheres());
         ShaderEngine.setScene(scene);

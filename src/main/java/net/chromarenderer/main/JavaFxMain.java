@@ -183,21 +183,27 @@ public class JavaFxMain extends Application {
         for (KeyCode pressedKey : pressedKeys) {
             switch (pressedKey) {
                 case NUMPAD4:
+                case A:
                     moveX -= 0.1f;
                     break;
                 case NUMPAD6:
+                case D:
                     moveX += 0.1f;
                     break;
                 case NUMPAD8:
+                case W:
                     moveZ -= 0.1f;
                     break;
                 case NUMPAD2:
+                case S:
                     moveZ += 0.1f;
                     break;
                 case PAGE_DOWN:
+                case Q:
                     moveY -= 0.1f;
                     break;
                 case PAGE_UP:
+                case E:
                     moveY += 0.1f;
                     break;
             }
@@ -254,7 +260,7 @@ public class JavaFxMain extends Application {
 
     public static void main(String[] args) {
         Thread thread = new Thread(chroma);
-        settings = new ChromaSettings(512, 512, ChromaRenderMode.PTDL, true, 2, false);
+        settings = new ChromaSettings(512, 512, ChromaRenderMode.PTDL, true, 2, true);
         chroma.init(settings);
 
         thread.start();

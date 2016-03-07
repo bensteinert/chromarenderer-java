@@ -3,7 +3,6 @@ package net.chromarenderer.renderer.scene;
 import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.geometry.Geometry;
-import net.chromarenderer.math.geometry.PhotonFountain;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.math.shader.MaterialType;
@@ -19,7 +18,7 @@ import java.util.List;
 public class GeometryScene {
 
     public final List<Geometry> geometryList;
-    public final PhotonFountain pointLight = new PhotonFountain(new ImmutableVector3(0.0f, 1.99f, 0.0f), 1.0f);
+    public final AccelerationStructure accStruct;
 
     public final List<Geometry> lightSources;
     public final float[] lightSourceDistributions;
@@ -28,6 +27,8 @@ public class GeometryScene {
 
     public GeometryScene(List<Geometry> geometryList) {
         this.geometryList = geometryList;
+        accStruct = new NoAccelerationImpl(geometryList);
+
         lightSources = filterEmittingGeometry(geometryList);
 
         if (lightSources.size() > 0) {
@@ -65,25 +66,18 @@ public class GeometryScene {
         return Collections.unmodifiableList(result);
     }
 
+    private static final ThreadLocal<IntersectionContext> intersectionContextHolder = ThreadLocal.withInitial(IntersectionContext::new);
 
     public Hitpoint intersect(Ray ray) {
-        float hitDistance = Float.MAX_VALUE;
-        Geometry hitGeometry = null;
-        ImmutableVector3 hitpoint = null;
-        for (Geometry geometry : geometryList) {
-            float distance = geometry.intersect(ray);
-            if (ray.isOnRay(distance) && distance < hitDistance) {
-                hitGeometry = geometry;
-                hitDistance = distance;
-            }
-        }
-
-        if (hitGeometry != null) {
-            hitpoint = ray.onRay(hitDistance);
-            hitpoint = increaseHitpointPrecision(ray, hitGeometry, hitpoint, hitDistance);
-            ImmutableVector3 hitpointNormal = hitGeometry.getNormal(hitpoint);
+        IntersectionContext intersectionContext = intersectionContextHolder.get();
+        intersectionContext.ray = ray;
+        accStruct.getHitGeometry(intersectionContext);
+        if (intersectionContext.hitGeometry != null) {
+            ImmutableVector3 hitpoint = ray.onRay(intersectionContext.hitDistance);
+            hitpoint = increaseHitpointPrecision(ray, intersectionContext.hitGeometry, hitpoint, intersectionContext.hitDistance);
+            ImmutableVector3 hitpointNormal = intersectionContext.hitGeometry.getNormal(hitpoint);
             hitpoint = hitpoint.plus(hitpointNormal.mult(Constants.FLT_EPSILON));
-            return new Hitpoint(hitGeometry, hitpoint, hitpointNormal);
+            return new Hitpoint(intersectionContext.hitGeometry, hitpoint, hitpointNormal);
         } else {
             return Hitpoint.INFINITY;
         }
@@ -105,15 +99,20 @@ public class GeometryScene {
         float random = ChromaThreadContext.randomFloatClosedOpen();
 
         int lightSourceIdx;
-        for (lightSourceIdx = 0; lightSourceIdx < lightSources.size() && random > lightSourceDistributions[lightSourceIdx]; lightSourceIdx++)
-            ;
+        lightSourceIdx = 0;
+        while (lightSourceIdx < lightSources.size() && random > lightSourceDistributions[lightSourceIdx]) {
+            lightSourceIdx++;
+        }
 
         Geometry sampledGeometry = lightSources.get(lightSourceIdx);
         ImmutableVector3 surfaceSample = sampledGeometry.getUnifDistrSample();
 
         return new Hitpoint(sampledGeometry, surfaceSample, sampledGeometry.getNormal(surfaceSample), totalLightSourceArea);
-
-        //return new Hitpoint(pointLight, pointLight.getUnifDistrSample(), null, 1.0f);
     }
 
+    static class IntersectionContext {
+        Geometry hitGeometry;
+        float hitDistance;
+        Ray ray;
+    }
 }

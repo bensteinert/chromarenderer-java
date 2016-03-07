@@ -50,8 +50,8 @@ public class PhotonFountain extends AbstractGeometry {
 
     @Override
     public float getArea() {
-        return 0;
-    }
+        return 0.001f;
+    } // no energy without area, even for PLS ;)
 
     @Override
     public ImmutableVector3 getUnifDistrSample() {
