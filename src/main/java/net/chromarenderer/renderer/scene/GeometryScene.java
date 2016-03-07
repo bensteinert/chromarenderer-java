@@ -7,6 +7,9 @@ import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.math.shader.MaterialType;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
+import net.chromarenderer.renderer.scene.acc.AccelerationStructure;
+import net.chromarenderer.renderer.scene.acc.IntersectionContext;
+import net.chromarenderer.renderer.scene.acc.NoAccelerationImpl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,7 +74,7 @@ public class GeometryScene {
     public Hitpoint intersect(Ray ray) {
         IntersectionContext intersectionContext = intersectionContextHolder.get();
         intersectionContext.ray = ray;
-        accStruct.getHitGeometry(intersectionContext);
+        accStruct.intersect(intersectionContext);
         if (intersectionContext.hitGeometry != null) {
             ImmutableVector3 hitpoint = ray.onRay(intersectionContext.hitDistance);
             hitpoint = increaseHitpointPrecision(ray, intersectionContext.hitGeometry, hitpoint, intersectionContext.hitDistance);
@@ -110,9 +113,4 @@ public class GeometryScene {
         return new Hitpoint(sampledGeometry, surfaceSample, sampledGeometry.getNormal(surfaceSample), totalLightSourceArea);
     }
 
-    static class IntersectionContext {
-        Geometry hitGeometry;
-        float hitDistance;
-        Ray ray;
-    }
 }

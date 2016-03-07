@@ -1,9 +1,6 @@
 package net.chromarenderer.math.geometry;
 
-import net.chromarenderer.math.Constants;
-import net.chromarenderer.math.ImmutableArrayMatrix3x3;
-import net.chromarenderer.math.ImmutableVector3;
-import net.chromarenderer.math.Vector3;
+import net.chromarenderer.math.*;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.math.shader.Material;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
@@ -134,6 +131,19 @@ public class Triangle extends AbstractGeometry {
         float gamma = v * sqrtU;
         return new ImmutableVector3(p0.mult(alpha).plus(p1.mult(beta)).plus(p2.mult(gamma)));
     }
+
+    @Override
+    public ImmutableVector3 getSpatialMinimum() {
+        // TODO: BENCHMARK two ctor calls for new vectors ... avoid with one mutable?
+        return VectorUtils.maxVector(p0, VectorUtils.maxVector(p1, p2));
+    }
+
+    @Override
+    public ImmutableVector3 getSpatialMaximum() {
+        // TODO: BENCHMARK two ctor calls for new vectors ... avoid with one mutable?
+        return VectorUtils.minVector(p0, VectorUtils.minVector(p1, p2));
+    }
+
 
     private ImmutableVector3 e2() {
         return (p2).minus(p0);

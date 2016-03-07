@@ -115,4 +115,16 @@ public class Sphere extends AbstractGeometry {
         return center.plus(unitSphereSample.mult((float) radius));
     }
 
+    @Override
+    public ImmutableVector3 getSpatialMinimum() {
+        return center.minus((float)radius, (float)radius, (float)radius);
+    }
+
+    @Override
+    public ImmutableVector3 getSpatialMaximum() {
+        return center.plus((float)radius, (float)radius, (float)radius);
+    }
+
+
+
 }

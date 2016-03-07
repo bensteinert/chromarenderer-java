@@ -1,4 +1,4 @@
-package net.chromarenderer.renderer.scene;
+package net.chromarenderer.renderer.scene.acc;
 
 import net.chromarenderer.math.geometry.Geometry;
 
@@ -14,7 +14,7 @@ public class NoAccelerationImpl implements AccelerationStructure {
     }
 
     @Override
-    public void getHitGeometry(GeometryScene.IntersectionContext ctx) {
+    public void intersect(IntersectionContext ctx) {
         ctx.hitDistance = Float.MAX_VALUE;
 
         for (Geometry geometry : geometryList) {

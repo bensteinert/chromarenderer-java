@@ -41,6 +41,14 @@ public class ImmutableVector3 implements Vector3 {
         );
     }
 
+    public ImmutableVector3 plus(float x, float y, float z){
+        return new ImmutableVector3(
+                this.x + x,
+                this.y + y,
+                this.z + z
+        );
+    }
+
     public ImmutableVector3 div(float val) {
         float div = 1.0f / val;
         return mult(div);
@@ -52,6 +60,14 @@ public class ImmutableVector3 implements Vector3 {
                 x - input.getX(),
                 y - input.getY(),
                 z - input.getZ()
+        );
+    }
+
+    public ImmutableVector3 minus(float x, float y, float z) {
+        return new ImmutableVector3(
+                this.x - x,
+                this.y - y,
+                this.z - z
         );
     }
 

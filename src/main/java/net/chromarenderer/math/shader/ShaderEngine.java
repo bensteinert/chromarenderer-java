@@ -59,8 +59,8 @@ public class ShaderEngine {
                 return DiffuseShader.getRecursiveRaySample(incomingRay, hitpoint);
 
             case MIRROR:
-                Vector3 mirrorDirection = VectorUtils.mirror(incomingRay.getDirection().mult(-1.0f), hitpoint.getHitpointNormal());
-                return new Ray(hitpoint.getPoint(), new ImmutableVector3(mirrorDirection));
+                ImmutableVector3 mirrorDirection = VectorUtils.mirror(incomingRay.getDirection().mult(-1.0f), hitpoint.getHitpointNormal());
+                return new Ray(hitpoint.getPoint(), mirrorDirection);
 
             default:
                 throw new RuntimeException("Unknown MaterialType");

@@ -57,4 +57,14 @@ public class PhotonFountain extends AbstractGeometry {
     public ImmutableVector3 getUnifDistrSample() {
         return point;
     }
+
+    @Override
+    public ImmutableVector3 getSpatialMinimum() {
+        return point;
+    }
+
+    @Override
+    public ImmutableVector3 getSpatialMaximum() {
+        return point;
+    }
 }

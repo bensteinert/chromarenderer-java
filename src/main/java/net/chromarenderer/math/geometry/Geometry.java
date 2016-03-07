@@ -27,4 +27,9 @@ public interface Geometry {
     float getArea();
 
     ImmutableVector3 getUnifDistrSample();
+
+    ImmutableVector3 getSpatialMinimum();
+
+    ImmutableVector3 getSpatialMaximum();
+
 }
