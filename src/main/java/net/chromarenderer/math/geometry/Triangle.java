@@ -135,13 +135,13 @@ public class Triangle extends AbstractGeometry {
     @Override
     public ImmutableVector3 getSpatialMinimum() {
         // TODO: BENCHMARK two ctor calls for new vectors ... avoid with one mutable?
-        return VectorUtils.maxVector(p0, VectorUtils.maxVector(p1, p2));
+        return VectorUtils.minVector(p0, VectorUtils.minVector(p1, p2));
     }
 
     @Override
     public ImmutableVector3 getSpatialMaximum() {
         // TODO: BENCHMARK two ctor calls for new vectors ... avoid with one mutable?
-        return VectorUtils.minVector(p0, VectorUtils.minVector(p1, p2));
+        return VectorUtils.maxVector(p0, VectorUtils.maxVector(p1, p2));
     }
 
 

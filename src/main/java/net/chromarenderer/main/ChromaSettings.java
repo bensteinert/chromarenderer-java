@@ -1,6 +1,7 @@
 package net.chromarenderer.main;
 
 import net.chromarenderer.renderer.ChromaRenderMode;
+import net.chromarenderer.renderer.scene.acc.AccStructType;
 
 
 public class ChromaSettings {
@@ -12,15 +13,17 @@ public class ChromaSettings {
     private final boolean forceContinuousRender;
     private final int maxRayDepth = 3;
     private final boolean lightSourceSamplingMode;
+    private final AccStructType accStructType;
 
 
-    public ChromaSettings(int imgWidth, int imgHeight, ChromaRenderMode renderMode, boolean forceContinuousRender, int threadCount, boolean lightSourceSamplingMode) {
+    public ChromaSettings(int imgWidth, int imgHeight, ChromaRenderMode renderMode, boolean forceContinuousRender, int threadCount, boolean lightSourceSamplingMode, AccStructType accStructType) {
         this.imgWidth = imgWidth;
         this.imgHeight = imgHeight;
         this.renderMode = renderMode;
         this.forceContinuousRender = forceContinuousRender;
         this.threadCount = threadCount;
         this.lightSourceSamplingMode = lightSourceSamplingMode;
+        this.accStructType = accStructType;
     }
 
 
@@ -31,6 +34,7 @@ public class ChromaSettings {
         this.forceContinuousRender = settings.isForceContinuousRender();
         this.threadCount = settings.threadCount;
         this.lightSourceSamplingMode = settings.lightSourceSamplingMode;
+        this.accStructType = settings.accStructType;
     }
 
 
@@ -55,12 +59,12 @@ public class ChromaSettings {
 
 
     public ChromaSettings changeMode(ChromaRenderMode mode) {
-        return new ChromaSettings(imgWidth, imgHeight, mode, forceContinuousRender, threadCount, lightSourceSamplingMode);
+        return new ChromaSettings(imgWidth, imgHeight, mode, forceContinuousRender, threadCount, lightSourceSamplingMode, accStructType);
     }
 
 
     public ChromaSettings changeContinuousRender(boolean isContinuousRender) {
-        return new ChromaSettings(imgWidth, imgHeight, renderMode, isContinuousRender, threadCount, lightSourceSamplingMode);
+        return new ChromaSettings(imgWidth, imgHeight, renderMode, isContinuousRender, threadCount, lightSourceSamplingMode, accStructType);
 
     }
 
@@ -75,10 +79,15 @@ public class ChromaSettings {
 
 
     public ChromaSettings toggleLightSourceSamplingMode() {
-        return new ChromaSettings(imgWidth, imgHeight, renderMode, forceContinuousRender, threadCount, !lightSourceSamplingMode);
+        return new ChromaSettings(imgWidth, imgHeight, renderMode, forceContinuousRender, threadCount, !lightSourceSamplingMode, accStructType);
     }
 
     public boolean isLightSourceSamplingEnabled(){
         return lightSourceSamplingMode;
+    }
+
+
+    public AccStructType getAccStructType() {
+        return accStructType;
     }
 }

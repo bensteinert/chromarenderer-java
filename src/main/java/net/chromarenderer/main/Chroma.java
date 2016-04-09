@@ -62,11 +62,11 @@ public class Chroma implements Runnable {
 
     private List<Geometry> createSomeSpheres() {
         List<Geometry> result = new ArrayList<>();
-        //result.add(new Sphere(new ImmutableVector3(0.0f, -0.3f, 0.0f), 0.1,   new Material(MaterialType.DIFFUSE, COLORS.BLUE)));
-        //result.add(new Sphere(new ImmutableVector3(-1.0f, 1.0f, -1.0f), 0.2, new Material(MaterialType.DIFFUSE, COLORS.RED)));
-        //result.add(new Sphere(new ImmutableVector3(1.0f, -0.4f, 1.0f), 0.2 , new Material(MaterialType.DIFFUSE, COLORS.PURPLE)));
-        //result.add(new Sphere(new ImmutableVector3(-1.0f, 1.7f, -1.0f), 0.2, new Material(MaterialType.DIFFUSE, COLORS.GREEN)));
-        //result.add(new Sphere(new ImmutableVector3(1.0f, -1.5f, -1.0f), 0.4, new Material(MaterialType.MIRROR, COLORS.WHITE)));
+        result.add(new Sphere(new ImmutableVector3(0.0f, -0.3f, 0.0f), 0.1,   new Material(MaterialType.DIFFUSE, COLORS.BLUE)));
+        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.0f, -1.0f), 0.2, new Material(MaterialType.DIFFUSE, COLORS.RED)));
+        result.add(new Sphere(new ImmutableVector3(1.0f, -0.4f, 1.0f), 0.2 , new Material(MaterialType.DIFFUSE, COLORS.PURPLE)));
+        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.7f, -1.0f), 0.2, new Material(MaterialType.DIFFUSE, COLORS.GREEN)));
+        result.add(new Sphere(new ImmutableVector3(1.0f, -1.5f, -1.0f), 0.4, new Material(MaterialType.MIRROR, COLORS.WHITE)));
         //result.add(new Sphere(new ImmutableVector3(0.0f, 0.0f, 0.0f), 0.125, new Material(MaterialType.EMITTING, new ImmutableVector3(20, 20 ,200))));
         result.add(new PhotonFountain(new ImmutableVector3(0.f, 0.f, 0.f), 2000.f));
         return result;
@@ -132,6 +132,7 @@ public class Chroma implements Runnable {
             camera = new PinholeCamera(new ImmutableVector3(0.0f, 0.0f, 10.0f), 100.0f, 0.09f, 0.09f, pixelsX, pixelsY);
         }
         GeometryScene scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, createSomeSpheres());
+        scene.buildAccelerationStructure(settingsIn.getAccStructType());
         ShaderEngine.setScene(scene);
 
         switch (settings.getRenderMode()) {

@@ -3,7 +3,7 @@ package net.chromarenderer.renderer.scene.acc;
 import net.chromarenderer.math.geometry.Geometry;
 
 /**
- * Created by ben on 06/03/16.
+ * @author bensteinert
  */
 public class NoAccelerationImpl implements AccelerationStructure {
 
@@ -15,14 +15,8 @@ public class NoAccelerationImpl implements AccelerationStructure {
 
     @Override
     public void intersect(IntersectionContext ctx) {
-        ctx.hitDistance = Float.MAX_VALUE;
-
         for (Geometry geometry : geometryList) {
-            float distance = geometry.intersect(ctx.ray);
-            if (ctx.ray.isOnRay(distance) && distance < ctx.hitDistance) {
-                ctx.hitGeometry = geometry;
-                ctx.hitDistance = distance;
-            }
+            ctx.checkGeometry(geometry);
         }
     }
 }

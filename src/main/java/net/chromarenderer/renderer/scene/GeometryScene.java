@@ -7,7 +7,9 @@ import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.math.shader.MaterialType;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
+import net.chromarenderer.renderer.scene.acc.AccStructType;
 import net.chromarenderer.renderer.scene.acc.AccelerationStructure;
+import net.chromarenderer.renderer.scene.acc.BvhTreeBuilder;
 import net.chromarenderer.renderer.scene.acc.IntersectionContext;
 import net.chromarenderer.renderer.scene.acc.NoAccelerationImpl;
 
@@ -16,23 +18,22 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * @author steinerb
+ * @author bensteinert
  */
 public class GeometryScene {
 
     public final List<Geometry> geometryList;
-    public final AccelerationStructure accStruct;
 
-    public final List<Geometry> lightSources;
-    public final float[] lightSourceDistributions;
-    public final float totalLightSourceArea;
+    private final List<Geometry> lightSources;
+    private final float[] lightSourceDistributions;
+    private final float totalLightSourceArea;
 
+    private AccelerationStructure accStruct;
 
     public GeometryScene(List<Geometry> geometryList) {
         this.geometryList = geometryList;
-        accStruct = new NoAccelerationImpl(geometryList);
-
         lightSources = filterEmittingGeometry(geometryList);
+        accStruct = new NoAccelerationImpl(geometryList);
 
         if (lightSources.size() > 0) {
             lightSourceDistributions = new float[lightSources.size()];
@@ -69,12 +70,17 @@ public class GeometryScene {
         return Collections.unmodifiableList(result);
     }
 
+
     private static final ThreadLocal<IntersectionContext> intersectionContextHolder = ThreadLocal.withInitial(IntersectionContext::new);
 
+
     public Hitpoint intersect(Ray ray) {
+        //TODO-IMP: Measure overhead of ThreadLocal
         IntersectionContext intersectionContext = intersectionContextHolder.get();
-        intersectionContext.ray = ray;
+        intersectionContext.reinit(ray);
+
         accStruct.intersect(intersectionContext);
+
         if (intersectionContext.hitGeometry != null) {
             ImmutableVector3 hitpoint = ray.onRay(intersectionContext.hitDistance);
             hitpoint = increaseHitpointPrecision(ray, intersectionContext.hitGeometry, hitpoint, intersectionContext.hitDistance);
@@ -111,6 +117,21 @@ public class GeometryScene {
         ImmutableVector3 surfaceSample = sampledGeometry.getUnifDistrSample();
 
         return new Hitpoint(sampledGeometry, surfaceSample, sampledGeometry.getNormal(surfaceSample), totalLightSourceArea);
+    }
+
+
+    public void buildAccelerationStructure(AccStructType type){
+
+        switch (type) {
+            case AABB_BVH:
+                BvhTreeBuilder treeBuilder = new BvhTreeBuilder();
+                accStruct = treeBuilder.buildBvh(geometryList, 1, 0);
+                break;
+            case LIST:
+            default:
+                accStruct = new NoAccelerationImpl(geometryList);
+                break;
+        }
     }
 
 }

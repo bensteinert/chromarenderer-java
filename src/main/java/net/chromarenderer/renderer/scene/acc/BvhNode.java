@@ -1,7 +1,7 @@
 package net.chromarenderer.renderer.scene.acc;
 
 /**
- * Created by ben on 07/03/16.
+ * @author bensteinert
  */
 public class BvhNode {
 
@@ -12,10 +12,16 @@ public class BvhNode {
     int axis;
     int[] indexList;
 
+
     public BvhNode(AxisAlignedBoundingBox box, int axis, int numberOfIndices, int[] indexList) {
         this.box = box;
         this.axis = axis;
         this.numberOfIndices = numberOfIndices;
         this.indexList = indexList;
+    }
+
+
+    public boolean intersects(IntersectionContext ctx) {
+        return box.intersects(ctx);
     }
 }

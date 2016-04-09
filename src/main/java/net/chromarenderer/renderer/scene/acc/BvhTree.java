@@ -1,25 +1,32 @@
 package net.chromarenderer.renderer.scene.acc;
 
-import net.chromarenderer.math.Vector3;
-import net.chromarenderer.renderer.scene.GeometryScene;
+import net.chromarenderer.math.geometry.Geometry;
 
 /**
- * Created by ben on 07/03/16.
+ * @author bensteinert
  */
 public class BvhTree implements AccelerationStructure {
 
-    private BvhNode rootNode;
+    private final Geometry[] primitives;
+    private final BvhNode rootNode;
 
-    private int maxDepth;
-    private int minTriangles;
-    private AxisAlignedBoundingBox[] allBoxes;
-    private Vector3[] centroids;
 
+    public BvhTree(Geometry[] primitives, BvhNode root) {
+        this.primitives = primitives;
+        rootNode = root;
+    }
 
 
     @Override
     public void intersect(IntersectionContext ctx) {
+        BvhNode node = rootNode;
 
+        if(node.intersects(ctx)) {
+            for (int i = 0; i < node.numberOfIndices ; i++) {
+                Geometry geometry = primitives[node.indexList[i]];
+                ctx.checkGeometry(geometry);
+            }
+        }
     }
 
 

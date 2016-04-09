@@ -4,25 +4,25 @@ import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.VectorUtils;
 import net.chromarenderer.math.geometry.Geometry;
-import net.chromarenderer.renderer.scene.GeometryScene;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
- * Created by ben on 07/03/16.
+ * @author bensteinert
  */
 public class BvhTreeBuilder {
-
 
     private Geometry[] primitives;
     private int[] indices;
     private AxisAlignedBoundingBox[] boxes;
     private Vector3[] centroids;
 
-    public BvhTree buildBvh(GeometryScene scene, int maxTreeDepth, int minTriangles) {
+    public BvhTree buildBvh(List<Geometry> geometryList, int maxTreeDepth, int minTriangles) {
 
-        int totalNumberOfPrimitives = scene.geometryList.size();
+        int totalNumberOfPrimitives = geometryList.size();
 
+        // TODO-IMP: Geometry not yet aligned in memory: Possible improvement with  https://github.com/ObjectLayout/ObjectLayout
         primitives = new Geometry[totalNumberOfPrimitives];
         indices = new int[totalNumberOfPrimitives];
         boxes = new AxisAlignedBoundingBox[totalNumberOfPrimitives];
@@ -30,7 +30,7 @@ public class BvhTreeBuilder {
 
 
         for (int i = 0; i < totalNumberOfPrimitives; i++) {
-            Geometry element = scene.geometryList.get(i);
+            Geometry element = geometryList.get(i);
             primitives[i] = element;
             indices[i] = i;
             boxes[i] = buildBoundingBox(element);
@@ -38,13 +38,13 @@ public class BvhTreeBuilder {
         }
 
         BvhNode root = createNode(0, totalNumberOfPrimitives - 1);
-        return new BvhTree();
+        return new BvhTree(primitives, root);
     }
 
     private BvhNode createNode(int leftIdx, int rightIdx) {
         ImmutableVector3 pMin = Vector3.FLT_MAX;
         ImmutableVector3 pMax = Vector3.FLT_MIN;
-        for (int i = leftIdx; i < rightIdx; i++) {
+        for (int i = leftIdx; i <= rightIdx; i++) {
             pMin = VectorUtils.minVector(pMin, primitives[i].getSpatialMinimum());
             pMax = VectorUtils.maxVector(pMax, primitives[i].getSpatialMaximum());
         }

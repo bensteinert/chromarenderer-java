@@ -4,13 +4,12 @@ import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.ImmutableArrayMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
-import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.math.shader.Material;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
 
 /**
- * @author steinerb
+ * @author bensteinert
  */
 public class Sphere extends AbstractGeometry {
 

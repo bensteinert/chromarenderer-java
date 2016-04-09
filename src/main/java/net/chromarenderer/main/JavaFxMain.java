@@ -24,6 +24,7 @@ import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.renderer.ChromaRenderMode;
 import net.chromarenderer.renderer.diag.ChromaStatistics;
+import net.chromarenderer.renderer.scene.acc.AccStructType;
 import net.chromarenderer.utils.BufferPressedKeysEventHandler;
 
 import java.util.Set;
@@ -260,7 +261,7 @@ public class JavaFxMain extends Application {
 
     public static void main(String[] args) {
         Thread thread = new Thread(chroma);
-        settings = new ChromaSettings(512, 512, ChromaRenderMode.PTDL, true, 2, true);
+        settings = new ChromaSettings(512, 512, ChromaRenderMode.PTDL, true, 2, true, AccStructType.AABB_BVH);
         chroma.init(settings);
 
         thread.start();
