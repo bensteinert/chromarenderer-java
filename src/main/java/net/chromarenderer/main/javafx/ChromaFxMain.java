@@ -1,175 +1,69 @@
-package net.chromarenderer.main;
+package net.chromarenderer.main.javafx;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelFormat;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import net.chromarenderer.main.Chroma;
+import net.chromarenderer.main.ChromaSettings;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.renderer.ChromaRenderMode;
-import net.chromarenderer.renderer.diag.ChromaStatistics;
 import net.chromarenderer.renderer.scene.acc.AccStructType;
 import net.chromarenderer.utils.BufferPressedKeysEventHandler;
 
 import java.util.Set;
 
-public class JavaFxMain extends Application {
+public class ChromaFxMain extends Application {
 
     private static final Chroma chroma = new Chroma();
 
     private static ChromaSettings settings;
 
-    private final Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
+    private Stage previewStage;
     private Stage utilityStage;
 
 
     @Override
     public void start(final Stage primaryStage) throws Exception {
-        utilityStage = statusWindow();
-        mainRenderWindow(primaryStage);
-        primaryStage.setOnCloseRequest(event -> utilityStage.close());
-    }
 
-
-    private Stage statusWindow() {
-        StackPane secondaryLayout = new StackPane();
-
-        Font monaco = Font.font("Monaco", 14);
-        Font monacoBold = Font.font("Monaco", FontWeight.BOLD, 16);
-        Text intro = new Text("Chroma Info and Controls");
-        intro.setFont(monacoBold);
-        Text fps = new Text();
-        Text reverseRaysMissed = new Text();
-        Text isContinuousActive = new Text();
-        Text isLightSourceSamplingActive = new Text();
-        Text cameraPosition = new Text();
-        Text rayCount = new Text();
-
-        ObservableList<AccStructType> options = FXCollections.observableArrayList(
-                AccStructType.AABB_BVH,
-                AccStructType.LIST
-        );
-
-        final ComboBox<AccStructType> comboBox = new ComboBox<>(options);
-        comboBox.setValue(settings.getAccStructType());
-
-        Button restartButton = new Button("RESTART");
-
-        comboBox.valueProperty().addListener((ov, oldValue, newValue) -> {
-            System.out.println(String.format("AccStruct setting changes from %s to %s", oldValue, newValue));
-            settings = settings.changeAccStructMode(newValue);
-        });
-
-        restartButton.setOnAction(e -> {
-                    chroma.restart();
-                    chroma.init(settings);
-                }
-        );
-
-        VBox vbox = new VBox(10, intro, fps, rayCount, isContinuousActive, isLightSourceSamplingActive, reverseRaysMissed, cameraPosition, comboBox, restartButton);
-
-        for (Node node : vbox.getChildren()) {
-            if (node instanceof Text) {
-                ((Text) node).setFont(monaco);
-            }
-        }
-        secondaryLayout.getChildren().add(vbox);
-
-        Scene secondScene = new Scene(secondaryLayout, 400, 400);
-        Stage secondStage = new Stage(StageStyle.UNDECORATED);
-        secondStage.setScene(secondScene);
-
-        secondStage.setX(visualBounds.getMaxX() - 400);
-        secondStage.setY(visualBounds.getMaxY() - 400);
-        secondStage.show();
-
-        new AnimationTimer() {
-            long lastTimeStamp = System.nanoTime();
-
-
-            @Override
-            public void handle(long now) {
-
-                // updates just every second is fine
-                float delta = (now - lastTimeStamp) / 1000000.f;
-                if (delta > 1000.f) {
-                    ChromaStatistics statistics = chroma.getStatistics();
-                    reverseRaysMissed.setText(String.valueOf(statistics.getReverseRaysMissedCount()));
-                    reverseRaysMissed.setText(String.valueOf(statistics.getReverseRaysMissedCount()));
-                    rayCount.setText(String.format("Rays/ms:    %.2f", statistics.getRayCountAndFlush() / delta));
-                    fps.setText(String.format("Frames/s:   %.2f [frames total: %s]", statistics.getFps(), statistics.getTotalFrameCount()));
-                    lastTimeStamp = now;
-                    cameraPosition.setText(chroma.getCamera().getCurrentPosition().toString());
-                }
-
-                isContinuousActive.setText(String.format("           Continuous: %s", Boolean.toString(settings.isForceContinuousRender())));
-                isLightSourceSamplingActive.setText(String.format("Light Source Sampling: %s", Boolean.toString(settings.isLightSourceSamplingEnabled())));
-            }
-        }.start();
-
-        return secondStage;
-    }
-
-
-    private void mainRenderWindow(final Stage primaryStage) {
         Pane root = new Pane();
         Scene scene = new Scene(root, settings.getImgWidth(), settings.getImgHeight());
         primaryStage.setScene(scene);
-        primaryStage.setX(visualBounds.getMinX());
-        primaryStage.setX(visualBounds.getMinY());
+        primaryStage.setX(0);
+        primaryStage.setX(0);
         primaryStage.setTitle("Chroma");
-        primaryStage.show();
-        primaryStage.toFront();
-
-        primaryStage.setOnCloseRequest((arg0 -> {
-            arg0.consume();
-            utilityStage.close();
-            primaryStage.close();
-        }));
 
         BufferPressedKeysEventHandler bufferPressedKeysEventHandler = new BufferPressedKeysEventHandler();
         primaryStage.addEventHandler(KeyEvent.ANY, bufferPressedKeysEventHandler);
         primaryStage.addEventHandler(KeyEvent.KEY_RELEASED, getKeyTypedEventHandler());
 
-        final WritableImage img = new WritableImage(settings.getImgWidth(), settings.getImgHeight());
+        previewStage = ChromaFxPreviewWindowFactory.createPreviewWindow(chroma);
+        utilityStage = ChromaFxStatusWindowFactory.createStatusWindow(chroma);
 
-        ImageView imageView = new ImageView();
-        imageView.setScaleY(-1.0);
-        imageView.setImage(img);
-        root.getChildren().add(imageView);
+        primaryStage.setOnCloseRequest((arg0 -> {
+            arg0.consume();
+            utilityStage.close();
+            previewStage.close();
+            primaryStage.close();
+        }));
 
         new AnimationTimer() {
             @Override
             public void handle(long now) {
-                if (chroma.hasChanges()) {
-                    img.getPixelWriter().setPixels(0, 0, settings.getImgWidth(), settings.getImgHeight(),
-                            PixelFormat.getByteRgbInstance(), chroma.getCurrentFrame(), 0, settings.getImgHeight() * 3);
-
-                }
                 Set<KeyCode> pressedKeys = bufferPressedKeysEventHandler.getPressedKeys();
                 chroma.moveCamera(getTranslationVector(pressedKeys), getRotationVector(pressedKeys));
             }
         }.start();
+
+        primaryStage.toFront();
+        primaryStage.show();
+        previewStage.show();
+        utilityStage.show();
     }
 
 
@@ -291,7 +185,7 @@ public class JavaFxMain extends Application {
 
         thread.start();
 
-        launch(JavaFxMain.class, args);
+        launch(ChromaFxMain.class, args);
         thread.interrupt();
         try {
             thread.join();

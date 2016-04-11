@@ -174,4 +174,9 @@ public class Chroma implements Runnable {
     public Camera getCamera() {
         return camera;
     }
+
+
+    public ChromaSettings getSettings() {
+        return settings;
+    }
 }
