@@ -90,4 +90,10 @@ public class ChromaSettings {
     public AccStructType getAccStructType() {
         return accStructType;
     }
+
+
+    public ChromaSettings changeAccStructMode(AccStructType newValue) {
+        return new ChromaSettings(imgWidth, imgHeight, renderMode, forceContinuousRender, threadCount, lightSourceSamplingMode, newValue);
+
+    }
 }

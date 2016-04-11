@@ -2,10 +2,14 @@ package net.chromarenderer.main;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
@@ -61,7 +65,28 @@ public class JavaFxMain extends Application {
         Text cameraPosition = new Text();
         Text rayCount = new Text();
 
-        VBox vbox = new VBox(10, intro, fps, rayCount, isContinuousActive, isLightSourceSamplingActive, reverseRaysMissed, cameraPosition);
+        ObservableList<AccStructType> options = FXCollections.observableArrayList(
+                AccStructType.AABB_BVH,
+                AccStructType.LIST
+        );
+
+        final ComboBox<AccStructType> comboBox = new ComboBox<>(options);
+        comboBox.setValue(settings.getAccStructType());
+
+        Button restartButton = new Button("RESTART");
+
+        comboBox.valueProperty().addListener((ov, oldValue, newValue) -> {
+            System.out.println(String.format("AccStruct setting changes from %s to %s", oldValue, newValue));
+            settings = settings.changeAccStructMode(newValue);
+        });
+
+        restartButton.setOnAction(e -> {
+                    chroma.restart();
+                    chroma.init(settings);
+                }
+        );
+
+        VBox vbox = new VBox(10, intro, fps, rayCount, isContinuousActive, isLightSourceSamplingActive, reverseRaysMissed, cameraPosition, comboBox, restartButton);
 
         for (Node node : vbox.getChildren()) {
             if (node instanceof Text) {
@@ -261,7 +286,7 @@ public class JavaFxMain extends Application {
 
     public static void main(String[] args) {
         Thread thread = new Thread(chroma);
-        settings = new ChromaSettings(512, 512, ChromaRenderMode.PTDL, true, 2, true, AccStructType.AABB_BVH);
+        settings = new ChromaSettings(512, 512, ChromaRenderMode.PTDL, true, 2, true, AccStructType.LIST);
         chroma.init(settings);
 
         thread.start();
