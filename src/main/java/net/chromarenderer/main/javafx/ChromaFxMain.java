@@ -101,6 +101,9 @@ public class ChromaFxMain extends Application {
         previewStage = ChromaFxPreviewWindowFactory.createPreviewWindow(chroma);
         utilityStage = ChromaFxStatusWindowFactory.createStatusWindow(chroma);
 
+        previewStage.initOwner(chromaMainStage);
+        utilityStage.initOwner(chromaMainStage);
+
         chromaMainStage.setOnCloseRequest((arg0 -> {
             arg0.consume();
             utilityStage.close();
