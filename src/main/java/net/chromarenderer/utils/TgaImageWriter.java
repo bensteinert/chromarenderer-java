@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-
+import java.util.logging.Logger;
 
 
 public class TgaImageWriter {
@@ -19,7 +19,8 @@ public class TgaImageWriter {
         }
 
         OutputStream outputStream = null;
-        Path javaPath = Paths.get(fileName);
+        Path javaPath = Paths.get(path);
+
         try {
             Files.createDirectories(javaPath);
             outputStream = Files.newOutputStream(Paths.get(path + fileName));
@@ -54,6 +55,7 @@ public class TgaImageWriter {
 
             outputStream.write(currentFrame);
             outputStream.close();
+            Logger.getGlobal().info("Successfully stored screenshot to " + path + fileName);
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * @author steinerb
+ * @author bensteinert
  */
 public class Chroma implements Runnable {
 
@@ -46,10 +46,9 @@ public class Chroma implements Runnable {
 //    }
 
     private Renderer renderer;
-
     private final ChromaStatistics statistics;
     private boolean changed = false;
-    private boolean restart = false;
+    private boolean breakLoop = false;
     private CountDownLatch renderLatch;
     private ChromaSettings settings;
     private Camera camera;
@@ -87,13 +86,14 @@ public class Chroma implements Runnable {
             try {
                 renderLatch = new CountDownLatch(1);
                 renderLatch.await();
-                restart = false;
+
+                breakLoop = false;
 
                 do {
                     renderer.renderNextImage(settings.getImgWidth(), settings.getImgWidth(), 0, 0);
                     changed = true;
                     statistics.frame();
-                } while (renderer.isContinuous() && !Thread.currentThread().isInterrupted() && !restart);
+                } while (renderer.isContinuous() && !Thread.currentThread().isInterrupted() && !breakLoop);
 
 
             } catch (InterruptedException e) {
@@ -103,11 +103,15 @@ public class Chroma implements Runnable {
     }
 
 
-    public void restart() {
+    public void start() {
         statistics.reset();
         if (renderLatch != null) {
             renderLatch.countDown();
         }
+    }
+
+    public void stop() {
+        breakLoop = true;
     }
 
 
@@ -117,12 +121,12 @@ public class Chroma implements Runnable {
 
 
     private void setRenderer(Renderer renderer) {
-        restart = true;
+        breakLoop = true;
         this.renderer = renderer;
     }
 
 
-    public void init(ChromaSettings settingsIn) {
+    public void reinit(ChromaSettings settingsIn) {
         this.settings = new ChromaSettings(settingsIn);
         int pixelsX = this.settings.getImgWidth();
         int pixelsY = this.settings.getImgHeight();
@@ -166,7 +170,7 @@ public class Chroma implements Runnable {
 
 
     public void takeScreenShot() {
-        TgaImageWriter.writeTga(getCurrentFrame(), settings.getImgWidth(), settings.getImgHeight(), "/tmp/chroma/", "screenshot.tga");
+        TgaImageWriter.writeTga(getCurrentFrame(), settings.getImgWidth(), settings.getImgHeight(), "./tmp/chroma/", "screenshot" + System.currentTimeMillis() + ".tga");
 
     }
 

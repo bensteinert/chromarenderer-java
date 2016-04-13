@@ -5,6 +5,7 @@ import net.chromarenderer.math.Vector3;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 /**
  * @author steinerb
@@ -16,6 +17,7 @@ public class MultiThreadedAccumulationBuffer extends SingleThreadedAccumulationB
     public MultiThreadedAccumulationBuffer(int width, int height) {
         super(width, height);
         pool = new ForkJoinPool();
+        Logger.getGlobal().warning("Using broken MultiThreadedAccumulationBuffer!");
     }
 
     @Override

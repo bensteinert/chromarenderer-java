@@ -2,11 +2,18 @@ package net.chromarenderer.main.javafx;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.event.EventHandler;
+import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import net.chromarenderer.main.Chroma;
 import net.chromarenderer.main.ChromaSettings;
@@ -29,27 +36,76 @@ public class ChromaFxMain extends Application {
 
 
     @Override
-    public void start(final Stage primaryStage) throws Exception {
+    public void start(final Stage chromaMainStage) throws Exception {
 
-        Pane root = new Pane();
-        Scene scene = new Scene(root, settings.getImgWidth(), settings.getImgHeight());
-        primaryStage.setScene(scene);
-        primaryStage.setX(0);
-        primaryStage.setX(0);
-        primaryStage.setTitle("Chroma");
+        BorderPane mainBox = new BorderPane();
+        GridPane controlPane = new GridPane();
+        controlPane.setHgap(10);
+        controlPane.setVgap(10);
+        controlPane.setPadding(new Insets(0, 10, 0, 10));
 
+        controlPane.add(new Text("Acc Struct:"), 0, 0);
+        ComboBox<AccStructType> accStructCombo = new ComboBox<>(FXCollections.observableArrayList(
+                AccStructType.LIST,
+                AccStructType.AABB_BVH
+        ));
+        controlPane.add(accStructCombo, 1, 0);
+
+        controlPane.add(new Text("Render Mode:"), 0, 1);
+        ComboBox<ChromaRenderMode> renderModeCombo = new ComboBox<>(FXCollections.observableArrayList(
+                ChromaRenderMode.SIMPLE,
+                ChromaRenderMode.PTDL,
+                ChromaRenderMode.COLOR_CUBE,
+                ChromaRenderMode.AVG
+        ));
+        controlPane.add(renderModeCombo, 1, 1);
+
+        controlPane.add(new Text("Accumulate:"), 0, 2);
+        CheckBox accumulate = new CheckBox();
+        controlPane.add(accumulate, 1, 2);
+
+        HBox buttonPane = new HBox(10);
+        buttonPane.setPadding(new Insets(5));
+        Button applySettings = new Button("Apply Settings");
+        applySettings.setOnAction(event -> {
+            settings = settings.changeContinuousRender(accumulate.selectedProperty().getValue());
+            settings = settings.changeAccStructMode(accStructCombo.getValue());
+            settings = settings.changeMode(renderModeCombo.getValue());
+            chroma.reinit(settings);
+        });
+        Button start = new Button("Start");
+        start.setOnAction(event -> {
+            chroma.start();
+        });
+        Button screenShot = new Button("Save Image");
+        screenShot.setOnAction(event -> chroma.takeScreenShot());
+        Button stop = new Button("Stop");
+        stop.setOnAction(event -> chroma.stop());
+
+        buttonPane.getChildren().add(applySettings);
+        buttonPane.getChildren().add(start);
+        buttonPane.getChildren().add(screenShot);
+        buttonPane.getChildren().add(stop);
+
+        mainBox.setCenter(controlPane);
+        mainBox.setBottom(buttonPane);
+
+        chromaMainStage.setX(0);
+        chromaMainStage.setX(0);
+        chromaMainStage.setTitle("Chroma Renderer");
+        Scene scene = new Scene(mainBox, settings.getImgWidth(), settings.getImgHeight());
+        chromaMainStage.setScene(scene);
         BufferPressedKeysEventHandler bufferPressedKeysEventHandler = new BufferPressedKeysEventHandler();
-        primaryStage.addEventHandler(KeyEvent.ANY, bufferPressedKeysEventHandler);
-        primaryStage.addEventHandler(KeyEvent.KEY_RELEASED, getKeyTypedEventHandler());
+        chromaMainStage.addEventHandler(KeyEvent.ANY, bufferPressedKeysEventHandler);
 
         previewStage = ChromaFxPreviewWindowFactory.createPreviewWindow(chroma);
         utilityStage = ChromaFxStatusWindowFactory.createStatusWindow(chroma);
 
-        primaryStage.setOnCloseRequest((arg0 -> {
+        chromaMainStage.setOnCloseRequest((arg0 -> {
             arg0.consume();
             utilityStage.close();
             previewStage.close();
-            primaryStage.close();
+            chromaMainStage.close();
         }));
 
         new AnimationTimer() {
@@ -60,8 +116,8 @@ public class ChromaFxMain extends Application {
             }
         }.start();
 
-        primaryStage.toFront();
-        primaryStage.show();
+        chromaMainStage.toFront();
+        chromaMainStage.show();
         previewStage.show();
         utilityStage.show();
     }
@@ -133,56 +189,10 @@ public class ChromaFxMain extends Application {
     }
 
 
-    private EventHandler<KeyEvent> getKeyTypedEventHandler() {
-        return event -> {
-            boolean reinitNeeded = false;
-
-            switch (event.getCode()) {
-                case F12:
-                    chroma.takeScreenShot();
-                    break;
-                case C:
-                    settings = settings.changeContinuousRender(!settings.isForceContinuousRender());
-                    reinitNeeded = true;
-                    break;
-                case F5:
-                    settings = settings.changeMode(ChromaRenderMode.AVG);
-                    reinitNeeded = true;
-                    break;
-                case F6:
-                    settings = settings.changeMode(ChromaRenderMode.COLOR_CUBE);
-                    reinitNeeded = true;
-                    break;
-                case F7:
-                    settings = settings.changeMode(ChromaRenderMode.SIMPLE);
-                    reinitNeeded = true;
-                    break;
-                case F8:
-                    settings = settings.changeMode(ChromaRenderMode.PTDL);
-                    reinitNeeded = true;
-                    break;
-                case L:
-                    settings = settings.toggleLightSourceSamplingMode();
-                    reinitNeeded = true;
-                    break;
-                case ENTER:
-                    chroma.restart();
-                    break;
-            }
-
-            if (reinitNeeded) {
-                chroma.init(settings);
-                reinitNeeded = false;
-            }
-        };
-    }
-
-
     public static void main(String[] args) {
         Thread thread = new Thread(chroma);
         settings = new ChromaSettings(512, 512, ChromaRenderMode.PTDL, true, 2, true, AccStructType.LIST);
-        chroma.init(settings);
-
+        chroma.reinit(settings);
         thread.start();
 
         launch(ChromaFxMain.class, args);
@@ -192,7 +202,6 @@ public class ChromaFxMain extends Application {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("Bye");
     }
 
 }

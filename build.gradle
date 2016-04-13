@@ -29,6 +29,7 @@ dependencies {
 
 jar {
     manifest {
-        attributes("Main-Class": "net.chromarenderer.main.javafx.JavaFxMain")
+        attributes("Main-Class": "net.chromarenderer.main.javafx.ChromaFxMain")
+        attributes("Application-Name": "Chroma Renderer")
     }
 }

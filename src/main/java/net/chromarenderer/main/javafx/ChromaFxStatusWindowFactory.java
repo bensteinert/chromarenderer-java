@@ -28,7 +28,6 @@ class ChromaFxStatusWindowFactory extends StackPane {
 
 
     static Stage createStatusWindow(Chroma chroma) {
-        StackPane statusLayout = new StackPane();
 
         Text intro = new Text(WINDOW_TITLE);
         intro.setFont(MONACO_BOLD);
@@ -39,12 +38,12 @@ class ChromaFxStatusWindowFactory extends StackPane {
         Text cameraPosition = new Text();
         Text rayCount = new Text();
 
-        VBox vbox = new VBox(10, intro, fps, rayCount, isContinuousActive, isLightSourceSamplingActive, reverseRaysMissed, cameraPosition);
+        VBox statusLayout = new VBox(10, intro, fps, rayCount, isContinuousActive, isLightSourceSamplingActive, reverseRaysMissed, cameraPosition);
 
-        vbox.getChildren().stream().filter(node -> node instanceof Text).forEach(node -> {
+        statusLayout.getChildren().stream().filter(node -> node instanceof Text).forEach(node -> {
             ((Text) node).setFont(MONACO);
         });
-        statusLayout.getChildren().add(vbox);
+
         Scene secondScene = new Scene(statusLayout, WINDOW_WIDTH, WINDOW_HEIGHT);
         Stage statusStage = new Stage(StageStyle.UTILITY);
 
