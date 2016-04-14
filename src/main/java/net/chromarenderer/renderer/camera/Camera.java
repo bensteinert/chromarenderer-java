@@ -19,5 +19,15 @@ public interface Camera {
 
     void move(Vector3 mutableVector3, Vector3 rotation);
 
-    ImmutableVector3 getCurrentPosition();
+    ImmutableVector3 getPosition();
+
+    float getFocalDistance();
+
+    float getPixelSizeX();
+
+    float getPixelSizeY();
+
+    void resetToInitial();
+
+    void recalibrateSensor(int newWidth, int newHeight);
 }

@@ -19,11 +19,11 @@ public class ChromaCanvas {
         for (int i = 0; i < width * height; i++) {
             pixels[i] = new MutableVector3();
         }
-        cleanCanvas();
+        flushCanvas();
     }
 
 
-    public void cleanCanvas() {
+    public void flushCanvas() {
         for (int i = 0; i < width * height; i++) {
             pixels[i].reset();
         }

@@ -86,6 +86,12 @@ public class SimplePathTracer extends ChromaCanvas implements RecursiveRenderer 
 
 
     @Override
+    public void flush() {
+        flushCanvas();
+    }
+
+
+    @Override
     public byte[] get8BitRgbSnapshot() {
         return buffer.to8BitImage();
     }

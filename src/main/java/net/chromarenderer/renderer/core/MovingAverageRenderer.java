@@ -36,6 +36,12 @@ public class MovingAverageRenderer implements Renderer {
 
 
     @Override
+    public void flush() {
+
+    }
+
+
+    @Override
     public byte[] get8BitRgbSnapshot() {
         return buffer.to8BitImage();
     }

@@ -69,7 +69,7 @@ class ChromaFxStatusWindowFactory extends StackPane {
                     rayCount.setText(String.format("Rays/ms:    %.2f", statistics.getRayCountAndFlush() / delta));
                     fps.setText(String.format("Frames/s:   %.2f [frames total: %s]", statistics.getFps(), statistics.getTotalFrameCount()));
                     lastTimeStamp = now;
-                    cameraPosition.setText(chroma.getCamera().getCurrentPosition().toString());
+                    cameraPosition.setText(chroma.getCamera().getPosition().toString());
                 }
             }
         }.start();

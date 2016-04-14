@@ -24,7 +24,7 @@ public class DiffuseShader {
 
     public static Radiance getDirectRadianceSample(Hitpoint hitpoint, float pathWeight, ChromaSettings settings) {
 
-        if (settings.isLightSourceSamplingEnabled()) {
+        if (settings.isDirectLightEstimationEnabled()) {
             return ptdl(hitpoint, pathWeight);
         }
         else {

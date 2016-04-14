@@ -11,18 +11,19 @@ import net.chromarenderer.renderer.core.ChromaThreadContext;
  */
 public class PinholeCamera implements Camera {
 
-    private final float shiftX;
-    private final float shiftY;
+    private final ImmutableVector3 initialPosition;
 
     private ImmutableVector3 position;
-
     private ImmutableArrayMatrix3x3 coordinateSystem;
 
     private float focalDistance;
     private float pixelSizeX;
     private float pixelSizeY;
+    private float shiftX;
+    private float shiftY;
 
     public PinholeCamera(ImmutableVector3 position, float focalDistance, float pixelSizeX, float pixelSizeY, int pixelsX, int pixelsY) {
+        this.initialPosition = new ImmutableVector3(position);
         this.position = position;
         this.coordinateSystem = new ImmutableArrayMatrix3x3(Vector3.X_AXIS, Vector3.Y_AXIS, Vector3.Z_AXIS);
         this.focalDistance = focalDistance;
@@ -30,7 +31,6 @@ public class PinholeCamera implements Camera {
         this.pixelSizeY = pixelSizeY;
         this.shiftX = (pixelsX / 2) * pixelSizeX;
         this.shiftY = (pixelsY / 2) * pixelSizeY;
-
     }
 
     @Override
@@ -40,7 +40,6 @@ public class PinholeCamera implements Camera {
         float subSampleY = ChromaThreadContext.randomFloatClosedOpen();
 
         ImmutableVector3 direction = new ImmutableVector3(((x + subSampleX) * pixelSizeX) - shiftX, ((y + subSampleY) * pixelSizeY) - shiftY, -focalDistance).normalize();
-        Vector3 origin = position;
         return new Ray(new ImmutableVector3(position), coordinateSystem.mult(direction), 0, Float.MAX_VALUE);
     }
 
@@ -63,8 +62,40 @@ public class PinholeCamera implements Camera {
     }
 
     @Override
-    public ImmutableVector3 getCurrentPosition() {
+    public ImmutableVector3 getPosition() {
         return position;
+    }
+
+
+    @Override
+    public float getFocalDistance() {
+        return focalDistance;
+    }
+
+
+    @Override
+    public float getPixelSizeX() {
+        return pixelSizeX;
+    }
+
+
+    @Override
+    public float getPixelSizeY() {
+        return pixelSizeY;
+    }
+
+
+    @Override
+    public void resetToInitial() {
+        position = initialPosition;
+        this.coordinateSystem = new ImmutableArrayMatrix3x3(Vector3.X_AXIS, Vector3.Y_AXIS, Vector3.Z_AXIS);
+    }
+
+
+    @Override
+    public void recalibrateSensor(int newWidth, int newHeight) {
+        this.shiftX = (newWidth / 2) * pixelSizeX;
+        this.shiftY = (newHeight / 2) * pixelSizeY;
     }
 
 }

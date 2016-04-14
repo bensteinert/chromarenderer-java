@@ -27,17 +27,19 @@ class ChromaFxPreviewWindowFactory {
         imageView.setImage(img);
         previewPane.getChildren().add(imageView);
 
-        new AnimationTimer() {
+        AnimationTimer animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 if (chroma.hasChanges()) {
-                    img.getPixelWriter().setPixels(0, 0, width, height, PixelFormat.getByteRgbInstance(), chroma.getCurrentFrame(), 0, height * 3);
+                     img.getPixelWriter().setPixels(0, 0, width, height, PixelFormat.getByteRgbInstance(), chroma.getCurrentFrame(), 0, height * 3);
                 }
             }
-        }.start();
+        };
 
         Scene scene = new Scene(previewPane, width, height);
         Stage previewStage = new Stage(StageStyle.UTILITY);
+        previewStage.setOnHiding(event -> animationTimer.stop());
+        previewStage.setOnShowing(event -> animationTimer.start());
 
         previewStage.setTitle("Chroma Preview");
         previewStage.setScene(scene);

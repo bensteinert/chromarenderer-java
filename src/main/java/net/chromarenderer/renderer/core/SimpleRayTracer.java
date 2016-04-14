@@ -71,6 +71,12 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
 
 
     @Override
+    public void flush() {
+        flushCanvas();
+    }
+
+
+    @Override
     public byte[] get8BitRgbSnapshot() {
         return to8BitImage();
     }

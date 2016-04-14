@@ -17,6 +17,8 @@ public interface Renderer {
 
     boolean isContinuous();
 
+    void flush();
+
     byte[] get8BitRgbSnapshot();
 
 }

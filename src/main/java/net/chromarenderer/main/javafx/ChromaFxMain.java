@@ -3,11 +3,15 @@ package net.chromarenderer.main.javafx;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
@@ -32,7 +36,7 @@ public class ChromaFxMain extends Application {
     private static ChromaSettings settings;
 
     private Stage previewStage;
-    private Stage utilityStage;
+    private Stage statisticsStage;
 
 
     @Override
@@ -44,38 +48,73 @@ public class ChromaFxMain extends Application {
         controlPane.setVgap(10);
         controlPane.setPadding(new Insets(0, 10, 0, 10));
 
-        controlPane.add(new Text("Acc Struct:"), 0, 0);
+        final boolean[] recreatePreview = {false};
+        int rowIdx = 0;
+
+        controlPane.add(new Text("Acc Struct:"), 0, rowIdx);
         ComboBox<AccStructType> accStructCombo = new ComboBox<>(FXCollections.observableArrayList(
                 AccStructType.LIST,
                 AccStructType.AABB_BVH
         ));
-        controlPane.add(accStructCombo, 1, 0);
+        controlPane.add(accStructCombo, 1, rowIdx++);
+        accStructCombo.setValue(settings.getAccStructType());
 
-        controlPane.add(new Text("Render Mode:"), 0, 1);
+        controlPane.add(new Text("Render Mode:"), 0, rowIdx);
         ComboBox<ChromaRenderMode> renderModeCombo = new ComboBox<>(FXCollections.observableArrayList(
                 ChromaRenderMode.SIMPLE,
                 ChromaRenderMode.PTDL,
                 ChromaRenderMode.COLOR_CUBE,
                 ChromaRenderMode.AVG
         ));
-        controlPane.add(renderModeCombo, 1, 1);
+        controlPane.add(renderModeCombo, 1, rowIdx++);
+        renderModeCombo.setValue(settings.getRenderMode());
 
-        controlPane.add(new Text("Accumulate:"), 0, 2);
+        controlPane.add(new Text("Resolution:"), 0, rowIdx);
+        ComboBox<String> resolutionCombo = new ComboBox<>(FXCollections.observableArrayList(
+                "256x256", "512x512", "768x768", "1024x1024"
+        ));
+        controlPane.add(resolutionCombo, 1, rowIdx++);
+        resolutionCombo.setValue(settings.getImgWidth() + "x" + settings.getImgHeight());
+        resolutionCombo.valueProperty().addListener((ov, oldValue, newValue) -> {
+            if (!oldValue.equals(newValue)) {
+                recreatePreview[0] = true;
+            }
+        });
+
+        controlPane.add(new Text("Accumulate:"), 0, rowIdx);
         CheckBox accumulate = new CheckBox();
-        controlPane.add(accumulate, 1, 2);
+        controlPane.add(accumulate, 1, rowIdx++);
+        accumulate.selectedProperty().setValue(settings.isForceContinuousRender());
+
+        controlPane.add(new Text("DL Estimation:"), 0, rowIdx);
+        CheckBox directLightEstimation = new CheckBox();
+        controlPane.add(directLightEstimation, 1, rowIdx++);
+        directLightEstimation.selectedProperty().setValue(settings.isDirectLightEstimationEnabled());
 
         HBox buttonPane = new HBox(10);
         buttonPane.setPadding(new Insets(5));
+        Button start = new Button("Start");
+        start.setOnAction(event -> {
+            chroma.start();
+        });
         Button applySettings = new Button("Apply Settings");
         applySettings.setOnAction(event -> {
+            start.setDisable(true);
+            String[] split = resolutionCombo.getValue().split("x");
+            settings = settings.changeResolution(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
+            settings = settings.changeDirectLightEstimation(directLightEstimation.selectedProperty().getValue());
             settings = settings.changeContinuousRender(accumulate.selectedProperty().getValue());
             settings = settings.changeAccStructMode(accStructCombo.getValue());
             settings = settings.changeMode(renderModeCombo.getValue());
             chroma.reinit(settings);
-        });
-        Button start = new Button("Start");
-        start.setOnAction(event -> {
-            chroma.start();
+            if (recreatePreview[0]) {
+                previewStage.close();
+                previewStage = ChromaFxPreviewWindowFactory.createPreviewWindow(chroma);
+                previewStage.initOwner(chromaMainStage);
+                previewStage.show();
+                recreatePreview[0] = false;
+            }
+            start.setDisable(false);
         });
         Button screenShot = new Button("Save Image");
         screenShot.setOnAction(event -> chroma.takeScreenShot());
@@ -93,20 +132,34 @@ public class ChromaFxMain extends Application {
         chromaMainStage.setX(0);
         chromaMainStage.setX(0);
         chromaMainStage.setTitle("Chroma Renderer");
-        Scene scene = new Scene(mainBox, settings.getImgWidth(), settings.getImgHeight());
+        Scene scene = new Scene(mainBox, 400, 400);
         chromaMainStage.setScene(scene);
         BufferPressedKeysEventHandler bufferPressedKeysEventHandler = new BufferPressedKeysEventHandler();
         chromaMainStage.addEventHandler(KeyEvent.ANY, bufferPressedKeysEventHandler);
+        chromaMainStage.addEventHandler(KeyEvent.KEY_RELEASED, getKeyTypedEventHandler());
 
         previewStage = ChromaFxPreviewWindowFactory.createPreviewWindow(chroma);
-        utilityStage = ChromaFxStatusWindowFactory.createStatusWindow(chroma);
-
+        statisticsStage = ChromaFxStatusWindowFactory.createStatusWindow(chroma);
         previewStage.initOwner(chromaMainStage);
-        utilityStage.initOwner(chromaMainStage);
+        statisticsStage.initOwner(chromaMainStage);
+
+        MenuBar menuBar = new MenuBar();
+        menuBar.setUseSystemMenuBar(true);
+        final Menu windows = new Menu("Windows");
+        final Menu menu3 = new Menu("Help");
+        mainBox.setTop(menuBar);
+
+        menuBar.getMenus().addAll(windows, menu3);
+        MenuItem showPreview = new MenuItem("Preview");
+        MenuItem showStatistics = new MenuItem("Statistics");
+        windows.getItems().add(showPreview);
+        windows.getItems().add(showStatistics);
+        showPreview.setOnAction(event -> previewStage.show());
+        showStatistics.setOnAction(event -> statisticsStage.show());
 
         chromaMainStage.setOnCloseRequest((arg0 -> {
             arg0.consume();
-            utilityStage.close();
+            statisticsStage.close();
             previewStage.close();
             chromaMainStage.close();
         }));
@@ -122,7 +175,7 @@ public class ChromaFxMain extends Application {
         chromaMainStage.toFront();
         chromaMainStage.show();
         previewStage.show();
-        utilityStage.show();
+        statisticsStage.show();
     }
 
 
@@ -192,9 +245,24 @@ public class ChromaFxMain extends Application {
     }
 
 
+    private EventHandler<KeyEvent> getKeyTypedEventHandler() {
+        return event -> {
+            boolean reinitNeeded = false;
+
+            switch (event.getCode()) {
+                case R:
+                    chroma.getCamera().resetToInitial();
+                    chroma.flushRenderer();
+                    chroma.getStatistics().reset();
+                    break;
+            }
+        };
+    }
+
+
     public static void main(String[] args) {
         Thread thread = new Thread(chroma);
-        settings = new ChromaSettings(512, 512, ChromaRenderMode.PTDL, true, 2, true, AccStructType.LIST);
+        settings = new ChromaSettings(256, 256, ChromaRenderMode.PTDL, true, 1, true, AccStructType.LIST);
         chroma.reinit(settings);
         thread.start();
 

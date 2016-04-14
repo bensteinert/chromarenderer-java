@@ -78,11 +78,11 @@ public class ChromaSettings {
     }
 
 
-    public ChromaSettings toggleLightSourceSamplingMode() {
-        return new ChromaSettings(imgWidth, imgHeight, renderMode, forceContinuousRender, threadCount, !lightSourceSamplingMode, accStructType);
+    public ChromaSettings changeDirectLightEstimation(Boolean value) {
+        return new ChromaSettings(imgWidth, imgHeight, renderMode, forceContinuousRender, threadCount, value, accStructType);
     }
 
-    public boolean isLightSourceSamplingEnabled(){
+    public boolean isDirectLightEstimationEnabled(){
         return lightSourceSamplingMode;
     }
 
@@ -95,5 +95,10 @@ public class ChromaSettings {
     public ChromaSettings changeAccStructMode(AccStructType newValue) {
         return new ChromaSettings(imgWidth, imgHeight, renderMode, forceContinuousRender, threadCount, lightSourceSamplingMode, newValue);
 
+    }
+
+
+    public ChromaSettings changeResolution(int width, int height) {
+        return new ChromaSettings(width, height, renderMode, forceContinuousRender, threadCount, lightSourceSamplingMode, accStructType);
     }
 }

@@ -134,6 +134,8 @@ public class Chroma implements Runnable {
         //RHS with depth along negative z-axis
         if (camera == null) {
             camera = new PinholeCamera(new ImmutableVector3(0.0f, 0.0f, 10.0f), 100.0f, 0.09f, 0.09f, pixelsX, pixelsY);
+        } else {
+            camera.recalibrateSensor(settings.getImgWidth(), settings.getImgHeight());
         }
         GeometryScene scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, createSomeSpheres());
         scene.buildAccelerationStructure(settingsIn.getAccStructType());
@@ -182,5 +184,10 @@ public class Chroma implements Runnable {
 
     public ChromaSettings getSettings() {
         return settings;
+    }
+
+
+    public void flushRenderer() {
+        renderer.flush();
     }
 }
