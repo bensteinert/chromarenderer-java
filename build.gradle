@@ -1,5 +1,8 @@
-apply plugin: 'idea'
-apply plugin: 'java'
+plugins {
+    id 'idea'
+    id 'java'
+    id "edu.sc.seis.macAppBundle" version "2.1.0"
+}
 
 group = 'net.chromarenderer'
 version = '0.0.1-SNAPSHOT'
@@ -32,4 +35,11 @@ jar {
         attributes("Main-Class": "net.chromarenderer.main.javafx.ChromaFxMain")
         attributes("Application-Name": "Chroma Renderer")
     }
+}
+
+macAppBundle {
+    mainClassName = jar.manifest.attributes.get("Main-Class")
+    appName = jar.manifest.attributes.get("Application-Name")
+    icon = "icon.icns"
+    bundleJRE = true
 }
