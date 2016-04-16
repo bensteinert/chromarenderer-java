@@ -5,6 +5,7 @@ package net.chromarenderer.math;
 */
 public class ImmutableVector3 implements Vector3 {
 
+    // using an array instead of members is up to x2 slower... investigate!
     private final float x;
     private final float y;
     private final float z;
@@ -32,6 +33,12 @@ public class ImmutableVector3 implements Vector3 {
     public float dot(Vector3 input){
         return x*input.getX() + y*input.getY() + z*input.getZ();
     }
+
+    @Override
+    public float[] internalGetValues() {
+        return new float[]{x,y,z};
+    }
+
 
     public ImmutableVector3 plus(Vector3 input){
         return new ImmutableVector3(

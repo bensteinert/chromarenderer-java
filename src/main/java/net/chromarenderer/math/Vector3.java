@@ -30,6 +30,8 @@ public interface Vector3 {
         return (float) Math.sqrt(getX() * getX() + getY() * getY() + getZ() * getZ());
     }
 
+    float[] internalGetValues();
+
     float getX();
 
     float getY();
@@ -72,5 +74,33 @@ public interface Vector3 {
 
     default public boolean isNaN(){
         return Float.isNaN(getX()) || Float.isNaN(getY()) ||Float.isNaN(getZ());
+    }
+
+    default int getMaxValueIndex(){
+        if (getX() > getY()) {
+            return (getZ() > getX()) ? 2 : 0;
+        }
+        else {
+            return (getZ() > getY()) ? 2 : 1;
+        }
+    }
+
+    default int getMinValueIndex(){
+        if (getX() < getY()) {
+            return (getX() < getZ()) ? 0 : 2;
+        }
+        else {
+            return (getZ() < getY()) ? 2 : 1;
+        }
+    }
+
+    default float getScalar(int splitDimIndex){
+        return internalGetValues()[splitDimIndex];
+    }
+
+    default boolean isCloserToOriginThan(Vector3 otherVector){
+        return this.getX() < otherVector.getX()
+                && this.getY() < otherVector.getY()
+                && this.getZ() < otherVector.getZ();
     }
 }

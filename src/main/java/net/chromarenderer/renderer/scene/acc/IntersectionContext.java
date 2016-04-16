@@ -4,9 +4,13 @@ import net.chromarenderer.math.geometry.Geometry;
 import net.chromarenderer.math.raytracing.Ray;
 
 public class IntersectionContext {
+
     public Geometry hitGeometry;
     public float hitDistance;
     public Ray ray;
+
+    float[] lastTValues = {0.0f, 0.0f};
+
 
     public void reinit(){
         hitDistance = Float.MAX_VALUE;

@@ -7,7 +7,7 @@ import java.util.Arrays;
  */
 public class MutableVector3 implements Vector3 {
 
-    private float[] values;
+    private final float[] values;
 
     public MutableVector3() {
         values = new float[3];
@@ -57,6 +57,13 @@ public class MutableVector3 implements Vector3 {
         values[2] -= input.getZ();
         return this;
     }
+
+
+    @Override
+    public float[] internalGetValues() {
+        return values;
+    }
+
 
     @Override
     public float getX() {

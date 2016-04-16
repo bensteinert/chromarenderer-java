@@ -145,11 +145,22 @@ public class Triangle extends AbstractGeometry {
     }
 
 
+    private ImmutableVector3 e3() {
+        return (p2).minus(p1);
+    }
+
     private ImmutableVector3 e2() {
         return (p2).minus(p0);
     }
 
     private ImmutableVector3 e1() {
         return (p1).minus(p0);
+    }
+
+
+
+    public Triangle[] subdivide() {
+        Triangle[] result = new Triangle[4];
+
     }
 }

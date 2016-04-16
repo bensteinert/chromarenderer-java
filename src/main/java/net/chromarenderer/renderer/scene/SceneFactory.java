@@ -11,6 +11,7 @@ import net.chromarenderer.math.shader.MaterialType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author steinerb
@@ -22,7 +23,31 @@ public class SceneFactory {
 
     public static GeometryScene cornellBox(ImmutableVector3 center, float halfDimension, List<Geometry> content){
 
-        List<Geometry> result = new ArrayList<>(10 + content.size());
+        List<Geometry> result = buildBaseBox(center, halfDimension);
+
+        tesselate(result,3);
+
+        result.addAll(content);
+
+        return new GeometryScene(result);
+    }
+
+
+    private static void tesselate(List<Geometry> triangles, int depth) {
+        List<Geometry> tesselated = new ArrayList<>(triangles.size()*depth);
+
+        List<Triangle[]> collect = triangles.stream()
+                .filter(geometry -> geometry instanceof Triangle)
+                .map(geometry -> ((Triangle) geometry).subdivide())
+                .collect(Collectors.toList());
+
+
+    }
+
+
+    private static ArrayList<Geometry> buildBaseBox(ImmutableVector3 center, float halfDimension) {
+
+        ArrayList<Geometry> result = new ArrayList<>(10);
 
         Vector3 shiftX = new ImmutableVector3(halfDimension, 0.0f, 0.0f);
         Vector3 shiftY = new ImmutableVector3(0.0f, halfDimension, 0.0f);
@@ -31,13 +56,12 @@ public class SceneFactory {
         Vector3 minusCenter = center.mult(-1f);
 
         ImmutableArrayMatrix3x3 rotationY90 = new ImmutableArrayMatrix3x3(0, 0, 1,
-                                                                          0, 1, 0,
-                                                                         -1, 0, 0);
+                0, 1, 0,
+                -1, 0, 0);
 
         ImmutableArrayMatrix3x3 rotationZ90 = new ImmutableArrayMatrix3x3( 0,-1, 0,
-                                                                           1, 0, 0,
-                                                                           0, 0, 1);
-
+                1, 0, 0,
+                0, 0, 1);
 
         ImmutableVector3 p0x1 = new ImmutableVector3(center.minus(shiftX).minus(shiftY).plus(shiftZ));
         ImmutableVector3 p1x1 = new ImmutableVector3(center.minus(shiftX).minus(shiftY).minus(shiftZ));
@@ -71,8 +95,6 @@ public class SceneFactory {
         result.add(t4.transpose(minusCenter).rotate(rotationZ90).transpose(center));
         result.add(t5.transpose(minusCenter).rotate(rotationZ90).transpose(center));
 
-        result.addAll(content);
-
-        return new GeometryScene(result);
+        return result;
     }
 }

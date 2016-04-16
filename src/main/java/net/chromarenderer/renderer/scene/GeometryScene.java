@@ -9,6 +9,7 @@ import net.chromarenderer.math.shader.MaterialType;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
 import net.chromarenderer.renderer.scene.acc.AccStructType;
 import net.chromarenderer.renderer.scene.acc.AccelerationStructure;
+import net.chromarenderer.renderer.scene.acc.BvhStrategyType;
 import net.chromarenderer.renderer.scene.acc.BvhTreeBuilder;
 import net.chromarenderer.renderer.scene.acc.IntersectionContext;
 import net.chromarenderer.renderer.scene.acc.NoAccelerationImpl;
@@ -124,8 +125,8 @@ public class GeometryScene {
 
         switch (type) {
             case AABB_BVH:
-                BvhTreeBuilder treeBuilder = new BvhTreeBuilder();
-                accStruct = treeBuilder.buildBvh(geometryList, 1, 0);
+                BvhTreeBuilder treeBuilder = new BvhTreeBuilder(4, 16);
+                accStruct = treeBuilder.buildBvh(geometryList, BvhStrategyType.TOP_DOWN);
                 break;
             case LIST:
             default:
