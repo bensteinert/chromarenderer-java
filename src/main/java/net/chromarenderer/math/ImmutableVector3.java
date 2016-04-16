@@ -1,51 +1,50 @@
 package net.chromarenderer.math;
 
 /**
-* @author steinerb
-*/
+ * @author steinerb
+ */
 public class ImmutableVector3 implements Vector3 {
 
-    private final float x;
-    private final float y;
-    private final float z;
+    private final float[] values;
+
+    public ImmutableVector3() {
+        values = new float[]{0.f,0.f,0.f};
+    }
 
     public ImmutableVector3(float x, float y, float z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        values = new float[]{x,y,z};
     }
 
     public ImmutableVector3(Vector3 input) {
-        this.x = input.getX();
-        this.y = input.getY();
-        this.z = input.getZ();
+        values = new float[]{input.getX(), input.getY(),input.getZ()};
     }
 
     public ImmutableVector3 mult(float val){
         return new ImmutableVector3(
-                x * val,
-                y * val,
-                z * val
+                values[0] * val,
+                values[1] * val,
+                values[2] * val
         );
     }
 
     public float dot(Vector3 input){
-        return x*input.getX() + y*input.getY() + z*input.getZ();
+        return values[0]*input.getX() + values[1]*input.getY() + values[2]*input.getZ();
     }
+
 
     public ImmutableVector3 plus(Vector3 input){
         return new ImmutableVector3(
-                x + input.getX(),
-                y + input.getY(),
-                z + input.getZ()
+                values[0] + input.getX(),
+                values[1] + input.getY(),
+                values[2] + input.getZ()
         );
     }
 
     public ImmutableVector3 plus(float x, float y, float z){
         return new ImmutableVector3(
-                this.x + x,
-                this.y + y,
-                this.z + z
+                this.values[0] + x,
+                this.values[1] + y,
+                this.values[2] + z
         );
     }
 
@@ -57,34 +56,34 @@ public class ImmutableVector3 implements Vector3 {
     @Override
     public ImmutableVector3 minus(Vector3 input) {
         return new ImmutableVector3(
-                x - input.getX(),
-                y - input.getY(),
-                z - input.getZ()
+                values[0] - input.getX(),
+                values[1] - input.getY(),
+                values[2] - input.getZ()
         );
     }
 
     public ImmutableVector3 minus(float x, float y, float z) {
         return new ImmutableVector3(
-                this.x - x,
-                this.y - y,
-                this.z - z
+                this.values[0] - x,
+                this.values[1] - y,
+                this.values[2] - z
         );
     }
 
     public float getX() {
-        return x;
+        return values[0];
     }
 
     public float getY() {
-        return y;
+        return values[1];
     }
 
     public float getZ() {
-        return z;
+        return values[2];
     }
 
     public Vector3 mult(Vector3 project) {
-        return new ImmutableVector3(x * project.getX(), y * project.getY(), z * project.getZ());
+        return new ImmutableVector3(values[0] * project.getX(), values[1] * project.getY(), values[2] * project.getZ());
     }
 
     @Override
@@ -118,27 +117,27 @@ public class ImmutableVector3 implements Vector3 {
 
         ImmutableVector3 vector3 = (ImmutableVector3) o;
 
-        if (Float.compare(vector3.x, x) != 0) return false;
-        if (Float.compare(vector3.y, y) != 0) return false;
-        if (Float.compare(vector3.z, z) != 0) return false;
+        if (Float.compare(vector3.values[0], values[0]) != 0) return false;
+        if (Float.compare(vector3.values[1], values[1]) != 0) return false;
+        if (Float.compare(vector3.values[2], values[2]) != 0) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = (x != +0.0f ? Float.floatToIntBits(x) : 0);
-        result = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
-        result = 31 * result + (z != +0.0f ? Float.floatToIntBits(z) : 0);
+        int result = (values[0] != +0.0f ? Float.floatToIntBits(values[0]) : 0);
+        result = 31 * result + (values[1] != +0.0f ? Float.floatToIntBits(values[1]) : 0);
+        result = 31 * result + (values[2] != +0.0f ? Float.floatToIntBits(values[2]) : 0);
         return result;
     }
 
     @Override
     public String toString() {
         return "Vector3{" +
-                "x=" + x +
-                ", y=" + y +
-                ", z=" + z +
+                "x=" + values[0] +
+                ", y=" + values[1] +
+                ", z=" + values[2] +
                 '}';
     }
 
@@ -149,7 +148,7 @@ public class ImmutableVector3 implements Vector3 {
 
     @Override
     public ImmutableVector3 abs() {
-        return new ImmutableVector3(Math.abs(x), Math.abs(y), Math.abs(z));
+        return new ImmutableVector3(Math.abs(values[0]), Math.abs(values[1]), Math.abs(values[2]));
     }
 
 
