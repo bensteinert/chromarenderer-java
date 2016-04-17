@@ -7,7 +7,7 @@ public interface Vector3 {
 
     public static final ImmutableVector3 ONE = new ImmutableVector3(1.0f, 1.0f, 1.0f);
     public static final ImmutableVector3 FLT_MAX = new ImmutableVector3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-    public static final ImmutableVector3 FLT_MIN = new ImmutableVector3(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
+    public static final ImmutableVector3 MINUS_FLT_MAX = new ImmutableVector3(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
     public static final ImmutableVector3 X_AXIS = new ImmutableVector3(1.0f, 0.0f, 0.0f);
     public static final ImmutableVector3 Y_AXIS = new ImmutableVector3(0.0f, 1.0f, 0.0f);
     public static final ImmutableVector3 Z_AXIS = new ImmutableVector3(0.0f, 0.0f, 1.0f);

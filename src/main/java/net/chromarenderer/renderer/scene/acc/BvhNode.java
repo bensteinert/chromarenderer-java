@@ -3,6 +3,7 @@ package net.chromarenderer.renderer.scene.acc;
 import net.chromarenderer.math.geometry.Geometry;
 
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 /**
  * @author bensteinert
@@ -25,12 +26,14 @@ class BvhNode {
 
     void intersect(IntersectionContext ctx, Geometry[] geometry) {
         if (indexList != null) {
-            Arrays.stream(indexList).forEach(idx -> ctx.checkGeometry(geometry[idx]));
+            Arrays.stream(indexList).forEach(idx -> {
+                if (geometry[idx] != ctx.hitGeometry) {
+                    ctx.checkGeometry(geometry[idx]);
+                } else {
+                    Logger.getGlobal().warning("re-intersection prevented.");
+                }
+            });
         } else {
-            // Naive: one can be avoided if we take ray direction into account.
-            //left.intersect(ctx, geometry);
-            //right.intersect(ctx, geometry);
-
             float tMinLeft;
             float tMinRight;
 

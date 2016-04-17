@@ -125,7 +125,7 @@ public class GeometryScene {
 
         switch (type) {
             case AABB_BVH:
-                BvhTreeBuilder treeBuilder = new BvhTreeBuilder(4, 16);
+                BvhTreeBuilder treeBuilder = new BvhTreeBuilder(4, 20);
                 accStruct = treeBuilder.buildBvh(geometryList, BvhStrategyType.TOP_DOWN);
                 break;
             case LIST:

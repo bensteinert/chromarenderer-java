@@ -25,7 +25,7 @@ public class SceneFactory {
         List<Triangle> baseBox = buildBaseBox(center, halfDimension);
         List<Geometry> result = new ArrayList<>(content.size() + baseBox.size() * 16);
         result.addAll(content);
-        result.addAll(subdivide(subdivide(baseBox)));
+        result.addAll(subdivide(subdivide(subdivide(baseBox))));
         //result.addAll(baseBox);
         return new GeometryScene(result);
     }

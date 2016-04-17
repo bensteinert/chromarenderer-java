@@ -19,6 +19,7 @@ public class BvhTreeBuilder {
     private int[] indices;
     private AxisAlignedBoundingBox[] boxes;
     private Vector3[] centroids;
+    private int bvhQualityIndex = 0;
 
     private int maxTreeDepth;
     private int minIndices;
@@ -50,6 +51,7 @@ public class BvhTreeBuilder {
         }
 
         BvhNode root = null;
+        bvhQualityIndex = 0;
 
         switch (strategy) {
             case TOP_DOWN:
@@ -60,6 +62,7 @@ public class BvhTreeBuilder {
                 throw new RuntimeException("Bottom-UP Bvh construction not yet implemented");
         }
 
+        Logger.getGlobal().info("Finished BVH Build with a total score of " + bvhQualityIndex);
         return new BvhTree(primitives, root);
     }
 
@@ -68,7 +71,7 @@ public class BvhTreeBuilder {
         int numberOfIndices = right - left + 1;
         if (numberOfIndices <= minIndices || depth == maxTreeDepth) {
             node.indexList = Arrays.copyOfRange(indices, left, right + 1);
-            Logger.getGlobal().warning("Reaching BVH stop criteria in Node " + node);
+            Logger.getGlobal().info("Reaching BVH stop criteria with " + numberOfIndices + " indices at depth " + depth);
             return;
         }
 
@@ -135,9 +138,14 @@ public class BvhTreeBuilder {
                     numIndicesRight[splitAxis] > 3 * numIndicesLeft[splitAxis]) {
                 score[splitAxis]--;
             }
+
+            if (numIndicesLeft[splitAxis] == 0 || numIndicesRight[splitAxis] == 0) {
+                score[splitAxis]-=10;
+            }
         }
 
         int winnerAxis = new MutableVector3(score[0], score[1], score[2]).getMaxValueIndex();
+        bvhQualityIndex += score[winnerAxis];
         int firstRightIndex = partitionIndicesWithPivotAdjusting(winnerAxis, boxCenter.getScalar(winnerAxis), left, right);
         node.left = createNode(left, firstRightIndex - 1);
         node.right = createNode(firstRightIndex, right);
@@ -167,7 +175,7 @@ public class BvhTreeBuilder {
               -- All centroids lie the left side of the pivotValue
               -- All centroids lie the right side of the pivotValue
             */
-            while ((tmp = (centroids[indices[i]]).getScalar(splitAxisIndex)) < pivotValue) {
+            while ((tmp = (centroids[indices[i]]).getScalar(splitAxisIndex)) <= pivotValue) {
                 centroidSum += tmp;
                 centroidCount++;
                 if (i == right) {
@@ -193,9 +201,6 @@ public class BvhTreeBuilder {
             swap = indices[j];
             indices[j] = indices[i];
             indices[i] = swap;
-
-            i++;
-            // not j-- because then pivot element could not be recognized correctly by abort criteria in loop!
         }
     }
 
@@ -210,7 +215,7 @@ public class BvhTreeBuilder {
 
         while (true) {
 
-            while ((centroids[indices[i]]).getScalar(splitAxisIndex) < pivot) {
+            while ((centroids[indices[i]]).getScalar(splitAxisIndex) <= pivot) {
                 if (i == right) {
                     return right + 1; // special case: all tris on the left side
                 }
@@ -229,7 +234,6 @@ public class BvhTreeBuilder {
             tmp = indices[j];
             indices[j] = indices[i];
             indices[i] = tmp;
-            i++; // not j-- because then pivot element could not be recognized correctly by abort criterium in loop!
         }
     }
 
@@ -242,7 +246,7 @@ public class BvhTreeBuilder {
 
     private AxisAlignedBoundingBox createBoundingBox(int leftIdx, int rightIdx) {
         ImmutableVector3 pMin = Vector3.FLT_MAX;
-        ImmutableVector3 pMax = Vector3.FLT_MIN;
+        ImmutableVector3 pMax = Vector3.MINUS_FLT_MAX;
         for (int i = leftIdx; i <= rightIdx; i++) {
             pMin = VectorUtils.minVector(pMin, primitives[indices[i]].getSpatialMinimum());
             pMax = VectorUtils.maxVector(pMax, primitives[indices[i]].getSpatialMaximum());
