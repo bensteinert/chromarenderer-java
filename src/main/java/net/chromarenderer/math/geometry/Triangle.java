@@ -96,12 +96,12 @@ public class Triangle extends AbstractGeometry {
     }
 
     @Override
-    public Geometry transpose(Vector3 transpose) {
+    public Triangle transpose(Vector3 transpose) {
         return new Triangle(p0.plus(transpose), p1.plus(transpose), p2.plus(transpose), getMaterial());
     }
 
     @Override
-    public Geometry rotate(ImmutableArrayMatrix3x3 rotationY) {
+    public Triangle rotate(ImmutableArrayMatrix3x3 rotationY) {
         return new Triangle(rotationY.mult(p0), rotationY.mult(p1), rotationY.mult(p2), getMaterial());
     }
 
@@ -162,5 +162,55 @@ public class Triangle extends AbstractGeometry {
     public Triangle[] subdivide() {
         Triangle[] result = new Triangle[4];
 
+        ImmutableVector3 p_e1 = p0.plus(p1).mult(0.5f);
+        ImmutableVector3 p_e2 = p0.plus(p2).mult(0.5f);
+        ImmutableVector3 p_e3 = p1.plus(p2).mult(0.5f);
+
+        //T1
+        ImmutableVector3 p0_1 = p0;
+        ImmutableVector3 p1_1 = p_e1;
+        ImmutableVector3 p2_1 = p_e2;
+        //T2
+        ImmutableVector3 p0_2 = p_e1;
+        ImmutableVector3 p1_2 = p1;
+        ImmutableVector3 p2_2 = p_e3;
+        //T3
+        ImmutableVector3 p0_3 = p_e3;
+        ImmutableVector3 p1_3 = p2;
+        ImmutableVector3 p2_3 = p_e2;
+        //T4
+        ImmutableVector3 p0_4 = p_e1;
+        ImmutableVector3 p1_4 = p_e3;
+        ImmutableVector3 p2_4 = p_e2;
+
+        result[0] = new Triangle(p0_1, p1_1, p2_1, n, getMaterial());
+        result[1] = new Triangle(p0_2, p1_2, p2_2, n, getMaterial());
+        result[2] = new Triangle(p0_3, p1_3, p2_3, n, getMaterial());
+        result[3] = new Triangle(p0_4, p1_4, p2_4, n, getMaterial());
+
+        return result;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Triangle triangle = (Triangle) o;
+
+        if (!p0.equals(triangle.p0)) return false;
+        if (!p1.equals(triangle.p1)) return false;
+        return p2.equals(triangle.p2);
+
+    }
+
+
+    @Override
+    public int hashCode() {
+        int result = p0.hashCode();
+        result = 31 * result + p1.hashCode();
+        result = 31 * result + p2.hashCode();
+        return result;
     }
 }

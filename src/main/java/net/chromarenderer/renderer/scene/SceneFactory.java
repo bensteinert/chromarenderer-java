@@ -10,44 +10,37 @@ import net.chromarenderer.math.shader.Material;
 import net.chromarenderer.math.shader.MaterialType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author steinerb
  */
 public class SceneFactory {
 
-    public static final Material WAAL_MATERIAL = new Material(MaterialType.DIFFUSE, COLORS.WALL);
+    private static final Material WAAL_MATERIAL = new Material(MaterialType.DIFFUSE, COLORS.WALL);
 
 
-    public static GeometryScene cornellBox(ImmutableVector3 center, float halfDimension, List<Geometry> content){
-
-        List<Geometry> result = buildBaseBox(center, halfDimension);
-
-        tesselate(result,3);
-
+    public static GeometryScene cornellBox(ImmutableVector3 center, float halfDimension, List<Geometry> content) {
+        List<Triangle> baseBox = buildBaseBox(center, halfDimension);
+        List<Geometry> result = new ArrayList<>(content.size() + baseBox.size() * 16);
         result.addAll(content);
-
+        result.addAll(subdivide(subdivide(baseBox)));
+        //result.addAll(baseBox);
         return new GeometryScene(result);
     }
 
 
-    private static void tesselate(List<Geometry> triangles, int depth) {
-        List<Geometry> tesselated = new ArrayList<>(triangles.size()*depth);
-
-        List<Triangle[]> collect = triangles.stream()
-                .filter(geometry -> geometry instanceof Triangle)
-                .map(geometry -> ((Triangle) geometry).subdivide())
-                .collect(Collectors.toList());
-
-
+    private static List<Triangle> subdivide(List<Triangle> triangles) {
+        List<Triangle> result = new ArrayList<>(triangles.size() * 4);
+        triangles.stream().map(Triangle::subdivide).forEach(subdivided -> Collections.addAll(result, subdivided));
+        return result;
     }
 
 
-    private static ArrayList<Geometry> buildBaseBox(ImmutableVector3 center, float halfDimension) {
+    private static List<Triangle> buildBaseBox(ImmutableVector3 center, float halfDimension) {
 
-        ArrayList<Geometry> result = new ArrayList<>(10);
+        ArrayList<Triangle> result = new ArrayList<>(10);
 
         Vector3 shiftX = new ImmutableVector3(halfDimension, 0.0f, 0.0f);
         Vector3 shiftY = new ImmutableVector3(0.0f, halfDimension, 0.0f);
@@ -59,7 +52,7 @@ public class SceneFactory {
                 0, 1, 0,
                 -1, 0, 0);
 
-        ImmutableArrayMatrix3x3 rotationZ90 = new ImmutableArrayMatrix3x3( 0,-1, 0,
+        ImmutableArrayMatrix3x3 rotationZ90 = new ImmutableArrayMatrix3x3(0, -1, 0,
                 1, 0, 0,
                 0, 0, 1);
 
@@ -80,14 +73,14 @@ public class SceneFactory {
         result.add(t1.transpose(minusCenter).rotate(rotationY90).transpose(center));
 
         //ceil
-        Geometry t2 = t0.transpose(minusCenter).rotate(rotationZ90).transpose(center);
-        Geometry t3 = t1.transpose(minusCenter).rotate(rotationZ90).transpose(center);
+        Triangle t2 = t0.transpose(minusCenter).rotate(rotationZ90).transpose(center);
+        Triangle t3 = t1.transpose(minusCenter).rotate(rotationZ90).transpose(center);
         result.add(t2);
         result.add(t3);
 
         //right
-        Geometry t4 = t2.transpose(minusCenter).rotate(rotationZ90).transpose(center);
-        Geometry t5 = t3.transpose(minusCenter).rotate(rotationZ90).transpose(center);
+        Triangle t4 = t2.transpose(minusCenter).rotate(rotationZ90).transpose(center);
+        Triangle t5 = t3.transpose(minusCenter).rotate(rotationZ90).transpose(center);
         result.add(t4);
         result.add(t5);
 
