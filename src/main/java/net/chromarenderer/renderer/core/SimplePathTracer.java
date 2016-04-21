@@ -26,15 +26,13 @@ public class SimplePathTracer extends ChromaCanvas implements RecursiveRenderer 
     private final GeometryScene scene;
     private boolean completed;
     private final Camera camera;
-    private final ChromaStatistics statistics;
 
 
-    public SimplePathTracer(ChromaSettings settings, GeometryScene scene, Camera camera, ChromaStatistics statistics) {
+    public SimplePathTracer(ChromaSettings settings, GeometryScene scene, Camera camera) {
         super(settings.getImgWidth(), settings.getImgHeight());
         this.settings = settings;
         this.scene = scene;
         this.camera = camera;
-        this.statistics = statistics;
         completed = false;
         buffer = new SingleThreadedAccumulationBuffer(settings.getImgWidth(), settings.getImgHeight());
     }
@@ -62,7 +60,7 @@ public class SimplePathTracer extends ChromaCanvas implements RecursiveRenderer 
     public Radiance recursiveKernel(Ray incomingRay, int depth, float pathWeight) {
         // scene intersection
         Hitpoint hitpoint = scene.intersect(incomingRay);
-        statistics.ray();
+        ChromaStatistics.ray();
 
         // shading
         Vector3 color = COLORS.BLACK;

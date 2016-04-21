@@ -17,8 +17,6 @@ import net.chromarenderer.renderer.scene.Radiance;
  */
 public class ShaderEngine {
 
-    private static GeometryScene scene;
-
 
     public static Radiance getDirectRadianceSample(Ray incomingRay, Hitpoint hitpoint, float pathWeight, ChromaSettings settings) {
 
@@ -76,7 +74,6 @@ public class ShaderEngine {
 
     public static void setScene(GeometryScene scene) {
         DiffuseShader.scene = scene;
-        ShaderEngine.scene = scene;
     }
 
 

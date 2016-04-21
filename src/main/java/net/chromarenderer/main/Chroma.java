@@ -46,7 +46,6 @@ public class Chroma implements Runnable {
 //    }
 
     private Renderer renderer;
-    private final ChromaStatistics statistics;
     private boolean changed = false;
     private boolean breakLoop = false;
     private CountDownLatch renderLatch;
@@ -55,7 +54,6 @@ public class Chroma implements Runnable {
 
 
     public Chroma() {
-        statistics = new ChromaStatistics();
     }
 
 
@@ -92,7 +90,7 @@ public class Chroma implements Runnable {
                 do {
                     renderer.renderNextImage(settings.getImgWidth(), settings.getImgWidth(), 0, 0);
                     changed = true;
-                    statistics.frame();
+                    ChromaStatistics.frame();
                 } while (renderer.isContinuous() && !Thread.currentThread().isInterrupted() && !breakLoop);
 
 
@@ -104,7 +102,7 @@ public class Chroma implements Runnable {
 
 
     public void start() {
-        statistics.reset();
+        ChromaStatistics.reset();
         if (renderLatch != null) {
             renderLatch.countDown();
         }
@@ -143,7 +141,7 @@ public class Chroma implements Runnable {
 
         switch (settings.getRenderMode()) {
             case SIMPLE:
-                setRenderer(new SimpleRayTracer(settings, scene, camera, statistics));
+                setRenderer(new SimpleRayTracer(settings, scene, camera));
                 break;
             case AVG:
                 setRenderer(new MovingAverageRenderer(settings));
@@ -152,7 +150,7 @@ public class Chroma implements Runnable {
                 setRenderer(new ColorCubeRenderer(settings));
                 break;
             case PTDL:
-                setRenderer(new SimplePathTracer(settings, scene, camera, statistics));
+                setRenderer(new SimplePathTracer(settings, scene, camera));
                 break;
             default:
                 break;
@@ -163,11 +161,6 @@ public class Chroma implements Runnable {
         if (translation.nonZero() || rotation.nonZero()) {
             camera.move(translation, rotation);
         }
-    }
-
-
-    public ChromaStatistics getStatistics() {
-        return statistics;
     }
 
 

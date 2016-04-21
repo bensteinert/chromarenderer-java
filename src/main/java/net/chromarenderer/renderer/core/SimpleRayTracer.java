@@ -19,16 +19,14 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
     private final ChromaSettings settings;
     private final GeometryScene scene;
     private final Camera camera;
-    private final ChromaStatistics statistics;
     private boolean completed;
 
 
-    public SimpleRayTracer(ChromaSettings settings, GeometryScene scene, Camera camera, ChromaStatistics statistics) {
+    public SimpleRayTracer(ChromaSettings settings, GeometryScene scene, Camera camera) {
         super(settings.getImgWidth(), settings.getImgHeight());
         this.settings = settings;
         this.scene = scene;
         this.camera = camera;
-        this.statistics = statistics;
         completed = false;
     }
 
@@ -46,7 +44,7 @@ public class SimpleRayTracer extends ChromaCanvas implements Renderer {
 
                     // scene intersection
                     Hitpoint hitpoint = scene.intersect(cameraRay);
-                    statistics.ray();
+                    ChromaStatistics.ray();
 
                     // very basic shading
                     Vector3 color = COLORS.BLACK;

@@ -23,8 +23,7 @@ import java.util.List;
  */
 public class GeometryScene {
 
-    public final List<Geometry> geometryList;
-
+    private final List<Geometry> geometryList;
     private final List<Geometry> lightSources;
     private final float[] lightSourceDistributions;
     private final float totalLightSourceArea;

@@ -8,6 +8,7 @@ import net.chromarenderer.math.VectorUtils;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.math.shader.Material;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
+import net.chromarenderer.renderer.diag.ChromaStatistics;
 
 /**
  * Chroma uses the right-hand-coordinate system. Think about three vertices specified counterclockwise on the floor.
@@ -46,11 +47,12 @@ public class Triangle extends AbstractGeometry {
 
     @Override
     public float intersect(Ray ray) {
-        return internalIntersect2(ray);
+        ChromaStatistics.intersectOp();
+        return internalIntersectPlainFloat(ray);
     }
 
 
-    private float internalIntersect2(Ray ray) {
+    private float internalIntersectPlainFloat(Ray ray) {
         ImmutableVector3 rayDir = ray.getDirection();
 
         /* if we hit the triangle from the back, it is not a valid intersection! */
@@ -117,7 +119,7 @@ public class Triangle extends AbstractGeometry {
     }
 
 
-    private float internalIntersect1(Ray ray) {
+    private float internalIntersect(Ray ray) {
         ImmutableVector3 P, Q, T;
         float det;
 

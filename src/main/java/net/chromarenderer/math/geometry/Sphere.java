@@ -7,6 +7,7 @@ import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.math.shader.Material;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
+import net.chromarenderer.renderer.diag.ChromaStatistics;
 
 /**
  * @author bensteinert
@@ -30,6 +31,7 @@ public class Sphere extends AbstractGeometry {
      */
     @Override
     public float intersect(Ray ray) {
+        ChromaStatistics.intersectOp();
         ImmutableVector3 OminusC = ray.getOrigin().minus(center);
 
         double a = ray.getDirection().dot(ray.getDirection());

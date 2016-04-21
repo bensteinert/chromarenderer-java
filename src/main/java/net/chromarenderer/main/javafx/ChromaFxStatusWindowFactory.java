@@ -32,13 +32,14 @@ class ChromaFxStatusWindowFactory extends StackPane {
         Text intro = new Text(WINDOW_TITLE);
         intro.setFont(MONACO_BOLD);
         Text fps = new Text();
+        Text totalIntersections = new Text();
         Text reverseRaysMissed = new Text();
         Text isContinuousActive = new Text();
         Text isLightSourceSamplingActive = new Text();
         Text cameraPosition = new Text();
         Text rayCount = new Text();
 
-        VBox statusLayout = new VBox(10, intro, fps, rayCount, isContinuousActive, isLightSourceSamplingActive, reverseRaysMissed, cameraPosition);
+        VBox statusLayout = new VBox(10, intro, fps, rayCount, isContinuousActive, isLightSourceSamplingActive, reverseRaysMissed, totalIntersections, cameraPosition);
 
         statusLayout.getChildren().stream().filter(node -> node instanceof Text).forEach(node -> {
             ((Text) node).setFont(MONACO);
@@ -63,11 +64,11 @@ class ChromaFxStatusWindowFactory extends StackPane {
                 // updates just every second is fine
                 float delta = (now - lastTimeStamp) / 1000000.f;
                 if (delta > WINDOW_REFRESH_INTERVAL) {
-                    ChromaStatistics statistics = chroma.getStatistics();
-                    reverseRaysMissed.setText(String.valueOf(statistics.getReverseRaysMissedCount()));
-                    reverseRaysMissed.setText(String.valueOf(statistics.getReverseRaysMissedCount()));
-                    rayCount.setText(String.format("Rays/ms:    %.2f", statistics.getRayCountAndFlush() / delta));
-                    fps.setText(String.format("Frames/s:   %.2f [frames total: %s]", statistics.getFps(), statistics.getTotalFrameCount()));
+                    reverseRaysMissed.setText(String.valueOf(ChromaStatistics.getReverseRaysMissedCount()));
+                    rayCount.setText(String.format("Rays/ms:    %.2f", ChromaStatistics.getRayCountAndFlush() / delta));
+                    totalIntersections.setText(String.format("Intersections/ms: %.2f",ChromaStatistics.getTotalIntersectionsAndFlush() / delta));
+                    fps.setText(String.format("Frames/s:   %.2f [frames total: %s]", ChromaStatistics.getFps(), ChromaStatistics.getTotalFrameCount()));
+
                     lastTimeStamp = now;
                     cameraPosition.setText(chroma.getCamera().getPosition().toString());
                 }

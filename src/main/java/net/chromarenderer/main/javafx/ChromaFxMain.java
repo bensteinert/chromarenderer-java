@@ -24,12 +24,15 @@ import net.chromarenderer.main.ChromaSettings;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.renderer.ChromaRenderMode;
+import net.chromarenderer.renderer.diag.ChromaStatistics;
 import net.chromarenderer.renderer.scene.acc.AccStructType;
 import net.chromarenderer.utils.BufferPressedKeysEventHandler;
 
 import java.util.Set;
 
 public class ChromaFxMain extends Application {
+
+    //-XX:+UnlockDiagnosticVMOptions -XX:+PrintAssembly -XX:+LogCompilation
 
     private static final Chroma chroma = new Chroma();
 
@@ -94,9 +97,7 @@ public class ChromaFxMain extends Application {
         HBox buttonPane = new HBox(10);
         buttonPane.setPadding(new Insets(5));
         Button start = new Button("Start");
-        start.setOnAction(event -> {
-            chroma.start();
-        });
+        start.setOnAction(event -> chroma.start());
         Button applySettings = new Button("Apply Settings");
         applySettings.setOnAction(event -> {
             start.setDisable(true);
@@ -247,13 +248,11 @@ public class ChromaFxMain extends Application {
 
     private EventHandler<KeyEvent> getKeyTypedEventHandler() {
         return event -> {
-            boolean reinitNeeded = false;
-
             switch (event.getCode()) {
                 case R:
                     chroma.getCamera().resetToInitial();
                     chroma.flushRenderer();
-                    chroma.getStatistics().reset();
+                    ChromaStatistics.reset();
                     break;
             }
         };
