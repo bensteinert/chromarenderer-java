@@ -6,7 +6,6 @@ import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.MutableVector3;
 import net.chromarenderer.math.Vector3;
-import net.chromarenderer.math.geometry.Geometry;
 import net.chromarenderer.math.raytracing.CoordinateSystem;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
@@ -75,13 +74,11 @@ public class DiffuseShader {
 
         float cosThetaSceneHit = direction.dot(hitpoint.getHitpointNormal());
 
-        //geometry hit from correct side?
+        //lightSource hit from correct side?
         if (cosThetaSceneHit > 0.0f) {
-            for (Geometry shadowGeometry : scene.geometryList) {
-                float distance = shadowGeometry.intersect(shadowRay);
-                if (shadowRay.isOnRay(distance)) {
-                    return new Radiance(COLORS.BLACK, shadowRay);
-                }
+            Hitpoint shadowGeometryHit = scene.intersect(shadowRay);
+            if(shadowGeometryHit.hit()){
+                return new Radiance(COLORS.BLACK, shadowRay);
             }
         } else {
             return new Radiance(COLORS.BLACK, shadowRay);
