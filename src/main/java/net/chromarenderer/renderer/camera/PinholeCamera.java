@@ -1,6 +1,6 @@
 package net.chromarenderer.renderer.camera;
 
-import net.chromarenderer.math.ImmutableArrayMatrix3x3;
+import net.chromarenderer.math.ImmutableMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Ray;
@@ -14,7 +14,7 @@ public class PinholeCamera implements Camera {
     private final ImmutableVector3 initialPosition;
 
     private ImmutableVector3 position;
-    private ImmutableArrayMatrix3x3 coordinateSystem;
+    private ImmutableMatrix3x3 coordinateSystem;
 
     private float focalDistance;
     private float pixelSizeX;
@@ -25,7 +25,7 @@ public class PinholeCamera implements Camera {
     public PinholeCamera(ImmutableVector3 position, float focalDistance, float pixelSizeX, float pixelSizeY, int pixelsX, int pixelsY) {
         this.initialPosition = new ImmutableVector3(position);
         this.position = position;
-        this.coordinateSystem = new ImmutableArrayMatrix3x3(Vector3.X_AXIS, Vector3.Y_AXIS, Vector3.Z_AXIS);
+        this.coordinateSystem = new ImmutableMatrix3x3(Vector3.X_AXIS, Vector3.Y_AXIS, Vector3.Z_AXIS);
         this.focalDistance = focalDistance;
         this.pixelSizeX = pixelSizeX;
         this.pixelSizeY = pixelSizeY;
@@ -54,7 +54,7 @@ public class PinholeCamera implements Camera {
         float sin_p = (float) Math.sin(rotationVector.getX());
         float cos_p = (float) Math.cos(rotationVector.getX());
 
-        ImmutableArrayMatrix3x3 rotation = new ImmutableArrayMatrix3x3(cos_p,        0.0f,   sin_p,
+        ImmutableMatrix3x3 rotation = new ImmutableMatrix3x3(cos_p,        0.0f,   sin_p,
                                                                        sin_t*sin_p,  cos_t, -1.0f*sin_t*cos_p,
                                                                        -sin_p*cos_t, sin_t, cos_t*cos_p);
 
@@ -88,7 +88,7 @@ public class PinholeCamera implements Camera {
     @Override
     public void resetToInitial() {
         position = initialPosition;
-        this.coordinateSystem = new ImmutableArrayMatrix3x3(Vector3.X_AXIS, Vector3.Y_AXIS, Vector3.Z_AXIS);
+        this.coordinateSystem = new ImmutableMatrix3x3(Vector3.X_AXIS, Vector3.Y_AXIS, Vector3.Z_AXIS);
     }
 
 

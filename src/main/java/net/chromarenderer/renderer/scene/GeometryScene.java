@@ -17,11 +17,12 @@ import net.chromarenderer.renderer.scene.acc.NoAccelerationImpl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author bensteinert
  */
-public class GeometryScene {
+public class GeometryScene implements ChromaScene {
 
     private final List<Geometry> geometryList;
     private final List<Geometry> lightSources;
@@ -128,7 +129,10 @@ public class GeometryScene {
 
 
     public void buildAccelerationStructure(AccStructType type){
-
+        // nothing to do, scene is static, result will be the same
+        if (Objects.equals(type, accStruct.getType())){
+            return;
+        }
         switch (type) {
             case AABB_BVH:
                 BvhTreeBuilder treeBuilder = new BvhTreeBuilder(4, 20);

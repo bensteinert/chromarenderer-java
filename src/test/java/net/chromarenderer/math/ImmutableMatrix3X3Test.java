@@ -6,8 +6,7 @@ import org.junit.Test;
 /**
  * @author steinerb
  */
-public class ImmutableMatrix3x3Test {
-
+public class ImmutableMatrix3X3Test {
 
     @Test
     public void testInvert() throws Exception {

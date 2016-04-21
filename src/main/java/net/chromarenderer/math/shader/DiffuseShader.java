@@ -10,18 +10,18 @@ import net.chromarenderer.math.raytracing.CoordinateSystem;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
-import net.chromarenderer.renderer.scene.GeometryScene;
+import net.chromarenderer.renderer.scene.ChromaScene;
 import net.chromarenderer.renderer.scene.Radiance;
 
 /**
  * @author steinerb
  */
-public class DiffuseShader {
+class DiffuseShader {
 
-    static GeometryScene scene;
+    static ChromaScene scene;
 
 
-    public static Radiance getDirectRadianceSample(Hitpoint hitpoint, float pathWeight, ChromaSettings settings) {
+    static Radiance getDirectRadianceSample(Hitpoint hitpoint, float pathWeight, ChromaSettings settings) {
 
         if (settings.isDirectLightEstimationEnabled()) {
             return ptdl(hitpoint, pathWeight);
@@ -93,7 +93,7 @@ public class DiffuseShader {
     }
 
 
-    public static Ray getRecursiveRaySample(Ray incomingRay, Hitpoint hitpoint) {
+    static Ray getRecursiveRaySample(Hitpoint hitpoint) {
         float u = ChromaThreadContext.randomFloatClosedOpen();
         float v = ChromaThreadContext.randomFloatClosedOpen();
         float sqrtU = (float) Math.sqrt(u);

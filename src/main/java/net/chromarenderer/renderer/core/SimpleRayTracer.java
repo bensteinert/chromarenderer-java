@@ -8,8 +8,8 @@ import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.renderer.Renderer;
 import net.chromarenderer.renderer.camera.Camera;
 import net.chromarenderer.renderer.canvas.ChromaCanvas;
-import net.chromarenderer.renderer.diag.ChromaStatistics;
-import net.chromarenderer.renderer.scene.GeometryScene;
+import net.chromarenderer.main.ChromaStatistics;
+import net.chromarenderer.renderer.scene.ChromaScene;
 
 /**
  * @author steinerb
@@ -17,12 +17,12 @@ import net.chromarenderer.renderer.scene.GeometryScene;
 public class SimpleRayTracer extends ChromaCanvas implements Renderer {
 
     private final ChromaSettings settings;
-    private final GeometryScene scene;
+    private final ChromaScene scene;
     private final Camera camera;
     private boolean completed;
 
 
-    public SimpleRayTracer(ChromaSettings settings, GeometryScene scene, Camera camera) {
+    public SimpleRayTracer(ChromaSettings settings, ChromaScene scene, Camera camera) {
         super(settings.getImgWidth(), settings.getImgHeight());
         this.settings = settings;
         this.scene = scene;

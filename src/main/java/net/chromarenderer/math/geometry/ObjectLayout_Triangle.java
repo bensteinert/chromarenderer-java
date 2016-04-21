@@ -1,7 +1,7 @@
 package net.chromarenderer.math.geometry;
 
 import net.chromarenderer.math.Constants;
-import net.chromarenderer.math.ImmutableArrayMatrix3x3;
+import net.chromarenderer.math.ImmutableMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.VectorUtils;
@@ -183,7 +183,7 @@ public class ObjectLayout_Triangle extends StructuredArray<ImmutableVector3> imp
 
 
     @Override
-    public ObjectLayout_Triangle rotate(ImmutableArrayMatrix3x3 rotationY) {
+    public ObjectLayout_Triangle rotate(ImmutableMatrix3x3 rotationY) {
         return createTriangle(rotationY.mult(get(0)), rotationY.mult(get(1)), rotationY.mult(get(2)), material);
     }
 

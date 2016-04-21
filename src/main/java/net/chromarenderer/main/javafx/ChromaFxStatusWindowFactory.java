@@ -12,7 +12,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.chromarenderer.main.Chroma;
-import net.chromarenderer.renderer.diag.ChromaStatistics;
+import net.chromarenderer.main.ChromaStatistics;
 
 /**
  * @author bensteinert
