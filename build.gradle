@@ -22,11 +22,15 @@ idea {
 
 repositories {
     mavenCentral()
+    flatDir {
+        dirs 'lib'
+    }
 }
 
 dependencies {
     compile 'com.google.guava:guava:18.0'
     compile 'org.apache.commons:commons-math3:3.4.1'
+    compile 'org.objectlayout:ObjectLayout:1.0.5-SNAPSHOT'
     testCompile 'junit:junit:4.11'
 }
 

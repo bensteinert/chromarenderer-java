@@ -8,7 +8,7 @@ import org.junit.Test;
 /**
  * @author bensteinert
  */
-public class ObjectLayoutTriangleTest {
+public class ObjectLayout_TriangleTest {
 
     @Test
     public void newInstance() throws Exception {

@@ -285,27 +285,4 @@ public class ObjectLayout_Triangle extends StructuredArray<ImmutableVector3> imp
 
         return result;
     }
-
-
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//
-//        Triangle2 triangle = (Triangle2) o;
-//
-//        if (!get(0).equals(triangle.get(0))) return false;
-//        if (!get(1).equals(triangle.get(1))) return false;
-//        return get(2).equals(triangle.get(2));
-//
-//    }
-//
-//
-//    @Override
-//    public int hashCode() {
-//        int result = get(0).hashCode();
-//        result = 31 * result + get(1).hashCode();
-//        result = 31 * result + get(2).hashCode();
-//        return result;
-//    }
 }
