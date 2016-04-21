@@ -2,7 +2,7 @@ package net.chromarenderer.renderer.scene.acc;
 
 
 /**
- * Created by ben on 06/03/16.
+ * @author bensteinert
  */
 public interface AccelerationStructure {
     void intersect(IntersectionContext ctx);

@@ -92,6 +92,13 @@ public class GeometryScene {
         }
     }
 
+    public boolean isObstructed(Ray ray) {
+        IntersectionContext intersectionContext = intersectionContextHolder.get();
+        intersectionContext.reinit(ray, IntersectionContext.ANY);
+        accStruct.intersect(intersectionContext);
+        return intersectionContext.hitGeometry != null;
+    }
+
 
     private ImmutableVector3 increaseHitpointPrecision(Ray ray, Geometry hitGeometry, ImmutableVector3 hitpoint, float hitDistance) {
         Ray reverseRay = new Ray(hitpoint, ray.getDirection().mult(-1.0f), 0.0f, hitDistance - Constants.FLT_EPSILON);

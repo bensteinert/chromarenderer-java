@@ -37,7 +37,9 @@ class BvhNode {
             float tMinLeft;
             float tMinRight;
 
-            int hitBits = left.box.intersects(ctx);
+            int hitBits = ctx.intersectionMode;
+
+            hitBits |= left.box.intersects(ctx);
             tMinLeft = ctx.lastTValues[0];
 
             hitBits = hitBits | right.box.intersects(ctx) << 1;
@@ -45,12 +47,14 @@ class BvhNode {
 
             switch (hitBits) {
                 case 1: // left hit
+                case 5: // left hit with any mode
                     left.intersect(ctx, geometry);
                     break;
                 case 2: // right hit
+                case 6: // right hit with any mode
                     right.intersect(ctx, geometry);
                     break;
-                case 3: // both hit
+                case 3: // both hit first mode
                     if (tMinLeft <= tMinRight) {
                         left.intersect(ctx, geometry);
                         if (ctx.hitDistance > tMinRight) {
@@ -59,6 +63,20 @@ class BvhNode {
                     } else {
                         right.intersect(ctx, geometry);
                         if (ctx.hitDistance > tMinLeft) {
+                            left.intersect(ctx, geometry);
+                        }
+                    }
+                    break;
+                case 7: // both hit with any mode
+                    if (tMinLeft <= tMinRight) {
+                        left.intersect(ctx, geometry);
+                        if (ctx.hitGeometry == null) {
+                            right.intersect(ctx, geometry);
+                        }
+
+                    } else {
+                        right.intersect(ctx, geometry);
+                        if (ctx.hitGeometry == null) {
                             left.intersect(ctx, geometry);
                         }
                     }

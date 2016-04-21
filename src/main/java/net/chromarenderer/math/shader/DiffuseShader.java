@@ -25,28 +25,28 @@ public class DiffuseShader {
 
         if (settings.isDirectLightEstimationEnabled()) {
             return ptdl(hitpoint, pathWeight);
-        }
-        else {
+        } else {
             return pt(hitpoint, pathWeight);
         }
     }
 
+
     /**
      * Simple path tracing with uniform hemisphere samples to determine path.
      * Ls(ω) = ∫ Li * ρ(ωi, ωo) * cosθ dω
-     *
+     * <p>
      * MC computation with one sample replaces ∫:
-     *   Ls(ω) = (Li * ρ(ωi, ωo) * cosθ) / p(ω)
-     *
+     * Ls(ω) = (Li * ρ(ωi, ωo) * cosθ) / p(ω)
+     * <p>
      * where p(ω) = cos(θ)/π (sample weight for a uniform sample on the hemisphere - PT)
-     *   Ls(ω) = (Li * ρ(ωi, ωo)) * π
-     *
+     * Ls(ω) = (Li * ρ(ωi, ωo)) * π
+     * <p>
      * Why can I neglect *π? (missing in the code)
-     *   Assume Li = 1, Ls = 0,8: (80% get reflected)
-     *   0,8 = ρ(ωi, ωo) * ∫ cosθ dω
-     *   0,8 = ρ(ωi, ωo) * π
-     *   ρ(ωi, ωo) = 0,8 / π
-     *
+     * Assume Li = 1, Ls = 0,8: (80% get reflected)
+     * 0,8 = ρ(ωi, ωo) * ∫ cosθ dω
+     * 0,8 = ρ(ωi, ωo) * π
+     * ρ(ωi, ωo) = 0,8 / π
+     * <p>
      * For diffuse surfaces where p const, you can write:
      * Ls(ω) = (Li * ρ(ωi, ωo)/π) * π
      * Ls(ω) = Li * ρ(ωi, ωo)
@@ -76,8 +76,7 @@ public class DiffuseShader {
 
         //lightSource hit from correct side?
         if (cosThetaSceneHit > 0.0f) {
-            Hitpoint shadowGeometryHit = scene.intersect(shadowRay);
-            if(shadowGeometryHit.hit()){
+            if (scene.isObstructed(shadowRay)) {
                 return new Radiance(COLORS.BLACK, shadowRay);
             }
         } else {
