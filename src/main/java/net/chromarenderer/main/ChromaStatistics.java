@@ -1,4 +1,4 @@
-package net.chromarenderer.renderer.diag;
+package net.chromarenderer.main;
 
 
 import net.chromarenderer.utils.FpsCounter;
