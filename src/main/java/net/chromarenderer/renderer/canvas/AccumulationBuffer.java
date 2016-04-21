@@ -10,4 +10,7 @@ public interface AccumulationBuffer {
     AccumulationBuffer accumulate(Vector3[] input);
 
     byte[] to8BitImage();
+
+    void flushBuffer();
+
 }

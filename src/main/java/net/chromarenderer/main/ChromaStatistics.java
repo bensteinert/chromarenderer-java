@@ -31,7 +31,7 @@ public class ChromaStatistics {
     }
 
 
-    public static void reset() {
+    static void reset() {
         reverseRaysMissed.set(0);
         totalFrames.set(0);
         fpsCounter.reset();
@@ -39,12 +39,7 @@ public class ChromaStatistics {
     }
 
 
-    public static void start() {
-        fpsCounter.start();
-    }
-
-
-    public static void frame() {
+    static void frame() {
         totalFrames.incrementAndGet();
         fpsCounter.frame();
     }

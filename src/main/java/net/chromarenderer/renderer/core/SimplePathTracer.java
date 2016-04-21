@@ -12,23 +12,23 @@ import net.chromarenderer.renderer.camera.Camera;
 import net.chromarenderer.renderer.canvas.AccumulationBuffer;
 import net.chromarenderer.renderer.canvas.ChromaCanvas;
 import net.chromarenderer.renderer.canvas.SingleThreadedAccumulationBuffer;
-import net.chromarenderer.renderer.diag.ChromaStatistics;
-import net.chromarenderer.renderer.scene.GeometryScene;
+import net.chromarenderer.main.ChromaStatistics;
+import net.chromarenderer.renderer.scene.ChromaScene;
 import net.chromarenderer.renderer.scene.Radiance;
 
 /**
- * @author steinerb
+ * @author bensteinert
  */
 public class SimplePathTracer extends ChromaCanvas implements RecursiveRenderer {
 
     private final AccumulationBuffer buffer;
     private final ChromaSettings settings;
-    private final GeometryScene scene;
+    private final ChromaScene scene;
     private boolean completed;
     private final Camera camera;
 
 
-    public SimplePathTracer(ChromaSettings settings, GeometryScene scene, Camera camera) {
+    public SimplePathTracer(ChromaSettings settings, ChromaScene scene, Camera camera) {
         super(settings.getImgWidth(), settings.getImgHeight());
         this.settings = settings;
         this.scene = scene;
@@ -86,6 +86,7 @@ public class SimplePathTracer extends ChromaCanvas implements RecursiveRenderer 
     @Override
     public void flush() {
         flushCanvas();
+        buffer.flushBuffer();
     }
 
 

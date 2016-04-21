@@ -1,14 +1,14 @@
 package net.chromarenderer.math.geometry;
 
 import net.chromarenderer.math.Constants;
-import net.chromarenderer.math.ImmutableArrayMatrix3x3;
+import net.chromarenderer.math.ImmutableMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.VectorUtils;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.math.shader.Material;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
-import net.chromarenderer.renderer.diag.ChromaStatistics;
+import net.chromarenderer.main.ChromaStatistics;
 
 /**
  * Chroma uses the right-hand-coordinate system. Think about three vertices specified counterclockwise on the floor.
@@ -179,7 +179,7 @@ public class Triangle extends AbstractGeometry {
     }
 
     @Override
-    public Triangle rotate(ImmutableArrayMatrix3x3 rotationY) {
+    public Triangle rotate(ImmutableMatrix3x3 rotationY) {
         return new Triangle(rotationY.mult(p0), rotationY.mult(p1), rotationY.mult(p2), getMaterial());
     }
 

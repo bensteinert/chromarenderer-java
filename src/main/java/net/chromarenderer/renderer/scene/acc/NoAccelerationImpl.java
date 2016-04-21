@@ -19,4 +19,10 @@ public class NoAccelerationImpl implements AccelerationStructure {
             ctx.checkGeometry(geometry);
         }
     }
+
+
+    @Override
+    public AccStructType getType() {
+        return AccStructType.LIST;
+    }
 }

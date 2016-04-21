@@ -22,4 +22,10 @@ public class BvhTree implements AccelerationStructure {
         rootNode.intersect(ctx, geometry);
     }
 
+
+    @Override
+    public AccStructType getType() {
+        return AccStructType.AABB_BVH;
+    }
+
 }

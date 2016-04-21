@@ -1,7 +1,7 @@
 package net.chromarenderer.renderer.scene;
 
 import net.chromarenderer.math.COLORS;
-import net.chromarenderer.math.ImmutableArrayMatrix3x3;
+import net.chromarenderer.math.ImmutableMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.geometry.Geometry;
@@ -48,11 +48,11 @@ public class SceneFactory {
 
         Vector3 minusCenter = center.mult(-1f);
 
-        ImmutableArrayMatrix3x3 rotationY90 = new ImmutableArrayMatrix3x3(0, 0, 1,
+        ImmutableMatrix3x3 rotationY90 = new ImmutableMatrix3x3(0, 0, 1,
                 0, 1, 0,
                 -1, 0, 0);
 
-        ImmutableArrayMatrix3x3 rotationZ90 = new ImmutableArrayMatrix3x3(0, -1, 0,
+        ImmutableMatrix3x3 rotationZ90 = new ImmutableMatrix3x3(0, -1, 0,
                 1, 0, 0,
                 0, 0, 1);
 

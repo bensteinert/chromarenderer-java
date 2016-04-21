@@ -1,13 +1,7 @@
 package net.chromarenderer.main;
 
-import net.chromarenderer.math.COLORS;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
-import net.chromarenderer.math.geometry.Geometry;
-import net.chromarenderer.math.geometry.PhotonFountain;
-import net.chromarenderer.math.geometry.Sphere;
-import net.chromarenderer.math.shader.Material;
-import net.chromarenderer.math.shader.MaterialType;
 import net.chromarenderer.math.shader.ShaderEngine;
 import net.chromarenderer.renderer.Renderer;
 import net.chromarenderer.renderer.camera.Camera;
@@ -17,13 +11,10 @@ import net.chromarenderer.renderer.core.ColorCubeRenderer;
 import net.chromarenderer.renderer.core.MovingAverageRenderer;
 import net.chromarenderer.renderer.core.SimplePathTracer;
 import net.chromarenderer.renderer.core.SimpleRayTracer;
-import net.chromarenderer.renderer.diag.ChromaStatistics;
+import net.chromarenderer.renderer.scene.ChromaScene;
 import net.chromarenderer.renderer.scene.GeometryScene;
-import net.chromarenderer.renderer.scene.SceneFactory;
 import net.chromarenderer.utils.TgaImageWriter;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -51,22 +42,10 @@ public class Chroma implements Runnable {
     private CountDownLatch renderLatch;
     private ChromaSettings settings;
     private Camera camera;
+    private boolean needsFlush;
 
 
     public Chroma() {
-    }
-
-
-    private List<Geometry> createSomeSpheres() {
-        List<Geometry> result = new ArrayList<>();
-        result.add(new Sphere(new ImmutableVector3(0.0f, -0.3f, 0.0f), 0.1,   new Material(MaterialType.DIFFUSE, COLORS.BLUE)));
-        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.0f, -1.0f), 0.2, new Material(MaterialType.DIFFUSE, COLORS.RED)));
-        result.add(new Sphere(new ImmutableVector3(1.0f, -0.4f, 1.0f), 0.2 , new Material(MaterialType.DIFFUSE, COLORS.PURPLE)));
-        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.7f, -1.0f), 0.2, new Material(MaterialType.DIFFUSE, COLORS.GREEN)));
-        result.add(new Sphere(new ImmutableVector3(1.0f, -1.5f, -1.0f), 0.4, new Material(MaterialType.MIRROR, COLORS.WHITE)));
-        //result.add(new Sphere(new ImmutableVector3(0.0f, 0.0f, 0.0f), 0.125, new Material(MaterialType.EMITTING, new ImmutableVector3(20, 20 ,200))));
-        result.add(new PhotonFountain(new ImmutableVector3(0.f, 0.f, 0.f), 2000.f));
-        return result;
     }
 
 
@@ -84,10 +63,14 @@ public class Chroma implements Runnable {
             try {
                 renderLatch = new CountDownLatch(1);
                 renderLatch.await();
-
                 breakLoop = false;
 
                 do {
+                    if (needsFlush) {
+                        flushRenderer();
+                        ChromaStatistics.reset();
+                        needsFlush = false;
+                    }
                     renderer.renderNextImage(settings.getImgWidth(), settings.getImgWidth(), 0, 0);
                     changed = true;
                     ChromaStatistics.frame();
@@ -102,7 +85,6 @@ public class Chroma implements Runnable {
 
 
     public void start() {
-        ChromaStatistics.reset();
         if (renderLatch != null) {
             renderLatch.countDown();
         }
@@ -124,7 +106,7 @@ public class Chroma implements Runnable {
     }
 
 
-    public void reinit(ChromaSettings settingsIn) {
+    public void reinit(ChromaSettings settingsIn, ChromaScene scene) {
         this.settings = new ChromaSettings(settingsIn);
         int pixelsX = this.settings.getImgWidth();
         int pixelsY = this.settings.getImgHeight();
@@ -135,8 +117,11 @@ public class Chroma implements Runnable {
         } else {
             camera.recalibrateSensor(settings.getImgWidth(), settings.getImgHeight());
         }
-        GeometryScene scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, createSomeSpheres());
-        scene.buildAccelerationStructure(settingsIn.getAccStructType());
+
+        if(scene instanceof GeometryScene) {
+            ((GeometryScene) scene).buildAccelerationStructure(settings.getAccStructType());
+        }
+
         ShaderEngine.setScene(scene);
 
         switch (settings.getRenderMode()) {
@@ -180,7 +165,12 @@ public class Chroma implements Runnable {
     }
 
 
-    public void flushRenderer() {
+    private void flushRenderer() {
         renderer.flush();
+    }
+
+
+    public void flushOnNextImage() {
+        needsFlush = true;
     }
 }
