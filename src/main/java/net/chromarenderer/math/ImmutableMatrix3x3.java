@@ -1,47 +1,54 @@
 package net.chromarenderer.math;
 
-import java.util.Arrays;
-
 /**
  * @author steinerb
  */
 public class ImmutableMatrix3x3 {
 
-    ImmutableVector3[] columns;
+    private final float m11, m12, m13;
+    private final float m21, m22, m23;
+    private final float m31, m32, m33;
 
-    public ImmutableMatrix3x3(Vector3 col1, Vector3 col2, Vector3 col3) {
-        this.columns = new ImmutableVector3[3];
-        columns[0] = new ImmutableVector3(col1);
-        columns[1] = new ImmutableVector3(col2);
-        columns[2] = new ImmutableVector3(col3);
-    }
 
     public ImmutableMatrix3x3(float m11, float m12, float m13, float m21, float m22, float m23, float m31, float m32, float m33) {
-        this(new ImmutableVector3(m11, m21, m31), new ImmutableVector3(m12, m22, m32), new ImmutableVector3(m13, m23, m33));
+        this.m11 = m11;
+        this.m12 = m12;
+        this.m13 = m13;
+        this.m21 = m21;
+        this.m22 = m22;
+        this.m23 = m23;
+        this.m31 = m31;
+        this.m32 = m32;
+        this.m33 = m33;
+    }
+
+    public ImmutableMatrix3x3(Vector3 col1, Vector3 col2, Vector3 col3) {
+        this.m11 = col1.getX();
+        this.m12 = col2.getX();
+        this.m13 = col3.getX();
+        this.m21 = col1.getY();
+        this.m22 = col2.getY();
+        this.m23 = col3.getY();
+        this.m31 = col1.getZ();
+        this.m32 = col2.getZ();
+        this.m33 = col3.getZ();
     }
 
 
     public ImmutableMatrix3x3 invert() {
+        float invDet = 1.f/(m11*m22*m33 + m12*m23*m31 + m13*m21*m32 - m12*m21*m33 - m13*m22*m31 - m11*m23*m32);
 
-        float temp[] = new float[9];
-        float invDet = 1.f/(col1().getX()*col2().getY()*col3().getZ() - col1().getX()*col3().getY()*col2().getZ() - col2().getX()*col1().getY()*col3().getZ()
-                + col2().getX()*col3().getY()*col1().getZ() + col3().getX()*col1().getY()*col2().getZ() - col3().getX()*col2().getY()*col1().getZ());
+        float newm11 = (m22*m33 - m23*m32) * invDet;
+        float newm12 = (m13*m32 - m12*m33) * invDet;
+        float newm13 = (m12*m23 - m13*m22) * invDet;
+        float newm21 = (m23*m31 - m33*m21) * invDet;
+        float newm22 = (m11*m33 - m13*m31) * invDet;
+        float newm23 = (m13*m21 - m11*m23) * invDet;
+        float newm31 = (m21*m32 - m31*m22) * invDet;
+        float newm32 = (m12*m31 - m11*m32) * invDet;
+        float newm33 = (m11*m22 - m12*m21) * invDet;
 
-        temp[0] = col2().getY()*col3().getZ() - col3().getY()*col2().getZ();
-        temp[1] = col3().getX()*col2().getZ() - col2().getX()*col3().getZ();
-        temp[2] = col3().getX()*col3().getY() - col3().getX()*col2().getY();
-        temp[3] = col3().getY()*col1().getZ() - col3().getZ()*col1().getY();
-        temp[4] = col1().getX()*col3().getZ() - col3().getX()*col1().getZ();
-        temp[5] = col2().getX()*col1().getZ() - col1().getX()*col2().getZ();
-        temp[6] = col1().getY()*col2().getZ() - col1().getZ()*col2().getY();
-        temp[7] = col3().getX()*col1().getY() - col1().getX()*col3().getY();
-        temp[8] = col1().getX()*col2().getY() - col2().getX()*col1().getY();
-
-        ImmutableVector3 newCol1 = new ImmutableVector3(invDet * temp[0], invDet * temp[3], invDet * temp[6]);
-        ImmutableVector3 newCol2 = new ImmutableVector3(invDet * temp[1], invDet * temp[4], invDet * temp[7]);
-        ImmutableVector3 newCol3 = new ImmutableVector3(invDet * temp[2], invDet * temp[5], invDet * temp[8]);
-
-        return new ImmutableMatrix3x3(newCol1, newCol2, newCol3);
+        return new ImmutableMatrix3x3(newm11, newm12, newm13, newm21, newm22, newm23, newm31, newm32, newm33);
     }
 
     public ImmutableMatrix3x3 orthogonalize() {
@@ -53,56 +60,51 @@ public class ImmutableMatrix3x3 {
         ImmutableVector3 projNewCol2 = newCol2.mult(newCol2.dot(col3()));
         tempA3 = col3().minus(projNewCol1).minus(projNewCol2);
         ImmutableVector3 newCol3 = tempA3.normalize();      
-        return new ImmutableMatrix3x3(newCol1, newCol2, newCol3);
+        return new ImmutableMatrix3x3(newCol1.getX(), newCol2.getX(), newCol3.getX(),
+                                           newCol1.getY(), newCol2.getY(), newCol3.getY(),
+                                           newCol1.getZ(), newCol2.getZ(), newCol3.getZ());
     }
 
     public ImmutableMatrix3x3 transpose() {
-        return new ImmutableMatrix3x3(row1(), row2(), row3());
+        return new ImmutableMatrix3x3(m11, m21, m31,
+                                           m12, m22, m32,
+                                           m13, m23, m33);
     }
 
     public ImmutableMatrix3x3 mult(ImmutableMatrix3x3 input) {
 
-        ImmutableVector3 row1 = row1();
-        ImmutableVector3 row2 = row2();
-        ImmutableVector3 row3 = row3();
-
-        return new ImmutableMatrix3x3(new ImmutableVector3(row1.dot(input.col1()),
-                                                           row2.dot(input.col1()),
-                                                           row3.dot(input.col1())),
-                                                             new ImmutableVector3(row1.dot(input.col2()),
-                                                                                  row2.dot(input.col2()),
-                                                                                  row3.dot(input.col2())),
-                                                                                    new ImmutableVector3(row1.dot(input.col3()),
-                                                                                                         row2.dot(input.col3()),
-                                                                                                         row3.dot(input.col3())));
+        return new ImmutableMatrix3x3((m11 * input.m11) + (m21 * input.m21) + (m13 * input.m31), (m11 * input.m12) + (m21 * input.m22) + (m13 * input.m32), (m11 * input.m13) + (m21 * input.m23) + (m13 * input.m33),
+                                           (m21 * input.m11) + (m22 * input.m21) + (m23 * input.m31), (m21 * input.m12) + (m22 * input.m22) + (m23 * input.m32), (m21 * input.m13) + (m22 * input.m23) + (m23 * input.m33),
+                                           (m31 * input.m11) + (m32 * input.m21) + (m33 * input.m31), (m31 * input.m12) + (m32 * input.m22) + (m33 * input.m32), (m31 * input.m13) + (m32 * input.m23) + (m33 * input.m33));
     }
 
-    public ImmutableVector3 mult(ImmutableVector3 input) {
-        return new ImmutableVector3( row1().dot(input), row2().dot(input), row3().dot(input) );
+
+    public ImmutableVector3 mult(Vector3 input) {
+        return new ImmutableVector3( col1().dot(input), col2().dot(input), col3().dot(input) );
     }
 
     private ImmutableVector3 row1() {
-        return new ImmutableVector3(columns[0].getX(), columns[1].getX(), columns[2].getX());
+        return new ImmutableVector3(m11, m12, m13);
     }
 
     private ImmutableVector3 row2() {
-        return new ImmutableVector3(columns[0].getY(), columns[1].getY(), columns[2].getY());
+        return new ImmutableVector3(m21, m22, m23);
     }
 
     private ImmutableVector3 row3() {
-        return new ImmutableVector3(columns[0].getZ(), columns[1].getZ(), columns[2].getZ());
+        return new ImmutableVector3(m31, m32, m33);
     }
 
     private ImmutableVector3 col1() {
-        return columns[0];
+        return new ImmutableVector3(m11, m21, m31);
     }
 
     private ImmutableVector3 col2() {
-        return columns[1];
+        return new ImmutableVector3(m12, m22, m32);
     }
 
     private ImmutableVector3 col3() {
-        return columns[2];
+        return new ImmutableVector3(m13, m23, m33);
     }
 
     @Override
@@ -112,20 +114,45 @@ public class ImmutableMatrix3x3 {
 
         ImmutableMatrix3x3 that = (ImmutableMatrix3x3) o;
 
-        if (!Arrays.equals(columns, that.columns)) return false;
+        if (Float.compare(that.m11, m11) != 0) return false;
+        if (Float.compare(that.m12, m12) != 0) return false;
+        if (Float.compare(that.m13, m13) != 0) return false;
+        if (Float.compare(that.m21, m21) != 0) return false;
+        if (Float.compare(that.m22, m22) != 0) return false;
+        if (Float.compare(that.m23, m23) != 0) return false;
+        if (Float.compare(that.m31, m31) != 0) return false;
+        if (Float.compare(that.m32, m32) != 0) return false;
+        if (Float.compare(that.m33, m33) != 0) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(columns);
+        int result = (m11 != +0.0f ? Float.floatToIntBits(m11) : 0);
+        result = 31 * result + (m12 != +0.0f ? Float.floatToIntBits(m12) : 0);
+        result = 31 * result + (m13 != +0.0f ? Float.floatToIntBits(m13) : 0);
+        result = 31 * result + (m21 != +0.0f ? Float.floatToIntBits(m21) : 0);
+        result = 31 * result + (m22 != +0.0f ? Float.floatToIntBits(m22) : 0);
+        result = 31 * result + (m23 != +0.0f ? Float.floatToIntBits(m23) : 0);
+        result = 31 * result + (m31 != +0.0f ? Float.floatToIntBits(m31) : 0);
+        result = 31 * result + (m32 != +0.0f ? Float.floatToIntBits(m32) : 0);
+        result = 31 * result + (m33 != +0.0f ? Float.floatToIntBits(m33) : 0);
+        return result;
     }
 
     @Override
     public String toString() {
-        return "ImmutableMatrix3x3{" +
-                "columns=" + Arrays.toString(columns) +
-                '}';
+        return  "m11=" + m11 + " | m12=" + m12 + " | m13=" + m13 + "\n" +
+                "m21=" + m21 + " | m22=" + m22 + " | m23=" + m23 + "\n" +
+                "m31=" + m31 + " | m32=" + m32 + " | m33=" + m33 + "\n";
+    }
+
+
+    public ImmutableMatrix3x3 normalizeCols() {
+        Vector3 normalizedCol1 = col1().normalize();
+        Vector3 normalizedCol2 = col2().normalize();
+        Vector3 normalizedCol3 = col3().normalize();
+        return new ImmutableMatrix3x3(normalizedCol1, normalizedCol2, normalizedCol3);
     }
 }

@@ -9,7 +9,7 @@ import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.renderer.RecursiveRenderer;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
-import net.chromarenderer.renderer.scene.GeometryScene;
+import net.chromarenderer.renderer.scene.ChromaScene;
 import net.chromarenderer.renderer.scene.Radiance;
 
 /**
@@ -44,17 +44,17 @@ public class ShaderEngine {
     }
 
 
-    public static Ray getRecursiveRaySample(Ray incomingRay, Hitpoint hitpoint) {
+    private static Ray getRecursiveRaySample(Ray incomingRay, Hitpoint hitpoint) {
 
         Material material = hitpoint.getHitGeometry().getMaterial();
 
         switch (material.getType()) {
             case DIFFUSE:
-                return DiffuseShader.getRecursiveRaySample(incomingRay, hitpoint);
+                return DiffuseShader.getRecursiveRaySample(hitpoint);
 
             case EMITTING:
                 // temporary handling of emitting materials in order to let them participate in reflections
-                return DiffuseShader.getRecursiveRaySample(incomingRay, hitpoint);
+                return DiffuseShader.getRecursiveRaySample(hitpoint);
 
             case MIRROR:
                 ImmutableVector3 mirrorDirection = VectorUtils.mirror(incomingRay.getDirection().mult(-1.0f), hitpoint.getHitpointNormal());
@@ -72,7 +72,7 @@ public class ShaderEngine {
     }
 
 
-    public static void setScene(GeometryScene scene) {
+    public static void setScene(ChromaScene scene) {
         DiffuseShader.scene = scene;
     }
 

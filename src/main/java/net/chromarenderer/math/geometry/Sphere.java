@@ -1,13 +1,13 @@
 package net.chromarenderer.math.geometry;
 
 import net.chromarenderer.math.Constants;
-import net.chromarenderer.math.ImmutableArrayMatrix3x3;
+import net.chromarenderer.math.ImmutableMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.math.shader.Material;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
-import net.chromarenderer.renderer.diag.ChromaStatistics;
+import net.chromarenderer.main.ChromaStatistics;
 
 /**
  * @author bensteinert
@@ -86,7 +86,7 @@ public class Sphere extends AbstractGeometry {
     }
 
     @Override
-    public Geometry rotate(ImmutableArrayMatrix3x3 rotationY) {
+    public Geometry rotate(ImmutableMatrix3x3 rotationY) {
         return null;
     }
 

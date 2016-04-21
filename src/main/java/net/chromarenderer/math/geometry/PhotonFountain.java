@@ -1,6 +1,6 @@
 package net.chromarenderer.math.geometry;
 
-import net.chromarenderer.math.ImmutableArrayMatrix3x3;
+import net.chromarenderer.math.ImmutableMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Ray;
@@ -33,7 +33,7 @@ public class PhotonFountain extends AbstractGeometry {
     }
 
     @Override
-    public Geometry rotate(ImmutableArrayMatrix3x3 rotationY) {
+    public Geometry rotate(ImmutableMatrix3x3 rotationY) {
         return new PhotonFountain(point, power);
     }
 

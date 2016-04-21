@@ -21,14 +21,18 @@ public class SingleThreadedAccumulationBuffer extends ChromaCanvas implements Ac
         }
 
         for (int i = 0; i < width * height; i++) {
-//            if (pixels[i].isNaN()){
-//                System.out.println("NAN");
-//            }
             pixels[i] = pixels[i].mult(accCount).plus(input[i]).div(accCount + 1);
         }
 
         accCount++;
         return this;
+    }
+
+
+    @Override
+    public void flushBuffer() {
+        accCount = 0;
+        flushCanvas();
     }
 
 }

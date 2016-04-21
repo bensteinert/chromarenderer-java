@@ -6,4 +6,6 @@ package net.chromarenderer.renderer.scene.acc;
  */
 public interface AccelerationStructure {
     void intersect(IntersectionContext ctx);
+
+    AccStructType getType();
 }
