@@ -44,3 +44,7 @@ macAppBundle {
     icon = "icon.icns"
     bundleJRE = true
 }
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.13'
+}
