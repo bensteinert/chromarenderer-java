@@ -1,5 +1,6 @@
 package net.chromarenderer.renderer.core;
 
+import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.random.MersenneTwisterFast;
 
 /**
@@ -9,15 +10,10 @@ public class ChromaThreadContext {
 
     private static ThreadLocal<Integer> currentX = new ThreadLocal<>() ;
     private static ThreadLocal<Integer> currentY = new ThreadLocal<>() ;
-    private static ThreadLocal<MersenneTwisterFast> mt = new ThreadLocal<>().withInitial(() -> {
-        //TODO: remove static seed!
-        return new MersenneTwisterFast(13499);
-    });
+    private static ThreadLocal<MersenneTwisterFast> mt = ThreadLocal.withInitial(() ->
+            new MersenneTwisterFast(Constants.getNextPrime())
+    );
 
-    public static void init() {
-        //TODO: remove static seed!
-        //mt.set(new MersenneTwisterFast(13499));
-    }
 
     public static void setX(int x) {
         currentX.set(x);

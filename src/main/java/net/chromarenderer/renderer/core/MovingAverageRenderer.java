@@ -4,7 +4,7 @@ import net.chromarenderer.main.ChromaSettings;
 import net.chromarenderer.renderer.Renderer;
 import net.chromarenderer.renderer.canvas.AccumulationBuffer;
 import net.chromarenderer.renderer.canvas.ChromaCanvas;
-import net.chromarenderer.renderer.canvas.MultiThreadedAccumulationBuffer;
+import net.chromarenderer.renderer.canvas.ParallelStreamAccumulationBuffer;
 
 /**
  * @author steinerb
@@ -17,21 +17,15 @@ public class MovingAverageRenderer implements Renderer {
 
 
     public MovingAverageRenderer(ChromaSettings settings) {
-        buffer = new MultiThreadedAccumulationBuffer(settings.getImgWidth(), settings.getImgHeight());
+        buffer = new ParallelStreamAccumulationBuffer(settings.getImgWidth(), settings.getImgHeight());
         nextImage = new ChromaCanvas(settings.getImgWidth(), settings.getImgHeight());
     }
 
 
     @Override
-    public void renderNextImage(int imgWidth, int imgHeight, int widthOffset, int heightOffset) {
+    public void renderNextImage() {
         generator.randomFloatPixels(nextImage.getPixels());
         buffer.accumulate(nextImage.getPixels());
-    }
-
-
-    @Override
-    public boolean isContinuous() {
-        return true;
     }
 
 

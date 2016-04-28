@@ -33,6 +33,7 @@ public class ChromaCanvas {
     public byte[] to8BitImage() {
         int pixelCount = width * height;
         byte[] result = new byte[pixelCount * 3];
+        //TODO parallelize
         for (int i = 0, j = 0; i < pixelCount; i += 1, j += 3) {
             result[j] =     (byte) (255.0f * (Math.min(pixels[i].getX(), 1.0f)));
             result[j + 1] = (byte) (255.0f * (Math.min(pixels[i].getY(), 1.0f)));

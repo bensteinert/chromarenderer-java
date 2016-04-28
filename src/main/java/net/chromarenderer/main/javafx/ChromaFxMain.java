@@ -94,6 +94,7 @@ public class ChromaFxMain extends Application {
             }
         });
 
+        // TODO: Change to make parallelization switchable...
         controlPane.add(new Text("Accumulate:"), 0, rowIdx);
         CheckBox accumulate = new CheckBox();
         controlPane.add(accumulate, 1, rowIdx++);
@@ -112,11 +113,15 @@ public class ChromaFxMain extends Application {
         applySettings.setOnAction(event -> {
             start.setDisable(true);
             String[] split = resolutionCombo.getValue().split("x");
-            settings = settings.changeResolution(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
-            settings = settings.changeDirectLightEstimation(directLightEstimation.selectedProperty().getValue());
-            settings = settings.changeContinuousRender(accumulate.selectedProperty().getValue());
-            settings = settings.changeAccStructMode(accStructCombo.getValue());
-            settings = settings.changeMode(renderModeCombo.getValue());
+            settings = new ChromaSettings(
+                    true,
+                    Integer.parseInt(split[0]),
+                    Integer.parseInt(split[1]),
+                    renderModeCombo.getValue(),
+                    true,
+                    directLightEstimation.selectedProperty().getValue(),
+                    accStructCombo.getValue()
+                    );
             chroma.reinit(settings, scene);
             if (recreatePreview[0]) {
                 previewStage.close();
@@ -306,7 +311,7 @@ public class ChromaFxMain extends Application {
     public static void main(String[] args) {
         Thread thread = new Thread(chroma);
         scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, createSomeSpheres());
-        settings = new ChromaSettings(512, 512, ChromaRenderMode.PTDL, true, 1, true, AccStructType.AABB_BVH);
+        settings = new ChromaSettings(false, 512, 512, ChromaRenderMode.PTDL, true, true, AccStructType.AABB_BVH);
         chroma.reinit(settings, scene);
         thread.start();
 

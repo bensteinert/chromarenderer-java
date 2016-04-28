@@ -19,14 +19,8 @@ public class ColorCubeRenderer extends ChromaCanvas implements Renderer {
 
 
     @Override
-    public void renderNextImage(int imgWidth, int imgHeight, int widthOffset, int heightOffset) {
+    public void renderNextImage() {
         // TODO: measure pure pixel write effort with continuous mode in a Random Pixel Renderer
-    }
-
-
-    @Override
-    public boolean isContinuous() {
-        return false;
     }
 
 

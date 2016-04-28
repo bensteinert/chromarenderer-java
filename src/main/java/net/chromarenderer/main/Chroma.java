@@ -6,11 +6,10 @@ import net.chromarenderer.math.shader.ShaderEngine;
 import net.chromarenderer.renderer.Renderer;
 import net.chromarenderer.renderer.camera.Camera;
 import net.chromarenderer.renderer.camera.PinholeCamera;
-import net.chromarenderer.renderer.core.ChromaThreadContext;
 import net.chromarenderer.renderer.core.ColorCubeRenderer;
 import net.chromarenderer.renderer.core.MovingAverageRenderer;
 import net.chromarenderer.renderer.core.SimplePathTracer;
-import net.chromarenderer.renderer.core.SimpleRayTracer;
+import net.chromarenderer.renderer.core.SimpleRayCaster;
 import net.chromarenderer.renderer.scene.ChromaScene;
 import net.chromarenderer.renderer.scene.GeometryScene;
 import net.chromarenderer.utils.TgaImageWriter;
@@ -57,7 +56,6 @@ public class Chroma implements Runnable {
 
     @Override
     public void run() {
-        ChromaThreadContext.init();
 
         while (!Thread.currentThread().isInterrupted()) {
             try {
@@ -71,10 +69,10 @@ public class Chroma implements Runnable {
                         ChromaStatistics.reset();
                         needsFlush = false;
                     }
-                    renderer.renderNextImage(settings.getImgWidth(), settings.getImgWidth(), 0, 0);
+                    renderer.renderNextImage();
                     changed = true;
                     ChromaStatistics.frame();
-                } while (renderer.isContinuous() && !Thread.currentThread().isInterrupted() && !breakLoop);
+                } while (!Thread.currentThread().isInterrupted() && !breakLoop);
 
 
             } catch (InterruptedException e) {
@@ -126,7 +124,7 @@ public class Chroma implements Runnable {
 
         switch (settings.getRenderMode()) {
             case SIMPLE:
-                setRenderer(new SimpleRayTracer(settings, scene, camera));
+                setRenderer(new SimpleRayCaster(settings, scene, camera));
                 break;
             case AVG:
                 setRenderer(new MovingAverageRenderer(settings));
