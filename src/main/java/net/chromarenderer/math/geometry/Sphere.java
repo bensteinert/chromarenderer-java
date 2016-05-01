@@ -6,7 +6,7 @@ import net.chromarenderer.math.ImmutableMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Ray;
-import net.chromarenderer.math.shader.Material;
+import net.chromarenderer.renderer.shader.Material;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
 import org.apache.commons.math3.util.FastMath;
 

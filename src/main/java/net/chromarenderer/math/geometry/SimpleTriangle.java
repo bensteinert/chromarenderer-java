@@ -3,7 +3,7 @@ package net.chromarenderer.math.geometry;
 import net.chromarenderer.math.ImmutableMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
-import net.chromarenderer.math.shader.Material;
+import net.chromarenderer.renderer.shader.Material;
 
 /**
  * Chroma uses the right-hand-coordinate system. Think about three vertices specified counterclockwise on the floor.
@@ -139,5 +139,10 @@ public class SimpleTriangle extends AbstractGeometry implements Triangle {
         result = 31 * result + p1.hashCode();
         result = 31 * result + p2.hashCode();
         return result;
+    }
+
+
+    public static SimpleTriangle createTriangle(ImmutableVector3 p0, ImmutableVector3 p1, ImmutableVector3 p2, Material material) {
+        return new SimpleTriangle(p0, p1, p2, material);
     }
 }

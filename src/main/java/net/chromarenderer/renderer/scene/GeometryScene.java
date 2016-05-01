@@ -1,11 +1,12 @@
 package net.chromarenderer.renderer.scene;
 
+import net.chromarenderer.main.ChromaStatistics;
 import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.geometry.Geometry;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
-import net.chromarenderer.math.shader.MaterialType;
+import net.chromarenderer.renderer.shader.MaterialType;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
 import net.chromarenderer.renderer.scene.acc.AccStructType;
 import net.chromarenderer.renderer.scene.acc.AccelerationStructure;
@@ -101,10 +102,14 @@ public class GeometryScene implements ChromaScene {
     }
 
 
+    /**
+     * When ray suffered distance precision loss it is good to do a 2nd intersection in order to correct the actual hitpoint.
+     */
     private ImmutableVector3 increaseHitpointPrecision(Ray ray, Geometry hitGeometry, ImmutableVector3 hitpoint, float hitDistance) {
-        Ray reverseRay = new Ray(hitpoint, ray.getDirection().mult(-1.0f), 0.0f, hitDistance - Constants.FLT_EPSILON);
+        Ray reverseRay = new Ray(hitpoint, ray.getDirection().mult(-1.0f), 0.0f, hitDistance * 0.5f);
         float reverseDistance = hitGeometry.intersect(reverseRay);
         if (reverseDistance > 0) {
+            ChromaStatistics.subsurfaceHitpointCorrected();
             return reverseRay.onRay(reverseDistance);
         } else {
             return hitpoint;

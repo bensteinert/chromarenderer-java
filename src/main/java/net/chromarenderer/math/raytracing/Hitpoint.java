@@ -4,7 +4,7 @@ import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.MutableVector3;
 import net.chromarenderer.math.geometry.Geometry;
-import net.chromarenderer.math.shader.MaterialType;
+import net.chromarenderer.renderer.shader.MaterialType;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
 import org.apache.commons.math3.util.FastMath;
 

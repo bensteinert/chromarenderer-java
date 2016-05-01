@@ -156,11 +156,11 @@ public class ImmutableVector3 implements Vector3 {
 
     @Override
     public String toString() {
-        return "Vector3{" +
+        return "(" +
                 "x=" + x +
                 ", y=" + y +
                 ", z=" + z +
-                '}';
+                ')';
     }
 
     public ImmutableVector3 normalize() {

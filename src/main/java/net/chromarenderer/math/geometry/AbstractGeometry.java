@@ -1,6 +1,6 @@
 package net.chromarenderer.math.geometry;
 
-import net.chromarenderer.math.shader.Material;
+import net.chromarenderer.renderer.shader.Material;
 
 /**
  * @author steinerb

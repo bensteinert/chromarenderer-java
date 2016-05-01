@@ -1,4 +1,4 @@
-package net.chromarenderer.math.shader;
+package net.chromarenderer.renderer.shader;
 
 import net.chromarenderer.main.ChromaSettings;
 import net.chromarenderer.math.COLORS;

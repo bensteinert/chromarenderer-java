@@ -5,9 +5,10 @@ import net.chromarenderer.math.ImmutableMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.geometry.Geometry;
-import net.chromarenderer.math.geometry.ObjectLayoutTriangle;
-import net.chromarenderer.math.shader.Material;
-import net.chromarenderer.math.shader.MaterialType;
+import net.chromarenderer.math.geometry.SimpleTriangle;
+import net.chromarenderer.math.geometry.Triangle;
+import net.chromarenderer.renderer.shader.Material;
+import net.chromarenderer.renderer.shader.MaterialType;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,7 +23,7 @@ public class SceneFactory {
 
 
     public static GeometryScene cornellBox(ImmutableVector3 center, float halfDimension, List<Geometry> content) {
-        List<ObjectLayoutTriangle> baseBox = buildBaseBox(center, halfDimension);
+        List<Triangle> baseBox = buildBaseBox(center, halfDimension);
         List<Geometry> result = new ArrayList<>(content.size() + baseBox.size() * 16);
         result.addAll(content);
         result.addAll(subdivide(subdivide(subdivide(baseBox))));
@@ -31,16 +32,16 @@ public class SceneFactory {
     }
 
 
-    private static List<ObjectLayoutTriangle> subdivide(List<ObjectLayoutTriangle> triangles) {
-        List<ObjectLayoutTriangle> result = new ArrayList<>(triangles.size() * 4);
-        triangles.stream().map(ObjectLayoutTriangle::subdivide).forEach(subdivided -> Collections.addAll(result, subdivided));
+    private static List<Triangle> subdivide(List<Triangle> triangles) {
+        List<Triangle> result = new ArrayList<>(triangles.size() * 4);
+        triangles.stream().map(Triangle::subdivide).forEach(subdivided -> Collections.addAll(result, subdivided));
         return result;
     }
 
 
-    private static List<ObjectLayoutTriangle> buildBaseBox(ImmutableVector3 center, float halfDimension) {
+    private static List<Triangle> buildBaseBox(ImmutableVector3 center, float halfDimension) {
 
-        ArrayList<ObjectLayoutTriangle> result = new ArrayList<>(10);
+        ArrayList<Triangle> result = new ArrayList<>(10);
 
         Vector3 shiftX = new ImmutableVector3(halfDimension, 0.0f, 0.0f);
         Vector3 shiftY = new ImmutableVector3(0.0f, halfDimension, 0.0f);
@@ -61,8 +62,8 @@ public class SceneFactory {
         ImmutableVector3 p2x1 = new ImmutableVector3(center.minus(shiftX).plus(shiftY).minus(shiftZ));
         ImmutableVector3 p3x1 = new ImmutableVector3(center.minus(shiftX).plus(shiftY).plus(shiftZ));
 
-        ObjectLayoutTriangle t0 = ObjectLayoutTriangle.createTriangle(p0x1, p1x1, p2x1, WAAL_MATERIAL);
-        ObjectLayoutTriangle t1 = ObjectLayoutTriangle.createTriangle(p3x1, p0x1, p2x1, WAAL_MATERIAL);
+        Triangle t0 = SimpleTriangle.createTriangle(p0x1, p1x1, p2x1, WAAL_MATERIAL);
+        Triangle t1 = SimpleTriangle.createTriangle(p3x1, p0x1, p2x1, WAAL_MATERIAL);
 
         //left
         result.add(t0);
@@ -73,14 +74,14 @@ public class SceneFactory {
         result.add(t1.transpose(minusCenter).rotate(rotationY90).transpose(center));
 
         //ceil
-        ObjectLayoutTriangle t2 = t0.transpose(minusCenter).rotate(rotationZ90).transpose(center);
-        ObjectLayoutTriangle t3 = t1.transpose(minusCenter).rotate(rotationZ90).transpose(center);
+        Triangle t2 = t0.transpose(minusCenter).rotate(rotationZ90).transpose(center);
+        Triangle t3 = t1.transpose(minusCenter).rotate(rotationZ90).transpose(center);
         result.add(t2);
         result.add(t3);
 
         //right
-        ObjectLayoutTriangle t4 = t2.transpose(minusCenter).rotate(rotationZ90).transpose(center);
-        ObjectLayoutTriangle t5 = t3.transpose(minusCenter).rotate(rotationZ90).transpose(center);
+        Triangle t4 = t2.transpose(minusCenter).rotate(rotationZ90).transpose(center);
+        Triangle t5 = t3.transpose(minusCenter).rotate(rotationZ90).transpose(center);
         result.add(t4);
         result.add(t5);
 

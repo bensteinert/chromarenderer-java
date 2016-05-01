@@ -10,9 +10,10 @@ public class ChromaSettings {
     private final int imgWidth;
     private final int imgHeight;
     private final ChromaRenderMode renderMode;
-    private final int maxRayDepth = 10;
     private final boolean lightSourceSamplingMode;
     private final AccStructType accStructType;
+    // TODO make configurable
+    private final int maxRayDepth = 5;
 
 
     public ChromaSettings(boolean parallelize, int imgWidth, int imgHeight, ChromaRenderMode renderMode, boolean lightSourceSamplingMode, AccStructType accStructType) {

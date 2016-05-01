@@ -3,26 +3,27 @@ package net.chromarenderer.main;
 
 import net.chromarenderer.utils.FpsCounter;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 
 public class ChromaStatistics {
 
-    private static final AtomicInteger reverseRaysMissed = new AtomicInteger(0);
-    private static final AtomicInteger totalFrames = new AtomicInteger(0);
-    private static final AtomicInteger rayCount = new AtomicInteger(0);
+    private static final AtomicLong subsurfaceHitpointCorrected = new AtomicLong(0);
+    private static final AtomicLong totalFrames = new AtomicLong(0);
+
+    private static final AtomicLong rayCounter = new AtomicLong(0);
     private static final AtomicLong intersectionCounter = new AtomicLong(0);
+
     private static final FpsCounter fpsCounter = new FpsCounter();
 
 
-    public static void reverseRayMissed() {
-        reverseRaysMissed.incrementAndGet();
+    public static void subsurfaceHitpointCorrected() {
+        subsurfaceHitpointCorrected.incrementAndGet();
     }
 
 
-    public static int getReverseRaysMissedCount() {
-        return reverseRaysMissed.intValue();
+    public static int getSubsurfaceCorrectionsCount() {
+        return subsurfaceHitpointCorrected.intValue();
     }
 
 
@@ -32,10 +33,11 @@ public class ChromaStatistics {
 
 
     static void reset() {
-        reverseRaysMissed.set(0);
+        subsurfaceHitpointCorrected.set(0);
         totalFrames.set(0);
         fpsCounter.reset();
         intersectionCounter.set(0);
+        rayCounter.set(0);
     }
 
 
@@ -46,27 +48,26 @@ public class ChromaStatistics {
 
 
     public static void ray() {
-        rayCount.incrementAndGet();
+        rayCounter.incrementAndGet();
     }
 
 
-    public static int getRayCountAndFlush() {
-        return rayCount.getAndSet(0);
+    public static long getRayCountAndFlush() {
+        return rayCounter.getAndSet(0);
     }
 
 
-    public static Integer getTotalFrameCount() {
+    public static long getTotalFrameCount() {
         return totalFrames.get();
     }
 
 
-    public static Long getTotalIntersectionsAndFlush() {
+    public static long getIntersectionsCountAndFlush() {
         return intersectionCounter.getAndSet(0);
     }
 
 
     public static void intersectOp() {
         intersectionCounter.getAndIncrement();
-
     }
 }

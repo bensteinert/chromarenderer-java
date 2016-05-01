@@ -1,10 +1,10 @@
-package net.chromarenderer.math.shader;
+package net.chromarenderer.renderer.shader;
 
 import net.chromarenderer.math.COLORS;
 import net.chromarenderer.math.Vector3;
 
 /**
- * @author steinerb
+ * @author bensteinert
  */
 public class Material {
 

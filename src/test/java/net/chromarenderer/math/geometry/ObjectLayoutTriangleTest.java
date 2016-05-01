@@ -2,13 +2,13 @@ package net.chromarenderer.math.geometry;
 
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
-import net.chromarenderer.math.shader.Material;
+import net.chromarenderer.renderer.shader.Material;
 import org.junit.Test;
 
 /**
  * @author bensteinert
  */
-public class ObjectLayout_TriangleTest {
+public class ObjectLayoutTriangleTest {
 
     @Test
     public void newInstance() throws Exception {
