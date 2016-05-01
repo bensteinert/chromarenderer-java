@@ -7,13 +7,13 @@ import org.apache.commons.math3.util.FastMath;
  */
 public interface Vector3 {
 
-    public static final ImmutableVector3 ONE = new ImmutableVector3(1.0f, 1.0f, 1.0f);
-    public static final ImmutableVector3 FLT_MAX = new ImmutableVector3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-    public static final ImmutableVector3 MINUS_FLT_MAX = new ImmutableVector3(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
-    public static final ImmutableVector3 X_AXIS = new ImmutableVector3(1.0f, 0.0f, 0.0f);
-    public static final ImmutableVector3 Y_AXIS = new ImmutableVector3(0.0f, 1.0f, 0.0f);
-    public static final ImmutableVector3 Z_AXIS = new ImmutableVector3(0.0f, 0.0f, 1.0f);
-    public static final ImmutableVector3 ORIGIN = new ImmutableVector3(0.0f, 0.0f, 0.0f);
+    ImmutableVector3 ONE = new ImmutableVector3(1.0f, 1.0f, 1.0f);
+    ImmutableVector3 FLT_MAX = new ImmutableVector3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+    ImmutableVector3 MINUS_FLT_MAX = new ImmutableVector3(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
+    ImmutableVector3 X_AXIS = new ImmutableVector3(1.0f, 0.0f, 0.0f);
+    ImmutableVector3 Y_AXIS = new ImmutableVector3(0.0f, 1.0f, 0.0f);
+    ImmutableVector3 Z_AXIS = new ImmutableVector3(0.0f, 0.0f, 1.0f);
+    ImmutableVector3 ORIGIN = new ImmutableVector3(0.0f, 0.0f, 0.0f);
 
 
     Vector3 mult(float val);
@@ -54,15 +54,15 @@ public interface Vector3 {
 
     Vector3 abs();
 
-    default public float getMaxValue() {
+    default float getMaxValue() {
         return FastMath.max(getZ(), FastMath.max(getX(), getY()));
     }
 
-    default public boolean nonZero() {
+    default boolean nonZero() {
         return getX() != 0.0f || getY() != 0.0f || getZ() != 0.0f;
     }
 
-    default public int getMinIndexAbs() {
+    default int getMinIndexAbs() {
         float absX = FastMath.abs(getX());
         float absY = FastMath.abs(getY());
         float absZ = FastMath.abs(getZ());
@@ -74,7 +74,7 @@ public interface Vector3 {
         }
     }
 
-    default public boolean isNaN(){
+    default boolean isNaN(){
         return Float.isNaN(getX()) || Float.isNaN(getY()) ||Float.isNaN(getZ());
     }
 

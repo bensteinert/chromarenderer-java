@@ -13,7 +13,7 @@ public class ObjectLayout_TriangleTest {
     @Test
     public void newInstance() throws Exception {
         ImmutableVector3[] arr = new ImmutableVector3[]{Vector3.FLT_MAX, Vector3.MINUS_FLT_MAX, Vector3.ONE, Vector3.Z_AXIS};
-        ObjectLayout_Triangle objectLayoutTriangle = ObjectLayout_Triangle.createTriangle(arr[0],arr[1],arr[2],arr[3] , Material.NULL);
+        ObjectLayoutTriangle objectLayoutTriangle = ObjectLayoutTriangle.createTriangle(arr[0],arr[1],arr[2],arr[3] , Material.NULL);
         System.out.println(objectLayoutTriangle);
     }
 

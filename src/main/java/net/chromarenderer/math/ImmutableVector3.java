@@ -8,9 +8,9 @@ import org.apache.commons.math3.util.FastMath;
 public class ImmutableVector3 implements Vector3 {
 
     // using an array instead of members is up to x2 slower... investigate!
-    public final float x;
-    public final float y;
-    public final float z;
+    private final float x;
+    private final float y;
+    private final float z;
 
     public ImmutableVector3(){
         this.x = 0.f;
@@ -173,8 +173,4 @@ public class ImmutableVector3 implements Vector3 {
         return new ImmutableVector3(FastMath.abs(x), FastMath.abs(y), FastMath.abs(z));
     }
 
-
-    public ImmutableVector3 inverse() {
-        return new ImmutableVector3(1.f / this.getX(), 1.f/this.getY(), 1.f/this.getZ()).normalize();
-    }
 }

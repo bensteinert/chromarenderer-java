@@ -8,11 +8,11 @@ import org.junit.Test;
 /**
  * @author steinerb
  */
-public class TriangleTest {
+public class SimpleTriangleTest {
 
     @Test
     public void testIntersectHit() throws Exception {
-        Triangle triangle = new Triangle(
+        SimpleTriangle triangle = new SimpleTriangle(
                 new ImmutableVector3(0.f, 0.f, 1.f),    //x
                 new ImmutableVector3(.0f, 1.f, 1.f),    //y
                 new ImmutableVector3(1.f, 0.f, 1.f),    //z
@@ -24,7 +24,7 @@ public class TriangleTest {
 
     @Test
     public void testIntersectMiss() throws Exception {
-        Triangle triangle = new Triangle(
+        SimpleTriangle triangle = new SimpleTriangle(
                 new ImmutableVector3(0.f, 0.f, 1.f),    //x
                 new ImmutableVector3(.0f, 1.f, 1.f),    //y
                 new ImmutableVector3(1.f, 0.f, 1.f),    //z
@@ -45,7 +45,7 @@ public class TriangleTest {
 
     @Test
     public void testIntersectRayDirectionParallel() throws Exception {
-        Triangle triangle = new Triangle(
+        SimpleTriangle triangle = new SimpleTriangle(
                 new ImmutableVector3(0.f, 0.f, 1.f),    //x
                 new ImmutableVector3(.0f, 1.f, 1.f),    //y
                 new ImmutableVector3(1.f, 0.f, 1.f),    //z
@@ -61,33 +61,33 @@ public class TriangleTest {
 
     @Test
     public void testSubdivide() throws Exception {
-        Triangle triangle = new Triangle(
+        SimpleTriangle triangle = new SimpleTriangle(
                 new ImmutableVector3(0.f, 0.f, 0.f),    //x
                 new ImmutableVector3(2.f, 0.f, 0.f),    //y
                 new ImmutableVector3(2.f, 2.f, 0.f));   //z;
 
-        Triangle expectedT1 = new Triangle(
+        SimpleTriangle expectedT1 = new SimpleTriangle(
                 new ImmutableVector3(0.f, 0.f, 0.f),    //x
                 new ImmutableVector3(1.f, 0.f, 0.f),    //y
                 new ImmutableVector3(1.f, 1.f, 0.f));   //z;
 
-        Triangle expectedT2 = new Triangle(
+        SimpleTriangle expectedT2 = new SimpleTriangle(
                 new ImmutableVector3(1.f, 0.f, 0.f),    //x
                 new ImmutableVector3(2.f, 0.f, 0.f),    //y
                 new ImmutableVector3(2.f, 1.f, 0.f));   //z;
 
-        Triangle expectedT3 = new Triangle(
+        SimpleTriangle expectedT3 = new SimpleTriangle(
                 new ImmutableVector3(2.f, 1.f, 0.f),    //x
                 new ImmutableVector3(2.f, 2.f, 0.f),    //y
                 new ImmutableVector3(1.f, 1.f, 0.f));   //z;
 
-        Triangle expectedT4 = new Triangle(
+        SimpleTriangle expectedT4 = new SimpleTriangle(
                 new ImmutableVector3(1.f, 0.f, 0.f),    //x
                 new ImmutableVector3(2.f, 1.f, 0.f),    //y
                 new ImmutableVector3(1.f, 1.f, 0.f));   //z;
 
 
-        Triangle[] subdividedTriangles = triangle.subdivide();
+        SimpleTriangle[] subdividedTriangles = triangle.subdivide();
 
         Assert.assertEquals(expectedT1, subdividedTriangles[0]);
         Assert.assertEquals(expectedT2, subdividedTriangles[1]);
