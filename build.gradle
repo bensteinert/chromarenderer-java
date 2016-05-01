@@ -25,10 +25,9 @@ repositories {
 }
 
 dependencies {
-    compile 'com.google.guava:guava:18.0'
-    compile 'org.apache.commons:commons-math3:3.4.1'
+    compile 'org.apache.commons:commons-math3:3.6.1'
     compile files('lib/ObjectLayout-1.0.5-SNAPSHOT.jar')
-    testCompile 'junit:junit:4.11'
+    testCompile 'junit:junit:4.12'
 }
 
 jar {
