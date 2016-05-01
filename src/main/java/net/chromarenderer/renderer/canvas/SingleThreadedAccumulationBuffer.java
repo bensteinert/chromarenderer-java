@@ -7,7 +7,7 @@ import net.chromarenderer.math.Vector3;
  */
 public class SingleThreadedAccumulationBuffer extends ChromaCanvas implements AccumulationBuffer {
 
-    protected int accCount;
+    int accCount;
 
     public SingleThreadedAccumulationBuffer(int width, int height) {
         super(width, height);
@@ -16,9 +16,6 @@ public class SingleThreadedAccumulationBuffer extends ChromaCanvas implements Ac
 
     @Override
     public SingleThreadedAccumulationBuffer accumulate(Vector3[] input) {
-        if (input.length != width * height) {
-            throw new IllegalArgumentException("Mismatching Accumulation buffer input!");
-        }
 
         for (int i = 0; i < width * height; i++) {
             pixels[i] = pixels[i].mult(accCount).plus(input[i]).div(accCount + 1);

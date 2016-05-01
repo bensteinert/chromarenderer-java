@@ -2,8 +2,10 @@ package net.chromarenderer.renderer.canvas;
 
 import net.chromarenderer.math.MutableVector3;
 
+import java.util.stream.IntStream;
+
 /**
- * @author steinerb
+ * @author bensteinert
  */
 public class ChromaCanvas {
 
@@ -33,13 +35,12 @@ public class ChromaCanvas {
     public byte[] to8BitImage() {
         int pixelCount = width * height;
         byte[] result = new byte[pixelCount * 3];
-        //TODO parallelize
-        for (int i = 0, j = 0; i < pixelCount; i += 1, j += 3) {
+        IntStream.range(0, pixelCount).parallel().forEach(i -> {
+            int j = i * 3;
             result[j] =     (byte) (255.0f * (Math.min(pixels[i].getX(), 1.0f)));
             result[j + 1] = (byte) (255.0f * (Math.min(pixels[i].getY(), 1.0f)));
             result[j + 2] = (byte) (255.0f * (Math.min(pixels[i].getZ(), 1.0f)));
-        }
-
+        });
         return result;
     }
 

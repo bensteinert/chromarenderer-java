@@ -33,7 +33,7 @@ public class SimpleRayCaster extends ChromaCanvas implements Renderer {
 
     @Override
     public void renderNextImage() {
-        if (settings.parallelized()){
+        if (settings.isMultiThreaded()){
             IntStream.range(0, settings.getImgHeight()).parallel().forEach(j ->
                     IntStream.range(0, settings.getImgWidth()).parallel().forEach(i -> {
                         renderPixel(j, i);

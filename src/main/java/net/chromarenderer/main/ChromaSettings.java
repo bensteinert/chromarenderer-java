@@ -10,19 +10,16 @@ public class ChromaSettings {
     private final int imgWidth;
     private final int imgHeight;
     private final ChromaRenderMode renderMode;
-    @Deprecated
-    private final boolean forceContinuousRender;
-    private final int maxRayDepth = 3;
+    private final int maxRayDepth = 10;
     private final boolean lightSourceSamplingMode;
     private final AccStructType accStructType;
 
 
-    public ChromaSettings(boolean parallelized, int imgWidth, int imgHeight, ChromaRenderMode renderMode, boolean forceContinuousRender, boolean lightSourceSamplingMode, AccStructType accStructType) {
-        this.parallelized = parallelized;
+    public ChromaSettings(boolean parallelize, int imgWidth, int imgHeight, ChromaRenderMode renderMode, boolean lightSourceSamplingMode, AccStructType accStructType) {
+        this.parallelized = parallelize;
         this.imgWidth = imgWidth;
         this.imgHeight = imgHeight;
         this.renderMode = renderMode;
-        this.forceContinuousRender = forceContinuousRender;
         this.lightSourceSamplingMode = lightSourceSamplingMode;
         this.accStructType = accStructType;
     }
@@ -33,7 +30,6 @@ public class ChromaSettings {
         this.imgWidth = settings.getImgWidth();
         this.imgHeight = settings.getImgHeight();
         this.renderMode = settings.getRenderMode();
-        this.forceContinuousRender = settings.isForceContinuousRender();
         this.lightSourceSamplingMode = settings.lightSourceSamplingMode;
         this.accStructType = settings.accStructType;
     }
@@ -54,36 +50,12 @@ public class ChromaSettings {
     }
 
 
-    public boolean isForceContinuousRender() {
-        return forceContinuousRender;
-    }
-
-
-    public ChromaSettings changeMode(ChromaRenderMode mode) {
-        return new ChromaSettings(parallelized, imgWidth, imgHeight, mode, forceContinuousRender, lightSourceSamplingMode, accStructType);
-    }
-
-
-    public ChromaSettings changeContinuousRender(boolean isContinuousRender) {
-        return new ChromaSettings(parallelized, imgWidth, imgHeight, renderMode, isContinuousRender, lightSourceSamplingMode, accStructType);
-
-    }
-
     public int getMaxRayDepth() {
         return maxRayDepth;
     }
 
 
-    public ChromaSettings changeDirectLightEstimation(Boolean value) {
-        return new ChromaSettings(parallelized, imgWidth, imgHeight, renderMode, forceContinuousRender, value, accStructType);
-    }
-
-    public ChromaSettings changeDoParallelize(Boolean value) {
-        return new ChromaSettings(value, imgWidth, imgHeight, renderMode, forceContinuousRender, value, accStructType);
-    }
-
-
-    public boolean isDirectLightEstimationEnabled(){
+    public boolean isDirectLightEstimationEnabled() {
         return lightSourceSamplingMode;
     }
 
@@ -93,17 +65,7 @@ public class ChromaSettings {
     }
 
 
-    public ChromaSettings changeAccStructMode(AccStructType newValue) {
-        return new ChromaSettings(parallelized, imgWidth, imgHeight, renderMode, forceContinuousRender, lightSourceSamplingMode, newValue);
-    }
-
-
-    public ChromaSettings changeResolution(int width, int height) {
-        return new ChromaSettings(parallelized, width, height, renderMode, forceContinuousRender, lightSourceSamplingMode, accStructType);
-    }
-
-
-    public boolean parallelized() {
+    public boolean isMultiThreaded() {
         return parallelized;
     }
 }

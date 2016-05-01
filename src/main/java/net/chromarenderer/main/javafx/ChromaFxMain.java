@@ -94,11 +94,11 @@ public class ChromaFxMain extends Application {
             }
         });
 
-        // TODO: Change to make parallelization switchable...
-        controlPane.add(new Text("Accumulate:"), 0, rowIdx);
-        CheckBox accumulate = new CheckBox();
-        controlPane.add(accumulate, 1, rowIdx++);
-        accumulate.selectedProperty().setValue(settings.isForceContinuousRender());
+
+        controlPane.add(new Text("Multi Threading:"), 0, rowIdx);
+        CheckBox parallelize = new CheckBox();
+        controlPane.add(parallelize, 1, rowIdx++);
+        parallelize.selectedProperty().setValue(settings.isMultiThreaded());
 
         controlPane.add(new Text("DL Estimation:"), 0, rowIdx);
         CheckBox directLightEstimation = new CheckBox();
@@ -114,11 +114,10 @@ public class ChromaFxMain extends Application {
             start.setDisable(true);
             String[] split = resolutionCombo.getValue().split("x");
             settings = new ChromaSettings(
-                    true,
+                    parallelize.selectedProperty().getValue(),
                     Integer.parseInt(split[0]),
                     Integer.parseInt(split[1]),
                     renderModeCombo.getValue(),
-                    true,
                     directLightEstimation.selectedProperty().getValue(),
                     accStructCombo.getValue()
                     );
@@ -311,7 +310,7 @@ public class ChromaFxMain extends Application {
     public static void main(String[] args) {
         Thread thread = new Thread(chroma);
         scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, createSomeSpheres());
-        settings = new ChromaSettings(false, 512, 512, ChromaRenderMode.PTDL, true, true, AccStructType.AABB_BVH);
+        settings = new ChromaSettings(false, 512, 512, ChromaRenderMode.PTDL, true, AccStructType.AABB_BVH);
         chroma.reinit(settings, scene);
         thread.start();
 

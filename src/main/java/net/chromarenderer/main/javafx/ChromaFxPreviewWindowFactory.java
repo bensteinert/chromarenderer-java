@@ -31,7 +31,8 @@ class ChromaFxPreviewWindowFactory {
             @Override
             public void handle(long now) {
                 if (chroma.hasChanges()) {
-                     img.getPixelWriter().setPixels(0, 0, width, height, PixelFormat.getByteRgbInstance(), chroma.getCurrentFrame(), 0, height * 3);
+                    // TODO: parallelize
+                    img.getPixelWriter().setPixels(0, 0, width, height, PixelFormat.getByteRgbInstance(), chroma.getCurrentFrame(), 0, height * 3);
                 }
             }
         };
