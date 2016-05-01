@@ -2,6 +2,7 @@ package net.chromarenderer.renderer.core;
 
 import net.chromarenderer.math.MutableVector3;
 import net.chromarenderer.math.random.MersenneTwisterFast;
+import org.apache.commons.math3.util.FastMath;
 
 /**
  * @author steinerb
@@ -21,7 +22,7 @@ public class RandomPixelGenerator {
         byte[] pixels = new byte[count];
 
         for (int i = 0; i < count; i++) {
-            pixels[i] = (byte) (Math.random() * 127);
+            pixels[i] = (byte) (FastMath.random() * 127);
         }
 
         return pixels;

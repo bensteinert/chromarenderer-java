@@ -1,6 +1,7 @@
 package net.chromarenderer.renderer.canvas;
 
 import net.chromarenderer.math.MutableVector3;
+import org.apache.commons.math3.util.FastMath;
 
 import java.util.stream.IntStream;
 
@@ -37,9 +38,9 @@ public class ChromaCanvas {
         byte[] result = new byte[pixelCount * 3];
         IntStream.range(0, pixelCount).parallel().forEach(i -> {
             int j = i * 3;
-            result[j] =     (byte) (255.0f * (Math.min(pixels[i].getX(), 1.0f)));
-            result[j + 1] = (byte) (255.0f * (Math.min(pixels[i].getY(), 1.0f)));
-            result[j + 2] = (byte) (255.0f * (Math.min(pixels[i].getZ(), 1.0f)));
+            result[j] =     (byte) (255.0f * (FastMath.min(pixels[i].getX(), 1.0f)));
+            result[j + 1] = (byte) (255.0f * (FastMath.min(pixels[i].getY(), 1.0f)));
+            result[j + 2] = (byte) (255.0f * (FastMath.min(pixels[i].getZ(), 1.0f)));
         });
         return result;
     }

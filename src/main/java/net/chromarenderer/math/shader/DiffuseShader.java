@@ -12,6 +12,7 @@ import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
 import net.chromarenderer.renderer.scene.ChromaScene;
 import net.chromarenderer.renderer.scene.Radiance;
+import org.apache.commons.math3.util.FastMath;
 
 /**
  * @author steinerb
@@ -87,7 +88,7 @@ class DiffuseShader {
         Vector3 rhoDiffuse = hitpoint.getHitGeometry().getMaterial().getColor();
         float precisionBound = 10.0f / (rhoDiffuse.getMaxValue());      // bound can include brdf which can soften the geometric term
         Vector3 lightSourceEmission = lightSourceSample.getHitGeometry().getMaterial().getColor();
-        Vector3 result = lightSourceEmission.mult(rhoDiffuse.div(Constants.PI_f).mult(Math.min(precisionBound, geomTerm)).mult(lightSourceSample.getInverseSampleWeight()));
+        Vector3 result = lightSourceEmission.mult(rhoDiffuse.div(Constants.PI_f).mult(FastMath.min(precisionBound, geomTerm)).mult(lightSourceSample.getInverseSampleWeight()));
 
         return new Radiance(result.mult(pathWeight), shadowRay);
     }
@@ -96,12 +97,12 @@ class DiffuseShader {
     static Ray getRecursiveRaySample(Hitpoint hitpoint) {
         float u = ChromaThreadContext.randomFloatClosedOpen();
         float v = ChromaThreadContext.randomFloatClosedOpen();
-        float sqrtU = (float) Math.sqrt(u);
+        float sqrtU = (float) FastMath.sqrt(u);
         float v2pi = v * Constants.TWO_PI_f;
 
-        float sampleX = (float) Math.cos(v2pi) * sqrtU;
-        float sampleY = (float) Math.sin(v2pi) * sqrtU;
-        float sampleZ = (float) Math.sqrt(1.0f - u);
+        float sampleX = (float) FastMath.cos(v2pi) * sqrtU;
+        float sampleY = (float) FastMath.sin(v2pi) * sqrtU;
+        float sampleZ = (float) FastMath.sqrt(1.0f - u);
         CoordinateSystem coordinateSystem = hitpoint.getCoordinateSystem();
 
         Vector3 newDirection = new MutableVector3(coordinateSystem.getT1()).mult(sampleX)

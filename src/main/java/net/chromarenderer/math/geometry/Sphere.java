@@ -1,5 +1,6 @@
 package net.chromarenderer.math.geometry;
 
+import net.chromarenderer.main.ChromaStatistics;
 import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.ImmutableMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
@@ -7,7 +8,7 @@ import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.math.shader.Material;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
-import net.chromarenderer.main.ChromaStatistics;
+import org.apache.commons.math3.util.FastMath;
 
 /**
  * @author bensteinert
@@ -46,7 +47,7 @@ public class Sphere extends AbstractGeometry {
         if (disc < 0.0) return 0.0f;
 
         // compute q as described above
-        double distSqrt = Math.sqrt(disc);
+        double distSqrt = FastMath.sqrt(disc);
         double q = b < 0 ? (-b - distSqrt) * 0.5 : (-b + distSqrt) * 0.5;
 
         // compute t0 and t1
@@ -109,10 +110,10 @@ public class Sphere extends AbstractGeometry {
     public ImmutableVector3 getUnifDistrSample() {
         float u = (ChromaThreadContext.randomFloatOpenOpen() - 0.5f) * 2.0f;
         float v = ChromaThreadContext.randomFloatClosedOpen();
-        float sqrtOneMinusU = (float) Math.sqrt(1.0f - u * u); // sin² + cos² = 1 -> sin = sqrt(1-cos²)
+        float sqrtOneMinusU = (float) FastMath.sqrt(1.0f - u * u); // sin² + cos² = 1 -> sin = sqrt(1-cos²)
         float vTwoPi = v * Constants.TWO_PI_f;
 
-        ImmutableVector3 unitSphereSample = new ImmutableVector3((float) (Math.cos(vTwoPi) * sqrtOneMinusU), (float) (sqrtOneMinusU * Math.sin(vTwoPi)), u);
+        ImmutableVector3 unitSphereSample = new ImmutableVector3((float) (FastMath.cos(vTwoPi) * sqrtOneMinusU), (float) (sqrtOneMinusU * FastMath.sin(vTwoPi)), u);
         return center.plus(unitSphereSample.mult((float) radius));
     }
 

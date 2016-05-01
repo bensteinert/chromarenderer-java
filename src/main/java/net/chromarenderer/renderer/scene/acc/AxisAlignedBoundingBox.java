@@ -2,6 +2,7 @@ package net.chromarenderer.renderer.scene.acc;
 
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.raytracing.Ray;
+import org.apache.commons.math3.util.FastMath;
 
 /**
  * @author bensteinert
@@ -95,7 +96,7 @@ public class AxisAlignedBoundingBox {
 
     public float getVolume() {
         ImmutableVector3 extent = getExtent();
-        return Math.abs(extent.getX() * extent.getY() * extent.getZ());
+        return FastMath.abs(extent.getX() * extent.getY() * extent.getZ());
     }
 
 

@@ -5,6 +5,7 @@ import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
+import org.apache.commons.math3.util.FastMath;
 
 /**
  * @author steinerb
@@ -49,10 +50,10 @@ public class PinholeCamera implements Camera {
         position = position.plus(coordinateSystem.mult(translation));
 
         //SLEEF FastMath useful here probably!
-        float sin_t = (float) Math.sin(rotationVector.getY());
-        float cos_t = (float) Math.cos(rotationVector.getY());
-        float sin_p = (float) Math.sin(rotationVector.getX());
-        float cos_p = (float) Math.cos(rotationVector.getX());
+        float sin_t = (float) FastMath.sin(rotationVector.getY());
+        float cos_t = (float) FastMath.cos(rotationVector.getY());
+        float sin_p = (float) FastMath.sin(rotationVector.getX());
+        float cos_p = (float) FastMath.cos(rotationVector.getX());
 
         ImmutableMatrix3x3 rotation = new ImmutableMatrix3x3(cos_p,        0.0f,   sin_p,
                                                                        sin_t*sin_p,  cos_t, -1.0f*sin_t*cos_p,

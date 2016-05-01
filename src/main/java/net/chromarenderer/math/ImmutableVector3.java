@@ -1,5 +1,7 @@
 package net.chromarenderer.math;
 
+import org.apache.commons.math3.util.FastMath;
+
 /**
 * @author steinerb
 */
@@ -168,7 +170,7 @@ public class ImmutableVector3 implements Vector3 {
 
     @Override
     public ImmutableVector3 abs() {
-        return new ImmutableVector3(Math.abs(x), Math.abs(y), Math.abs(z));
+        return new ImmutableVector3(FastMath.abs(x), FastMath.abs(y), FastMath.abs(z));
     }
 
 

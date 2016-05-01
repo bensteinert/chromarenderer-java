@@ -6,6 +6,7 @@ import net.chromarenderer.math.MutableVector3;
 import net.chromarenderer.math.geometry.Geometry;
 import net.chromarenderer.math.shader.MaterialType;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
+import org.apache.commons.math3.util.FastMath;
 
 
 public class Hitpoint {
@@ -63,10 +64,10 @@ public class Hitpoint {
         float u = ChromaThreadContext.randomFloatClosedOpen();
         float v = ChromaThreadContext.randomFloatClosedOpen();
 
-        float sqrtOneMinusU = (float) Math.sqrt(1.0f - u * u); // sin² + cos² = 1 -> sin = sqrt(1-cos²)
+        float sqrtOneMinusU = (float) FastMath.sqrt(1.0f - u * u); // sin² + cos² = 1 -> sin = sqrt(1-cos²)
         float vTwoPi = v * Constants.TWO_PI_f;
 
-        ImmutableVector3 unitSphereSample = new ImmutableVector3((float) (Math.cos(vTwoPi) * sqrtOneMinusU), (float) (sqrtOneMinusU * Math.sin(vTwoPi)), u);
+        ImmutableVector3 unitSphereSample = new ImmutableVector3((float) (FastMath.cos(vTwoPi) * sqrtOneMinusU), (float) (sqrtOneMinusU * FastMath.sin(vTwoPi)), u);
         CoordinateSystem coordinateSystem = getCoordinateSystem();
         return coordinateSystem.getT1().mult(unitSphereSample.getX()).plus(coordinateSystem.getT2().mult(unitSphereSample.getY())).plus(coordinateSystem.getN().mult(unitSphereSample.getZ())).normalize();
     }

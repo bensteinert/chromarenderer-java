@@ -1,5 +1,7 @@
 package net.chromarenderer.math;
 
+import org.apache.commons.math3.util.FastMath;
+
 /**
  * @author steinerb
  */
@@ -13,17 +15,17 @@ public class VectorUtils {
 
     public static ImmutableVector3 maxVector(Vector3 p0, Vector3 p1) {
         return new ImmutableVector3(
-                Math.max(p0.getX(), p1.getX()),
-                Math.max(p0.getY(), p1.getY()),
-                Math.max(p0.getZ(), p1.getZ())
+                FastMath.max(p0.getX(), p1.getX()),
+                FastMath.max(p0.getY(), p1.getY()),
+                FastMath.max(p0.getZ(), p1.getZ())
         );
     }
 
     public static ImmutableVector3 minVector(Vector3 p0, Vector3 p1) {
         return new ImmutableVector3(
-                Math.min(p0.getX(), p1.getX()),
-                Math.min(p0.getY(), p1.getY()),
-                Math.min(p0.getZ(), p1.getZ())
+                FastMath.min(p0.getX(), p1.getX()),
+                FastMath.min(p0.getY(), p1.getY()),
+                FastMath.min(p0.getZ(), p1.getZ())
         );
     }
 }

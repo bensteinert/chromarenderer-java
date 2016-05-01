@@ -1,5 +1,7 @@
 package net.chromarenderer.math;
 
+import org.apache.commons.math3.util.FastMath;
+
 /**
  * @author steinerb
  */
@@ -27,7 +29,7 @@ public interface Vector3 {
     }
 
     default float length() {
-        return (float) Math.sqrt(getX() * getX() + getY() * getY() + getZ() * getZ());
+        return (float) FastMath.sqrt(getX() * getX() + getY() * getY() + getZ() * getZ());
     }
 
     float[] internalGetValues();
@@ -53,7 +55,7 @@ public interface Vector3 {
     Vector3 abs();
 
     default public float getMaxValue() {
-        return Math.max(getZ(), Math.max(getX(), getY()));
+        return FastMath.max(getZ(), FastMath.max(getX(), getY()));
     }
 
     default public boolean nonZero() {
@@ -61,9 +63,9 @@ public interface Vector3 {
     }
 
     default public int getMinIndexAbs() {
-        float absX = Math.abs(getX());
-        float absY = Math.abs(getY());
-        float absZ = Math.abs(getZ());
+        float absX = FastMath.abs(getX());
+        float absY = FastMath.abs(getY());
+        float absZ = FastMath.abs(getZ());
         if(absX < absY) {
             return (absZ < absX) ? 2 : 0;
         }

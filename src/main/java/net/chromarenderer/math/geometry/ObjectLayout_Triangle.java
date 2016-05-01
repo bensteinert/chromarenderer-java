@@ -12,6 +12,7 @@ import org.ObjectLayout.ConstructionContext;
 import org.ObjectLayout.CtorAndArgs;
 import org.ObjectLayout.CtorAndArgsProvider;
 import org.ObjectLayout.StructuredArray;
+import org.apache.commons.math3.util.FastMath;
 
 /**
  * Chroma uses the right-hand-coordinate system. Think about three vertices specified counterclockwise on the floor.
@@ -217,7 +218,7 @@ public class ObjectLayout_Triangle extends StructuredArray<ImmutableVector3> imp
     public ImmutableVector3 getUnifDistrSample() {
         float u = ChromaThreadContext.randomFloatClosedOpen();
         float v = ChromaThreadContext.randomFloatClosedOpen();
-        float sqrtU = (float) Math.sqrt(u);
+        float sqrtU = (float) FastMath.sqrt(u);
         float alpha = 1.0f - sqrtU;
         float beta = (1.0f - v) * sqrtU;
         float gamma = v * sqrtU;

@@ -1,5 +1,6 @@
 package net.chromarenderer.math.geometry;
 
+import net.chromarenderer.main.ChromaStatistics;
 import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.ImmutableMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
@@ -8,7 +9,7 @@ import net.chromarenderer.math.VectorUtils;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.math.shader.Material;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
-import net.chromarenderer.main.ChromaStatistics;
+import org.apache.commons.math3.util.FastMath;
 
 /**
  * Chroma uses the right-hand-coordinate system. Think about three vertices specified counterclockwise on the floor.
@@ -203,7 +204,7 @@ public class Triangle extends AbstractGeometry {
     public ImmutableVector3 getUnifDistrSample() {
         float u = ChromaThreadContext.randomFloatClosedOpen();
         float v = ChromaThreadContext.randomFloatClosedOpen();
-        float sqrtU = (float) Math.sqrt(u);
+        float sqrtU = (float) FastMath.sqrt(u);
         float alpha = 1.0f - sqrtU;
         float beta = (1.0f - v) * sqrtU;
         float gamma = v * sqrtU;

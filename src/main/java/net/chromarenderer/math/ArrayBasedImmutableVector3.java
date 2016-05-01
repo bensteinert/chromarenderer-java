@@ -1,5 +1,7 @@
 package net.chromarenderer.math;
 
+import org.apache.commons.math3.util.FastMath;
+
 import java.util.Arrays;
 
 /**
@@ -156,7 +158,7 @@ public class ArrayBasedImmutableVector3 implements Vector3 {
 
     @Override
     public ArrayBasedImmutableVector3 abs() {
-        return new ArrayBasedImmutableVector3(Math.abs(values[0]), Math.abs(values[1]), Math.abs(values[2]));
+        return new ArrayBasedImmutableVector3(FastMath.abs(values[0]), FastMath.abs(values[1]), FastMath.abs(values[2]));
     }
 
 
