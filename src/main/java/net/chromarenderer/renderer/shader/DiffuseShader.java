@@ -58,7 +58,7 @@ class DiffuseShader {
         Hitpoint lightSourceSample = scene.intersect(ray);
 
         if (lightSourceSample.hit() && lightSourceSample.isOn(MaterialType.EMITTING)) {
-            return new Radiance(lightSourceSample.getHitGeometry().getMaterial().getColor().mult(pathWeight), ray);
+            return new Radiance(lightSourceSample.getHitGeometry().getMaterial().getEmittance().mult(pathWeight), ray);
         } else {
             return new Radiance(COLORS.BLACK, ray);
         }
@@ -87,7 +87,8 @@ class DiffuseShader {
         float geomTerm = (cosThetaSceneHit) / (distToLight * distToLight);
         Vector3 rhoDiffuse = hitpoint.getHitGeometry().getMaterial().getColor();
         float precisionBound = 10.0f / (rhoDiffuse.getMaxValue());      // bound can include brdf which can soften the geometric term
-        Vector3 lightSourceEmission = lightSourceSample.getHitGeometry().getMaterial().getColor();
+        Material emittingMaterial = lightSourceSample.getHitGeometry().getMaterial();
+        Vector3 lightSourceEmission = emittingMaterial.getEmittance();
         Vector3 result = lightSourceEmission.mult(rhoDiffuse.div(Constants.PI_f).mult(FastMath.min(precisionBound, geomTerm)).mult(lightSourceSample.getInverseSampleWeight()));
 
         return new Radiance(result.mult(pathWeight), shadowRay);

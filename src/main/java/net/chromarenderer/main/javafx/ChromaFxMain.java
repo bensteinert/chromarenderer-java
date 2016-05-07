@@ -21,22 +21,14 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import net.chromarenderer.main.Chroma;
 import net.chromarenderer.main.ChromaSettings;
-import net.chromarenderer.math.COLORS;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
-import net.chromarenderer.math.geometry.Geometry;
-import net.chromarenderer.math.geometry.PhotonFountain;
-import net.chromarenderer.math.geometry.Sphere;
-import net.chromarenderer.renderer.shader.Material;
-import net.chromarenderer.renderer.shader.MaterialType;
 import net.chromarenderer.renderer.ChromaRenderMode;
 import net.chromarenderer.renderer.scene.GeometryScene;
 import net.chromarenderer.renderer.scene.SceneFactory;
 import net.chromarenderer.renderer.scene.acc.AccStructType;
 import net.chromarenderer.utils.BufferPressedKeysEventHandler;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 public class ChromaFxMain extends Application {
@@ -294,22 +286,11 @@ public class ChromaFxMain extends Application {
     }
 
 
-    private static List<Geometry> createSomeSpheres() {
-        List<Geometry> result = new ArrayList<>();
-        result.add(new Sphere(new ImmutableVector3(0.0f, -0.3f, 0.0f), 0.1, new Material(MaterialType.DIFFUSE, COLORS.BLUE)));
-        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.0f, -1.0f), 0.2, new Material(MaterialType.DIFFUSE, COLORS.RED)));
-        result.add(new Sphere(new ImmutableVector3(1.0f, -0.4f, 1.0f), 0.2, new Material(MaterialType.DIFFUSE, COLORS.PURPLE)));
-        result.add(new Sphere(new ImmutableVector3(-1.0f, 1.7f, -1.0f), 0.2, new Material(MaterialType.DIFFUSE, COLORS.GREEN)));
-        result.add(new Sphere(new ImmutableVector3(1.0f, -1.5f, -1.0f), 0.4, new Material(MaterialType.MIRROR, COLORS.WHITE)));
-        //result.add(new Sphere(new ImmutableVector3(0.0f, 0.0f, 0.0f), 0.125, new Material(MaterialType.EMITTING, new ImmutableVector3(20, 20 ,200))));
-        result.add(new PhotonFountain(new ImmutableVector3(0.f, 0.f, 0.f), 2000.f));
-        return result;
-    }
 
 
     public static void main(String[] args) {
         Thread thread = new Thread(chroma);
-        scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, createSomeSpheres());
+        scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, SceneFactory.createSomeSpheres());
         settings = new ChromaSettings(false, 512, 512, ChromaRenderMode.PTDL, true, AccStructType.AABB_BVH);
         chroma.reinit(settings, scene);
         thread.start();

@@ -5,10 +5,9 @@ import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.renderer.shader.Material;
-import net.chromarenderer.renderer.shader.MaterialType;
 
 /**
- * Created by ben on 22/02/15.
+ * @author bensteinert
  */
 public class PhotonFountain extends AbstractGeometry {
 
@@ -16,10 +15,9 @@ public class PhotonFountain extends AbstractGeometry {
     private final float power;
 
     public PhotonFountain(ImmutableVector3 point, float power) {
-        super(new Material(MaterialType.EMITTING, Vector3.ONE.mult(power)));
+        super(Material.createEmittingMaterial(Vector3.ONE, power));
         this.power = power;
         this.point = point;
-
     }
 
     @Override

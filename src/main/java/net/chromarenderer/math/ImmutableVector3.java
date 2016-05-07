@@ -104,7 +104,7 @@ public class ImmutableVector3 implements Vector3 {
         return z;
     }
 
-    public Vector3 mult(Vector3 project) {
+    public ImmutableVector3 mult(Vector3 project) {
         return new ImmutableVector3(x * project.getX(), y * project.getY(), z * project.getZ());
     }
 
