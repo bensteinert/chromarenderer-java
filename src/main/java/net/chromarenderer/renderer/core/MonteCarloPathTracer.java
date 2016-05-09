@@ -1,8 +1,8 @@
 package net.chromarenderer.renderer.core;
 
 import net.chromarenderer.main.ChromaSettings;
+import net.chromarenderer.main.ChromaStatistics;
 import net.chromarenderer.math.Constants;
-import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.MutableVector3;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
@@ -57,6 +57,9 @@ public class MonteCarloPathTracer extends ChromaCanvas implements Renderer {
         }
 
         buffer.accumulate(getPixels());
+        if (settings.computeL1Norm()) {
+            ChromaStatistics.L1Norm = buffer.computeL1();
+        }
     }
 
 
@@ -68,31 +71,70 @@ public class MonteCarloPathTracer extends ChromaCanvas implements Renderer {
     }
 
 
-    public Radiance kernel(Ray incomingRay) {
-        float pathWeight = 1.0f;
+    private Radiance kernel(Ray incomingRay) {
         int depth = 0;
         MutableVector3 result = new MutableVector3();
-
-        // L = Le + ∫ fr * Li
-        while (pathWeight > Constants.FLT_EPSILON && depth < settings.getMaxRayDepth()) {
-            // scene intersection
-            Hitpoint hitpoint = scene.intersect(incomingRay);
-            depth++;
-
+        MutableVector3 pathWeight = new MutableVector3(1.f, 1.f, 1.f);
+        Hitpoint hitpoint = null;
+        Radiance fr = null;
+        if (settings.isDirectLightEstimationEnabled()) {
+            hitpoint = scene.intersect(incomingRay);
             if (hitpoint.hit()) {
                 // Add Le
                 Material emitting = hitpoint.getHitGeometry().getMaterial();
+
                 if (MaterialType.EMITTING.equals(emitting.getType())){
-                    result.plus(emitting.getEmittance().mult(pathWeight));
+                    result.plus(emitting.getEmittance());
                 }
 
-                ImmutableVector3 fr = ShaderEngine.brdf2(hitpoint, incomingRay);
-                pathWeight = pathWeight * russianRoulette() * fr.getMaxValue();
+                Radiance frDL = ShaderEngine.getDirectRadiance(incomingRay, hitpoint);
+                if (frDL.getColor().getMaxValue() > Constants.FLT_EPSILON) {
+                    result.plus(frDL.getColor());
+                }
+
+                fr = ShaderEngine.brdf2(hitpoint, incomingRay);
+                pathWeight = pathWeight.mult(fr.getColor());
+                incomingRay = fr.getLightRay();
+
+                while (pathWeight.getMaxValue() > Constants.FLT_EPSILON && depth < settings.getMaxRayDepth()) {
+                    hitpoint = scene.intersect(incomingRay);
+                    depth++;
+                    if (hitpoint.hit()) {
+                        frDL = ShaderEngine.getDirectRadiance(incomingRay, hitpoint);
+                        //System.out.println("frDL" + frDL);
+                        if (frDL.getColor().getMaxValue() > Constants.FLT_EPSILON) {
+                            result.plus(frDL.getColor().mult(pathWeight));
+                        }
+
+                        fr = ShaderEngine.brdf2(hitpoint, incomingRay);
+                        pathWeight = pathWeight.mult(russianRoulette()).mult(fr.getColor());
+                        incomingRay = fr.getLightRay();
+                    }
+                    else break;
+                }
             }
-
         }
+        else {
+            // L = Le + ∫ fr * Li
+            while (pathWeight.getMaxValue() > Constants.FLT_EPSILON && depth < settings.getMaxRayDepth()) {
+                // scene intersection
+                hitpoint = scene.intersect(incomingRay);
+                depth++;
 
-        return new Radiance(result, incomingRay);
+                if (hitpoint.hit()) {
+                    // Add Le
+                    Material emitting = hitpoint.getHitGeometry().getMaterial();
+                    if (MaterialType.EMITTING.equals(emitting.getType())) {
+                        result.plus(emitting.getEmittance().mult(pathWeight));
+                    }
+
+                    fr = ShaderEngine.brdf2(hitpoint, incomingRay);
+                    pathWeight = pathWeight.mult(russianRoulette()).mult(fr.getColor());
+                    incomingRay = fr.getLightRay();
+                }
+            }
+        }
+        return new Radiance(result, null);
     }
 
 

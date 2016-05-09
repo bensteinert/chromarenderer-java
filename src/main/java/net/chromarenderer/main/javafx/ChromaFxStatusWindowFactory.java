@@ -60,13 +60,16 @@ class ChromaFxStatusWindowFactory extends StackPane {
         Text precisionFixedLabel = new Text("Imprecise Hitpoints");
         Text precisionFixedCount = new Text();
 
+        Text L1Norm = new Text("L1 Norm");
+        Text L1NormValue = new Text();
+
         Text cameraPosition = new Text();
 
         vBox.getChildren().add(cameraPosition);
         vBox.setPadding(new Insets(10));
 
-        statusGrid.addColumn(0, col0Title, fpsLabel, intersectionsLabel, rayCountLabel, precisionFixedLabel);
-        statusGrid.addColumn(1, col1Title, fpsCurr, intersectionsCurr, rayCountCurr, precisionFixedCount);
+        statusGrid.addColumn(0, col0Title, fpsLabel, intersectionsLabel, rayCountLabel, precisionFixedLabel, L1Norm);
+        statusGrid.addColumn(1, col1Title, fpsCurr, intersectionsCurr, rayCountCurr, precisionFixedCount, L1NormValue);
         statusGrid.addColumn(2, col2Title, fpsPeak, intersectionsPeak, rayCountPeak);
         statusGrid.addColumn(3, col3Title, framesTotal);
 
@@ -118,6 +121,12 @@ class ChromaFxStatusWindowFactory extends StackPane {
                     cameraPosition.setText(chroma.getCamera().getPosition().toString());
                     framesTotal.setText(String.valueOf(ChromaStatistics.getTotalFrameCount()));
                     lastTimeStamp = now;
+
+                    if (chroma.getSettings().computeL1Norm()) {
+                        L1NormValue.setText(String.valueOf(ChromaStatistics.L1Norm));
+                    } else {
+                        L1NormValue.setText("-.-");
+                    }
                 }
             }
         }.start();

@@ -2,16 +2,17 @@ package net.chromarenderer.main;
 
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
-import net.chromarenderer.renderer.shader.ShaderEngine;
 import net.chromarenderer.renderer.Renderer;
 import net.chromarenderer.renderer.camera.Camera;
 import net.chromarenderer.renderer.camera.PinholeCamera;
 import net.chromarenderer.renderer.core.ColorCubeRenderer;
+import net.chromarenderer.renderer.core.MonteCarloPathTracer;
 import net.chromarenderer.renderer.core.MovingAverageRenderer;
 import net.chromarenderer.renderer.core.SimplePathTracer;
 import net.chromarenderer.renderer.core.SimpleRayCaster;
 import net.chromarenderer.renderer.scene.ChromaScene;
 import net.chromarenderer.renderer.scene.GeometryScene;
+import net.chromarenderer.renderer.shader.ShaderEngine;
 import net.chromarenderer.utils.TgaImageWriter;
 
 import java.util.concurrent.CountDownLatch;
@@ -134,6 +135,9 @@ public class Chroma implements Runnable {
                 break;
             case PTDL:
                 setRenderer(new SimplePathTracer(settings, scene, camera));
+                break;
+            case MT_PTDL:
+                setRenderer(new MonteCarloPathTracer(settings, scene, camera));
                 break;
             default:
                 break;

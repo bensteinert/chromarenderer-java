@@ -29,7 +29,28 @@ public class ShaderEngine {
                 return DiffuseShader.getDirectRadianceSample(hitpoint, pathWeight, settings);
 
             case MIRROR: {
-                return MirrorShader.getDirectRadiance(incomingRay, hitpoint, pathWeight);
+                return MirrorShader.getDirectRadiance(incomingRay, hitpoint);
+            }
+
+            default:
+                return Radiance.NO_CONTRIBUTION;
+        }
+    }
+
+    public static Radiance getDirectRadiance(Ray incomingRay, Hitpoint hitpoint) {
+
+        Material material = hitpoint.getHitGeometry().getMaterial();
+
+        switch (material.getType()) {
+            case DIFFUSE:
+                return DiffuseShader.sampleDirectRadiance(hitpoint);
+
+            case EMITTING:
+                // temporary handling of emitting materials in order to let them participate in reflections
+                return DiffuseShader.sampleDirectRadiance(hitpoint);
+
+            case MIRROR: {
+                return MirrorShader.getDirectRadiance(incomingRay, hitpoint);
             }
 
             default:
@@ -74,8 +95,8 @@ public class ShaderEngine {
         return hitpoint.getHitGeometry().getMaterial().getColor().mult(indirectRadianceSample.getColor().plus(directRadianceSample.getColor()));
     }
 
-    public static ImmutableVector3 brdf2(Hitpoint hitpoint, Ray ray) {
-        return hitpoint.getHitGeometry().getMaterial().getColor();
+    public static Radiance brdf2(Hitpoint hitpoint, Ray ray) {
+        return new Radiance(hitpoint.getHitGeometry().getMaterial().getColor(), getRecursiveRaySample(ray, hitpoint));
     }
 
 

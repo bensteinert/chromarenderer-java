@@ -15,13 +15,13 @@ class MirrorShader {
 
     static ChromaScene scene;
 
-    static Radiance getDirectRadiance(Ray incomingRay, Hitpoint hitpoint, float pathWeight) {
+    static Radiance getDirectRadiance(Ray incomingRay, Hitpoint hitpoint) {
         Ray directRadianceRay = getRecursiveRaySample(incomingRay, hitpoint);
         Hitpoint lightSourceSample = scene.intersect(directRadianceRay);
 
         if (lightSourceSample.hit() && lightSourceSample.isOn(MaterialType.EMITTING)) {
             Material emitting = lightSourceSample.getHitGeometry().getMaterial();
-            return new Radiance(emitting.getEmittance().mult(pathWeight), directRadianceRay);
+            return new Radiance(emitting.getEmittance(), directRadianceRay);
         } else {
             return new Radiance(COLORS.BLACK, directRadianceRay);
         }

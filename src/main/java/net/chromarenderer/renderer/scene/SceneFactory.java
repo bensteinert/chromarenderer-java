@@ -5,7 +5,6 @@ import net.chromarenderer.math.ImmutableMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.geometry.Geometry;
-import net.chromarenderer.math.geometry.PhotonFountain;
 import net.chromarenderer.math.geometry.SimpleTriangle;
 import net.chromarenderer.math.geometry.Sphere;
 import net.chromarenderer.math.geometry.Triangle;
@@ -16,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * @author steinerb
+ * @author bensteinert
  */
 public class SceneFactory {
 
@@ -26,8 +25,8 @@ public class SceneFactory {
     public static GeometryScene cornellBox(ImmutableVector3 center, float halfDimension, List<Geometry> content) {
         List<Triangle> baseBox = buildBaseBox(center, halfDimension);
         List<Geometry> result = new ArrayList<>(content.size() + baseBox.size() * 16);
-        result.addAll(content);
         result.addAll(subdivide(baseBox));
+        result.addAll(content);
         return new GeometryScene(result);
     }
 
@@ -37,9 +36,8 @@ public class SceneFactory {
         result.add(new Sphere(new ImmutableVector3(-1.0f, 1.0f, -1.0f), 0.2, Material.createDiffuseMaterial(COLORS.RED)));
         result.add(new Sphere(new ImmutableVector3(1.0f, -0.4f, 1.0f), 0.2, Material.createDiffuseMaterial(COLORS.PURPLE)));
         result.add(new Sphere(new ImmutableVector3(-1.0f, 1.7f, -1.0f), 0.2, Material.createDiffuseMaterial(COLORS.GREEN)));
-        result.add(new Sphere(new ImmutableVector3(1.0f, -1.5f, -1.0f), 0.4, Material.MIRROR));
-        //result.add(new Sphere(new ImmutableVector3(0.0f, 1.49f, 0.0f), 0.5,  Material.createEmittingMaterial(COLORS.WHITE, 2.f)));
-        result.add(new PhotonFountain(new ImmutableVector3(0.f, 0.f, 0.f), 1000.f));
+        result.add(new Sphere(new ImmutableVector3(1.0f, -1.6f, -1.0f), 0.4, Material.MIRROR));
+        result.add(new Sphere(new ImmutableVector3(0.0f, 1.6f, 0.0f), 0.4,  Material.createEmittingMaterial(COLORS.WHITE, 2.f)));
         return result;
     }
 

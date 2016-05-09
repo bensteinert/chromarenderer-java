@@ -1,5 +1,6 @@
 package net.chromarenderer.renderer.canvas;
 
+import net.chromarenderer.math.MutableVector3;
 import net.chromarenderer.math.Vector3;
 
 /**
@@ -9,10 +10,12 @@ public class SingleThreadedAccumulationBuffer extends ChromaCanvas implements Ac
 
     int accCount;
 
+
     public SingleThreadedAccumulationBuffer(int width, int height) {
         super(width, height);
         accCount = 0;
     }
+
 
     @Override
     public SingleThreadedAccumulationBuffer accumulate(Vector3[] input) {
@@ -30,6 +33,17 @@ public class SingleThreadedAccumulationBuffer extends ChromaCanvas implements Ac
     public void flushBuffer() {
         accCount = 0;
         flushCanvas();
+    }
+
+
+    @Override
+    public float computeL1() {
+        int pixelCount = width * height;
+        MutableVector3 result = new MutableVector3();
+        for (int i = 0; i < pixelCount; i++) {
+            result.plus(pixels[i]);
+        }
+        return (result.getX() + result.getY() + result.getZ()) / (3.0f * pixelCount);
     }
 
 }

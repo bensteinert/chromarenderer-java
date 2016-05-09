@@ -3,14 +3,14 @@ package net.chromarenderer.math.geometry;
 import net.chromarenderer.renderer.shader.Material;
 
 /**
- * @author steinerb
+ * @author bensteinert
  */
-public abstract class AbstractGeometry implements Geometry {
+abstract class AbstractGeometry implements Geometry {
 
-    private final Material material;
+    private Material material;
 
 
-    protected AbstractGeometry(Material material) {
+    AbstractGeometry(Material material) {
         this.material = material;
     }
 
@@ -18,5 +18,10 @@ public abstract class AbstractGeometry implements Geometry {
     @Override
     public Material getMaterial() {
         return material;
+    }
+
+
+    public void setMaterial(Material material) {
+        this.material = material;
     }
 }

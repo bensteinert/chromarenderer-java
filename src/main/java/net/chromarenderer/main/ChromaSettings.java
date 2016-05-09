@@ -69,4 +69,9 @@ public class ChromaSettings {
     public boolean isMultiThreaded() {
         return parallelized;
     }
+
+
+    public boolean computeL1Norm() {
+        return true;
+    }
 }

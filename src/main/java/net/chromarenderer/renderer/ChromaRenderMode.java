@@ -5,5 +5,5 @@ package net.chromarenderer.renderer;
  */
 public enum ChromaRenderMode {
 
-    SIMPLE, COLOR_CUBE, AVG, PTDL;
+    SIMPLE, COLOR_CUBE, AVG, PTDL, MT_PTDL;
 }

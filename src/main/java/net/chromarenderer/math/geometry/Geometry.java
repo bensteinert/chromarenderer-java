@@ -7,7 +7,7 @@ import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.renderer.shader.Material;
 
 /**
- * @author steinerb
+ * @author bensteinert
  */
 public interface Geometry {
 
@@ -22,6 +22,8 @@ public interface Geometry {
     boolean isPlane();
 
     Material getMaterial();
+
+    void setMaterial(Material material);
 
     float getArea();
 

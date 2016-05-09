@@ -199,5 +199,10 @@ public class ObjectLayoutTriangle extends StructuredArray<ImmutableVector3> impl
         return result;
     }
 
+    @Override
+    public void setMaterial(Material material) {
+        this.material = material;
+    }
+
 
 }

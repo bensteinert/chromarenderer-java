@@ -32,6 +32,36 @@ class DiffuseShader {
     }
 
 
+    static Radiance sampleDirectRadiance(Hitpoint hitpoint) {
+        ImmutableVector3 point = hitpoint.getPoint();
+        Hitpoint lightSourceSample = scene.getLightSourceSample();
+        ImmutableVector3 directionToLightSource = point.minus(lightSourceSample.getPoint());
+        float distToLight = directionToLightSource.length();
+        directionToLightSource = directionToLightSource.div(distToLight); // manual normalize
+        Ray shadowRay = new Ray(lightSourceSample.getPoint(), directionToLightSource.normalize(), Constants.FLT_EPSILON, distToLight - Constants.FLT_EPSILON);
+
+        float cosThetaContribHit = directionToLightSource.dot(lightSourceSample.getHitpointNormal());
+        float cosThetaSceneHit = directionToLightSource.mult(-1.0f).dot(hitpoint.getHitpointNormal());
+
+        //lightSource hit from correct side?
+        if (cosThetaSceneHit < 0.0f || cosThetaContribHit < 0.0f) {
+            return new Radiance(COLORS.BLACK, shadowRay);
+        } else {
+            if (scene.isObstructed(shadowRay)) {
+                return new Radiance(COLORS.BLACK, shadowRay);
+            } else {
+                float geomTerm = (cosThetaSceneHit * cosThetaContribHit) / (distToLight * distToLight);
+                Vector3 rhoDiffuse = hitpoint.getHitGeometry().getMaterial().getColor();
+                float precisionBound = 10.0f / (rhoDiffuse.getMaxValue());      // bound can include brdf which can soften the geometric term
+                Material emittingMaterial = lightSourceSample.getHitGeometry().getMaterial();
+                ImmutableVector3 lightSourceEmission = emittingMaterial.getEmittance();
+                ImmutableVector3 result = lightSourceEmission.mult(rhoDiffuse.div(Constants.PI_f * 1.0f /*diffuse case probability*/)).mult(FastMath.min(precisionBound, geomTerm) * lightSourceSample.getInverseSampleWeight());
+                return new Radiance(result, shadowRay);
+            }
+        }
+    }
+
+
     /**
      * Simple path tracing with uniform hemisphere samples to determine path.
      * Ls(ω) = ∫ Li * ρ(ωi, ωo) * cosθ dω
@@ -85,11 +115,11 @@ class DiffuseShader {
         }
 
         float geomTerm = (cosThetaSceneHit) / (distToLight * distToLight);
-        Vector3 rhoDiffuse = hitpoint.getHitGeometry().getMaterial().getColor();
+        ImmutableVector3 rhoDiffuse = hitpoint.getHitGeometry().getMaterial().getColor();
         float precisionBound = 10.0f / (rhoDiffuse.getMaxValue());      // bound can include brdf which can soften the geometric term
         Material emittingMaterial = lightSourceSample.getHitGeometry().getMaterial();
-        Vector3 lightSourceEmission = emittingMaterial.getEmittance();
-        Vector3 result = lightSourceEmission.mult(rhoDiffuse.div(Constants.PI_f).mult(FastMath.min(precisionBound, geomTerm)).mult(lightSourceSample.getInverseSampleWeight()));
+        ImmutableVector3 lightSourceEmission = emittingMaterial.getEmittance();
+        Vector3 result = lightSourceEmission.mult(rhoDiffuse.div(Constants.PI_f).mult(FastMath.min(precisionBound, geomTerm) * lightSourceSample.getInverseSampleWeight()));
 
         return new Radiance(result.mult(pathWeight), shadowRay);
     }

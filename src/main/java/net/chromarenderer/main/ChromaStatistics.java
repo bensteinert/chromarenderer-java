@@ -16,6 +16,7 @@ public class ChromaStatistics {
 
     private static final FpsCounter fpsCounter = new FpsCounter();
 
+    public static float L1Norm = 0.0f;
 
     public static void subsurfaceHitpointCorrected() {
         subsurfaceHitpointCorrected.incrementAndGet();
@@ -70,4 +71,5 @@ public class ChromaStatistics {
     public static void intersectOp() {
         intersectionCounter.getAndIncrement();
     }
+
 }
