@@ -13,5 +13,5 @@ public interface AccumulationBuffer {
 
     void flushBuffer();
 
-    float computeL1();
+    float computeL1Norm();
 }

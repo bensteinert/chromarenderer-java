@@ -15,6 +15,8 @@ public class ChromaSettings {
     // TODO make configurable
     private final int maxRayDepth = 10;
 
+    private boolean computeL1 = false;
+
 
     public ChromaSettings(boolean parallelize, int imgWidth, int imgHeight, ChromaRenderMode renderMode, boolean lightSourceSamplingMode, AccStructType accStructType) {
         this.parallelized = parallelize;
@@ -72,6 +74,11 @@ public class ChromaSettings {
 
 
     public boolean computeL1Norm() {
-        return true;
+        return computeL1;
+    }
+
+
+    public void toggleL1Computation() {
+        computeL1 = !computeL1;
     }
 }

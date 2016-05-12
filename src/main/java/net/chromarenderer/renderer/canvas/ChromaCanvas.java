@@ -46,6 +46,17 @@ public class ChromaCanvas {
     }
 
 
+    public float computeL1Norm() {
+        int pixelCount = width * height;
+        MutableVector3 result = new MutableVector3();
+        for (int i = 0; i < pixelCount; i++) {
+            result.plus(pixels[i]);
+        }
+        return (result.getX() + result.getY() + result.getZ()) / (3.0f * pixelCount);
+    }
+
+
+
     public MutableVector3[] getPixels() {
         return pixels;
     }

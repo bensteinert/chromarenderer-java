@@ -71,6 +71,9 @@ public class Chroma implements Runnable {
                         needsFlush = false;
                     }
                     renderer.renderNextImage();
+                    if (settings.computeL1Norm()) {
+                        ChromaStatistics.L1Norm = renderer.computeL1Norm();
+                    }
                     changed = true;
                     ChromaStatistics.frame();
                 } while (!Thread.currentThread().isInterrupted() && !breakLoop);
@@ -106,7 +109,7 @@ public class Chroma implements Runnable {
 
 
     public void reinit(ChromaSettings settingsIn, ChromaScene scene) {
-        this.settings = new ChromaSettings(settingsIn);
+        this.settings = settingsIn;
         int pixelsX = this.settings.getImgWidth();
         int pixelsY = this.settings.getImgHeight();
 
@@ -133,7 +136,7 @@ public class Chroma implements Runnable {
             case COLOR_CUBE:
                 setRenderer(new ColorCubeRenderer(settings));
                 break;
-            case PTDL:
+            case SIMPLE_PTDL:
                 setRenderer(new SimplePathTracer(settings, scene, camera));
                 break;
             case MT_PTDL:

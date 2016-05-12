@@ -67,7 +67,7 @@ public class ChromaFxMain extends Application {
         controlPane.add(new Text("Render Mode:"), 0, rowIdx);
         ComboBox<ChromaRenderMode> renderModeCombo = new ComboBox<>(FXCollections.observableArrayList(
                 ChromaRenderMode.SIMPLE,
-                ChromaRenderMode.PTDL,
+                ChromaRenderMode.SIMPLE_PTDL,
                 ChromaRenderMode.MT_PTDL,
                 ChromaRenderMode.COLOR_CUBE,
                 ChromaRenderMode.AVG
@@ -282,6 +282,8 @@ public class ChromaFxMain extends Application {
                     chroma.getCamera().resetToInitial();
                     chroma.flushOnNextImage();
                     break;
+                case L:
+                    settings.toggleL1Computation();
             }
         };
     }
@@ -292,7 +294,7 @@ public class ChromaFxMain extends Application {
     public static void main(String[] args) {
         Thread thread = new Thread(chroma);
         scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, SceneFactory.createSomeSpheres());
-        settings = new ChromaSettings(false, 512, 512, ChromaRenderMode.PTDL, true, AccStructType.AABB_BVH);
+        settings = new ChromaSettings(false, 512, 512, ChromaRenderMode.SIMPLE_PTDL, true, AccStructType.AABB_BVH);
         chroma.reinit(settings, scene);
         thread.start();
 

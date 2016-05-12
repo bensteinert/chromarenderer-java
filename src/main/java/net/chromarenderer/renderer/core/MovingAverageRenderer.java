@@ -40,4 +40,10 @@ public class MovingAverageRenderer implements Renderer {
         return buffer.to8BitImage();
     }
 
+
+    @Override
+    public float computeL1Norm() {
+        return 0;
+    }
+
 }

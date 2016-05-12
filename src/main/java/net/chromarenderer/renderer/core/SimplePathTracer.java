@@ -2,101 +2,66 @@ package net.chromarenderer.renderer.core;
 
 import net.chromarenderer.main.ChromaSettings;
 import net.chromarenderer.main.ChromaStatistics;
-import net.chromarenderer.math.COLORS;
 import net.chromarenderer.math.Constants;
+import net.chromarenderer.math.MutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
-import net.chromarenderer.renderer.shader.ShaderEngine;
 import net.chromarenderer.renderer.RecursiveRenderer;
 import net.chromarenderer.renderer.camera.Camera;
-import net.chromarenderer.renderer.canvas.AccumulationBuffer;
-import net.chromarenderer.renderer.canvas.ChromaCanvas;
-import net.chromarenderer.renderer.canvas.ParallelStreamAccumulationBuffer;
 import net.chromarenderer.renderer.scene.ChromaScene;
 import net.chromarenderer.renderer.scene.Radiance;
-
-import java.util.stream.IntStream;
+import net.chromarenderer.renderer.shader.Material;
+import net.chromarenderer.renderer.shader.ShaderEngine;
 
 /**
  * @author bensteinert
  */
-public class SimplePathTracer extends ChromaCanvas implements RecursiveRenderer {
-
-    private final AccumulationBuffer buffer;
-    private final ChromaSettings settings;
-    private final ChromaScene scene;
-    private final Camera camera;
+public class SimplePathTracer extends AccumulativeRenderer implements RecursiveRenderer {
 
 
     public SimplePathTracer(ChromaSettings settings, ChromaScene scene, Camera camera) {
-        super(settings.getImgWidth(), settings.getImgHeight());
-        this.settings = settings;
-        this.scene = scene;
-        this.camera = camera;
-        buffer = new ParallelStreamAccumulationBuffer(settings.getImgWidth(), settings.getImgHeight());
+        super(settings, scene, camera);
     }
 
 
-    @Override
-    public void renderNextImage() {
-        if (settings.isMultiThreaded()) {
-            IntStream.range(0, settings.getImgHeight()).parallel().forEach(j ->
-                    IntStream.range(0, settings.getImgWidth()).parallel().forEach(i -> {
-                        renderPixel(j, i);
-                    })
-            );
-        }
-        else {
-            for (int j = 0; j < settings.getImgHeight(); j += 1) {
-                for (int i = 0; i < settings.getImgWidth(); i += 1) {
-                    renderPixel(j, i);
-                }
-            }
-        }
-
-        buffer.accumulate(getPixels());
-    }
-
-
-    private void renderPixel(int j, int i) {
+    protected void renderPixel(int j, int i) {
         ChromaThreadContext.setX(i);
         ChromaThreadContext.setY(j);
         Ray cameraRay = camera.getRay(i, j);
-        pixels[width * j + i].set(recursiveKernel(cameraRay, 0, 1.0f).getColor());
+        pixels[width * j + i].set(recursiveKernel(cameraRay, 0).getColor());
     }
 
 
-    public Radiance recursiveKernel(Ray incomingRay, int depth, float pathWeight) {
+    public Radiance recursiveKernel(Ray incomingRay, int depth) {
         // scene intersection
         Hitpoint hitpoint = scene.intersect(incomingRay);
         ChromaStatistics.ray();
 
         // shading
-        Vector3 color = COLORS.BLACK;
+        Vector3 color = new MutableVector3();
         if (hitpoint.hit()) {
-            Radiance directRadianceSample = ShaderEngine.getDirectRadianceSample(incomingRay, hitpoint, pathWeight, settings);
+            Material material = hitpoint.getHitGeometry().getMaterial();
+            // make light sources visible
+            color.plus(hitpoint.getHitGeometry().getMaterial().getEmittance());
 
-            if (settings.getMaxRayDepth() > depth && pathWeight > Constants.FLT_EPSILON) {
-                Radiance indirectRadianceSample = ShaderEngine.getIndirectRadianceSample(incomingRay, hitpoint, this, depth, pathWeight);
-                color = ShaderEngine.brdf(hitpoint, directRadianceSample, indirectRadianceSample);
+            Radiance directRadianceSample = ShaderEngine.getDirectRadiance(incomingRay, hitpoint);
+            if (settings.getMaxRayDepth() > depth) {
+                Radiance indirectRadianceSample;
+                // terminate the path via russian roulette
+                float russianRoulette = ChromaThreadContext.randomFloatClosedOpen();
+                if (russianRoulette > Constants.RR_LIMIT) {
+                    indirectRadianceSample = Radiance.NO_CONTRIBUTION;
+                } else {
+                    Ray recursiveRaySample = ShaderEngine.getRecursiveRaySample(incomingRay, hitpoint);
+                    indirectRadianceSample = recursiveKernel(recursiveRaySample, depth + 1);
+                }
+                // crude mix of direct an indirect 'colors'...
+                color.plus(material.getColor().mult(indirectRadianceSample.getColor().plus(directRadianceSample.getColor())));
             }
         }
 
         return new Radiance(color, incomingRay);
-    }
-
-
-    @Override
-    public void flush() {
-        flushCanvas();
-        buffer.flushBuffer();
-    }
-
-
-    @Override
-    public byte[] get8BitRgbSnapshot() {
-        return buffer.to8BitImage();
     }
 
 }

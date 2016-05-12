@@ -1,6 +1,5 @@
 package net.chromarenderer.renderer.shader;
 
-import net.chromarenderer.main.ChromaSettings;
 import net.chromarenderer.math.COLORS;
 import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.ImmutableVector3;
@@ -20,17 +19,6 @@ import org.apache.commons.math3.util.FastMath;
 class DiffuseShader {
 
     static ChromaScene scene;
-
-
-    static Radiance getDirectRadianceSample(Hitpoint hitpoint, float pathWeight, ChromaSettings settings) {
-
-        if (settings.isDirectLightEstimationEnabled()) {
-            return ptdl(hitpoint, pathWeight);
-        } else {
-            return pt(hitpoint, pathWeight);
-        }
-    }
-
 
     static Radiance sampleDirectRadiance(Hitpoint hitpoint) {
         ImmutableVector3 point = hitpoint.getPoint();
@@ -82,47 +70,6 @@ class DiffuseShader {
      * Ls(ω) = (Li * ρ(ωi, ωo)/π) * π
      * Ls(ω) = Li * ρ(ωi, ωo)
      */
-    private static Radiance pt(Hitpoint hitpoint, float pathWeight) {
-        ImmutableVector3 direction = hitpoint.getUniformHemisphereSample();
-        Ray ray = new Ray(hitpoint.getPoint(), direction);
-        Hitpoint lightSourceSample = scene.intersect(ray);
-
-        if (lightSourceSample.hit() && lightSourceSample.isOn(MaterialType.EMITTING)) {
-            return new Radiance(lightSourceSample.getHitGeometry().getMaterial().getEmittance().mult(pathWeight), ray);
-        } else {
-            return new Radiance(COLORS.BLACK, ray);
-        }
-    }
-
-
-    private static Radiance ptdl(Hitpoint hitpoint, float pathWeight) {
-        ImmutableVector3 point = hitpoint.getPoint();
-        Hitpoint lightSourceSample = scene.getLightSourceSample();
-        ImmutableVector3 direction = lightSourceSample.getPoint().minus(point);
-
-        float distToLight = direction.length();
-        Ray shadowRay = new Ray(point, direction.normalize(), Constants.FLT_EPSILON, distToLight - Constants.FLT_EPSILON);
-
-        float cosThetaSceneHit = direction.dot(hitpoint.getHitpointNormal());
-
-        //lightSource hit from correct side?
-        if (cosThetaSceneHit > 0.0f) {
-            if (scene.isObstructed(shadowRay)) {
-                return new Radiance(COLORS.BLACK, shadowRay);
-            }
-        } else {
-            return new Radiance(COLORS.BLACK, shadowRay);
-        }
-
-        float geomTerm = (cosThetaSceneHit) / (distToLight * distToLight);
-        ImmutableVector3 rhoDiffuse = hitpoint.getHitGeometry().getMaterial().getColor();
-        float precisionBound = 10.0f / (rhoDiffuse.getMaxValue());      // bound can include brdf which can soften the geometric term
-        Material emittingMaterial = lightSourceSample.getHitGeometry().getMaterial();
-        ImmutableVector3 lightSourceEmission = emittingMaterial.getEmittance();
-        Vector3 result = lightSourceEmission.mult(rhoDiffuse.div(Constants.PI_f).mult(FastMath.min(precisionBound, geomTerm) * lightSourceSample.getInverseSampleWeight()));
-
-        return new Radiance(result.mult(pathWeight), shadowRay);
-    }
 
 
     static Ray getRecursiveRaySample(Hitpoint hitpoint) {

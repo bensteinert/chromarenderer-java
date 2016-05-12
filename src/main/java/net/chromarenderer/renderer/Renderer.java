@@ -11,4 +11,5 @@ public interface Renderer {
 
     byte[] get8BitRgbSnapshot();
 
+    float computeL1Norm();
 }
