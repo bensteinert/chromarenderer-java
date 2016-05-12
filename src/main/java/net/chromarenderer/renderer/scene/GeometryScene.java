@@ -77,6 +77,7 @@ public class GeometryScene implements ChromaScene {
 
 
     public Hitpoint intersect(Ray ray) {
+        ChromaStatistics.ray();
         //TODO-IMP: Measure overhead of ThreadLocal
         IntersectionContext intersectionContext = intersectionContextHolder.get();
         intersectionContext.reinit(ray);

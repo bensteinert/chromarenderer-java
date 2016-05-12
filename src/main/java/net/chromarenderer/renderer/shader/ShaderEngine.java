@@ -54,7 +54,7 @@ public class ShaderEngine {
     }
 
 
-    public static Radiance brdf2(Hitpoint hitpoint, Ray ray) {
+    public static Radiance brdf(Hitpoint hitpoint, Ray ray) {
         return new Radiance(hitpoint.getHitGeometry().getMaterial().getColor(), getRecursiveRaySample(ray, hitpoint));
     }
 

@@ -23,8 +23,6 @@ public class MonteCarloPathTracer extends AccumulativeRenderer  {
 
 
     protected void renderPixel(int j, int i) {
-        ChromaThreadContext.setX(i);
-        ChromaThreadContext.setY(j);
         Ray cameraRay = camera.getRay(i, j);
         pixels[width * j + i].set(kernel(cameraRay).getColor());
     }
@@ -52,7 +50,7 @@ public class MonteCarloPathTracer extends AccumulativeRenderer  {
                     result.plus(frDL.getColor());
                 }
 
-                fr = ShaderEngine.brdf2(hitpoint, incomingRay);
+                fr = ShaderEngine.brdf(hitpoint, incomingRay);
                 pathWeight = pathWeight.mult(fr.getColor());
                 incomingRay = fr.getLightRay();
 
@@ -61,12 +59,11 @@ public class MonteCarloPathTracer extends AccumulativeRenderer  {
                     depth++;
                     if (hitpoint.hit()) {
                         frDL = ShaderEngine.getDirectRadiance(incomingRay, hitpoint);
-                        //System.out.println("frDL" + frDL);
                         if (frDL.getColor().getMaxValue() > Constants.FLT_EPSILON) {
                             result.plus(frDL.getColor().mult(pathWeight));
                         }
 
-                        fr = ShaderEngine.brdf2(hitpoint, incomingRay);
+                        fr = ShaderEngine.brdf(hitpoint, incomingRay);
                         pathWeight = pathWeight.mult(russianRoulette()).mult(fr.getColor());
                         incomingRay = fr.getLightRay();
                     }
@@ -88,7 +85,7 @@ public class MonteCarloPathTracer extends AccumulativeRenderer  {
                         result.plus(emitting.getEmittance().mult(pathWeight));
                     }
 
-                    fr = ShaderEngine.brdf2(hitpoint, incomingRay);
+                    fr = ShaderEngine.brdf(hitpoint, incomingRay);
                     pathWeight = pathWeight.mult(russianRoulette()).mult(fr.getColor());
                     incomingRay = fr.getLightRay();
                 }

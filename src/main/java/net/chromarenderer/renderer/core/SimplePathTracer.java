@@ -1,7 +1,6 @@
 package net.chromarenderer.renderer.core;
 
 import net.chromarenderer.main.ChromaSettings;
-import net.chromarenderer.main.ChromaStatistics;
 import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.MutableVector3;
 import net.chromarenderer.math.Vector3;
@@ -26,8 +25,6 @@ public class SimplePathTracer extends AccumulativeRenderer implements RecursiveR
 
 
     protected void renderPixel(int j, int i) {
-        ChromaThreadContext.setX(i);
-        ChromaThreadContext.setY(j);
         Ray cameraRay = camera.getRay(i, j);
         pixels[width * j + i].set(recursiveKernel(cameraRay, 0).getColor());
     }
@@ -36,7 +33,6 @@ public class SimplePathTracer extends AccumulativeRenderer implements RecursiveR
     public Radiance recursiveKernel(Ray incomingRay, int depth) {
         // scene intersection
         Hitpoint hitpoint = scene.intersect(incomingRay);
-        ChromaStatistics.ray();
 
         // shading
         Vector3 color = new MutableVector3();

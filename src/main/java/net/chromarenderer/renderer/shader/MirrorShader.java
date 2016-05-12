@@ -1,6 +1,7 @@
 package net.chromarenderer.renderer.shader;
 
 import net.chromarenderer.math.COLORS;
+import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.VectorUtils;
 import net.chromarenderer.math.raytracing.Hitpoint;
@@ -15,17 +16,19 @@ class MirrorShader {
 
     static ChromaScene scene;
 
+
     static Radiance getDirectRadiance(Ray incomingRay, Hitpoint hitpoint) {
         Ray directRadianceRay = getRecursiveRaySample(incomingRay, hitpoint);
         Hitpoint lightSourceSample = scene.intersect(directRadianceRay);
 
-        if (lightSourceSample.hit() && lightSourceSample.isOn(MaterialType.EMITTING)) {
+        if (lightSourceSample.isOn(MaterialType.EMITTING)) {
             Material emitting = lightSourceSample.getHitGeometry().getMaterial();
-            return new Radiance(emitting.getEmittance(), directRadianceRay);
+            return new Radiance(emitting.getEmittance().mult(1.0f - Constants.FLT_EPSILON), directRadianceRay);
         } else {
             return new Radiance(COLORS.BLACK, directRadianceRay);
         }
     }
+
 
     static Ray getRecursiveRaySample(Ray incomingRay, Hitpoint hitpoint) {
         ImmutableVector3 mirrorDirection = VectorUtils.mirror(incomingRay.getDirection().mult(-1.0f), hitpoint.getHitpointNormal());

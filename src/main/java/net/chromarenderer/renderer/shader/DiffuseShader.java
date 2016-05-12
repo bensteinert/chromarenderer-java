@@ -14,7 +14,7 @@ import net.chromarenderer.renderer.scene.Radiance;
 import org.apache.commons.math3.util.FastMath;
 
 /**
- * @author steinerb
+ * @author bensteinert
  */
 class DiffuseShader {
 

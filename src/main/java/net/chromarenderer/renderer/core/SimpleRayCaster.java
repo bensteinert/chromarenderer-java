@@ -50,15 +50,14 @@ public class SimpleRayCaster extends ChromaCanvas implements Renderer {
 
 
     private void renderPixel(int j, int i) {
-        ChromaThreadContext.setX(i);
-        ChromaThreadContext.setY(j);
+//        ChromaThreadContext.setX(i);
+//        ChromaThreadContext.setY(j);
 
         // create camera/eye ray
         Ray cameraRay = camera.getRay(i, j);
 
         // scene intersection
         Hitpoint hitpoint = scene.intersect(cameraRay);
-//        ChromaStatistics.ray();
 
         // very basic shading
         Vector3 color = COLORS.BLACK;

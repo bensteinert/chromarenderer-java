@@ -84,10 +84,7 @@ public class Hitpoint {
 
 
     public boolean isOn(MaterialType materialType) {
-        return getHitGeometry() != null && getHitGeometry().getMaterial().getType().equals(materialType);
+        return hit() && getHitGeometry().getMaterial().getType().equals(materialType);
     }
 
-    public boolean isEmitting(){
-        return hit() && MaterialType.EMITTING.equals(getHitGeometry().getMaterial().getType());
-    }
 }
