@@ -12,9 +12,7 @@ public class ShaderEngine {
 
     public static Radiance getDirectRadiance(Ray incomingRay, Hitpoint hitpoint) {
 
-        Material material = hitpoint.getHitGeometry().getMaterial();
-
-        switch (material.getType()) {
+        switch (hitpoint.getHitGeometry().getMaterial().getType()) {
             case DIFFUSE:
                 return DiffuseShader.sampleDirectRadiance(hitpoint);
 
@@ -34,9 +32,7 @@ public class ShaderEngine {
 
     public static Ray getRecursiveRaySample(Ray incomingRay, Hitpoint hitpoint) {
 
-        Material material = hitpoint.getHitGeometry().getMaterial();
-
-        switch (material.getType()) {
+        switch (hitpoint.getHitGeometry().getMaterial().getType()) {
             case DIFFUSE:
                 return DiffuseShader.getRecursiveRaySample(hitpoint);
 

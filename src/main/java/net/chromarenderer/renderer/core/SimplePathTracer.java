@@ -33,15 +33,15 @@ public class SimplePathTracer extends AccumulativeRenderer implements RecursiveR
     public Radiance recursiveKernel(Ray incomingRay, int depth) {
         // scene intersection
         Hitpoint hitpoint = scene.intersect(incomingRay);
+        Vector3 result = new MutableVector3();
 
-        // shading
-        Vector3 color = new MutableVector3();
         if (hitpoint.hit()) {
             Material material = hitpoint.getHitGeometry().getMaterial();
             // make light sources visible
-            color.plus(hitpoint.getHitGeometry().getMaterial().getEmittance());
+            result.plus(material.getEmittance());
 
             Radiance directRadianceSample = ShaderEngine.getDirectRadiance(incomingRay, hitpoint);
+            result.plus(directRadianceSample.getColor());
             if (settings.getMaxRayDepth() > depth) {
                 Radiance indirectRadianceSample;
                 // terminate the path via russian roulette
@@ -52,12 +52,11 @@ public class SimplePathTracer extends AccumulativeRenderer implements RecursiveR
                     Ray recursiveRaySample = ShaderEngine.getRecursiveRaySample(incomingRay, hitpoint);
                     indirectRadianceSample = recursiveKernel(recursiveRaySample, depth + 1);
                 }
-                // crude mix of direct an indirect 'colors'...
-                color.plus(material.getColor().mult(indirectRadianceSample.getColor().plus(directRadianceSample.getColor())));
+                result.plus(material.getColor().mult(indirectRadianceSample.getColor()));//.mult(1.0f/Constants.RR_LIMIT));
             }
         }
 
-        return new Radiance(color, incomingRay);
+        return new Radiance(result, incomingRay);
     }
 
 }

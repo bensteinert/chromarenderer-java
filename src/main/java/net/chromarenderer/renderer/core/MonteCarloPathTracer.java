@@ -24,80 +24,90 @@ public class MonteCarloPathTracer extends AccumulativeRenderer  {
 
     protected void renderPixel(int j, int i) {
         Ray cameraRay = camera.getRay(i, j);
-        pixels[width * j + i].set(kernel(cameraRay).getColor());
+        kernel(cameraRay, pixels[width * j + i]);
     }
 
 
-    private Radiance kernel(Ray incomingRay) {
+    private void kernel(Ray incomingRay, MutableVector3 pixel) {
+        pixel.reset();
         int depth = 0;
-        MutableVector3 result = new MutableVector3();
-        MutableVector3 pathWeight = new MutableVector3(1.f, 1.f, 1.f);
-        Hitpoint hitpoint;
-        Radiance fr;
 
         if (settings.isDirectLightEstimationEnabled()) {
+            ptdlKernel(incomingRay, depth, pixel);
+        }
+        else {
+            ptKernel(incomingRay, depth, pixel);
+        }
+    }
+
+
+    private void ptKernel(Ray incomingRay, int depth, MutableVector3 result) {
+        MutableVector3 pathWeight = new MutableVector3(1.f, 1.f, 1.f);
+        Hitpoint hitpoint;
+        // L = Le + ∫ fr * Li
+        while (pathWeight.getMaxValue() > Constants.FLT_EPSILON && depth < settings.getMaxRayDepth()) {
+            // scene intersection
             hitpoint = scene.intersect(incomingRay);
+            depth++;
+
             if (hitpoint.hit()) {
                 // Add Le
                 Material emitting = hitpoint.getHitGeometry().getMaterial();
-
-                if (MaterialType.EMITTING.equals(emitting.getType())){
-                    result.plus(emitting.getEmittance());
+                if (MaterialType.EMITTING.equals(emitting.getType())) {
+                    result.plus(emitting.getEmittance().mult(pathWeight));
                 }
 
-                Radiance frDL = ShaderEngine.getDirectRadiance(incomingRay, hitpoint);
-                if (frDL.getColor().getMaxValue() > Constants.FLT_EPSILON) {
-                    result.plus(frDL.getColor());
-                }
-
-                fr = ShaderEngine.brdf(hitpoint, incomingRay);
-                pathWeight = pathWeight.mult(fr.getColor());
+                Radiance fr = ShaderEngine.brdf(hitpoint, incomingRay);
+                pathWeight = pathWeight.mult(russianRoulette()).mult(fr.getColor());
                 incomingRay = fr.getLightRay();
-
-                while (pathWeight.getMaxValue() > Constants.FLT_EPSILON && depth < settings.getMaxRayDepth()) {
-                    hitpoint = scene.intersect(incomingRay);
-                    depth++;
-                    if (hitpoint.hit()) {
-                        frDL = ShaderEngine.getDirectRadiance(incomingRay, hitpoint);
-                        if (frDL.getColor().getMaxValue() > Constants.FLT_EPSILON) {
-                            result.plus(frDL.getColor().mult(pathWeight));
-                        }
-
-                        fr = ShaderEngine.brdf(hitpoint, incomingRay);
-                        pathWeight = pathWeight.mult(russianRoulette()).mult(fr.getColor());
-                        incomingRay = fr.getLightRay();
-                    }
-                    else break;
-                }
             }
         }
-        else {
-            // L = Le + ∫ fr * Li
+    }
+
+
+    private void ptdlKernel(Ray incomingRay, int depth, MutableVector3 result) {
+        MutableVector3 pathWeight = new MutableVector3(1.f, 1.f, 1.f);
+        Hitpoint hitpoint;
+        Radiance fr;
+        hitpoint = scene.intersect(incomingRay);
+        if (hitpoint.hit()) {
+
+            Material material = hitpoint.getHitGeometry().getMaterial();
+            // Add Le - returns 0 if not emitting
+            result.plus(material.getEmittance());
+
+            Radiance frDL = ShaderEngine.getDirectRadiance(incomingRay, hitpoint);
+            if (frDL.getColor().getMaxValue() > Constants.FLT_EPSILON) {
+                result.plus(frDL.getColor());
+            }
+
+            fr = ShaderEngine.brdf(hitpoint, incomingRay);
+            pathWeight = pathWeight.mult(fr.getColor());
+            incomingRay = fr.getLightRay();
+
             while (pathWeight.getMaxValue() > Constants.FLT_EPSILON && depth < settings.getMaxRayDepth()) {
-                // scene intersection
                 hitpoint = scene.intersect(incomingRay);
                 depth++;
-
                 if (hitpoint.hit()) {
-                    // Add Le
-                    Material emitting = hitpoint.getHitGeometry().getMaterial();
-                    if (MaterialType.EMITTING.equals(emitting.getType())) {
-                        result.plus(emitting.getEmittance().mult(pathWeight));
+                    frDL = ShaderEngine.getDirectRadiance(incomingRay, hitpoint);
+                    if (frDL.getColor().getMaxValue() > Constants.FLT_EPSILON) {
+                        result.plus(frDL.getColor().mult(pathWeight));
                     }
 
                     fr = ShaderEngine.brdf(hitpoint, incomingRay);
                     pathWeight = pathWeight.mult(russianRoulette()).mult(fr.getColor());
                     incomingRay = fr.getLightRay();
                 }
+                else break;
             }
         }
-        return new Radiance(result, null);
     }
 
 
     private float russianRoulette() {
-        float russianRoulette = ChromaThreadContext.randomFloatClosedOpen();
-        return russianRoulette > Constants.RR_LIMIT ? 0.f : 1.0f/Constants.RR_LIMIT;
+        //float russianRoulette = ChromaThreadContext.randomFloatClosedOpen();
+        //return russianRoulette > Constants.RR_LIMIT ? 0.f : 1.0f/Constants.RR_LIMIT;
+        return 1.0f;
     }
 
 }
