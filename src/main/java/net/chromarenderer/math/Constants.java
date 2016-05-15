@@ -12,7 +12,7 @@ public class Constants {
     public static final float SPHERE_NAN_LIMIT = 1000000.0f;
     public static final float PI_f = 3.141593f;
     public static final float TWO_PI_f = 6.2831854f;
-    public static final float RR_LIMIT = 0.66f;
+    public static final float RR_LIMIT = 0.80f;
 
     private static final int[] SOME_NICE_PRIMES = {
             10009, 10037, 10039, 10061, 10067, 10069, 10079, 10091, 10093, 10099,

@@ -294,7 +294,7 @@ public class ChromaFxMain extends Application {
     public static void main(String[] args) {
         Thread thread = new Thread(chroma);
         scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, SceneFactory.createSomeSpheres());
-        settings = new ChromaSettings(false, 512, 512, ChromaRenderMode.SIMPLE_PTDL, true, AccStructType.AABB_BVH);
+        settings = new ChromaSettings(true, 512, 512, ChromaRenderMode.MT_PTDL, true, AccStructType.AABB_BVH);
         chroma.reinit(settings, scene);
         thread.start();
 

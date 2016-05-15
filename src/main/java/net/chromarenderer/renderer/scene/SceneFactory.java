@@ -37,7 +37,7 @@ public class SceneFactory {
         result.add(new Sphere(new ImmutableVector3(1.0f, -0.4f, 1.0f), 0.2, Material.createDiffuseMaterial(COLORS.PURPLE)));
         result.add(new Sphere(new ImmutableVector3(-1.0f, 1.7f, -1.0f), 0.2, Material.createDiffuseMaterial(COLORS.GREEN)));
         result.add(new Sphere(new ImmutableVector3(1.0f, -1.6f, -1.0f), 0.4, Material.MIRROR));
-        result.add(new Sphere(new ImmutableVector3(0.0f, 1.3f, 0.0f), 0.4,  Material.createEmittingMaterial(COLORS.WHITE, 2.f)));
+        result.add(new Sphere(new ImmutableVector3(0.0f, 1.8f, 0.0f), 0.4,  Material.createEmittingMaterial(COLORS.WHITE, 10.f)));
         return result;
     }
 

@@ -105,9 +105,8 @@ public class MonteCarloPathTracer extends AccumulativeRenderer  {
 
 
     private float russianRoulette() {
-        //float russianRoulette = ChromaThreadContext.randomFloatClosedOpen();
-        //return russianRoulette > Constants.RR_LIMIT ? 0.f : 1.0f/Constants.RR_LIMIT;
-        return 1.0f;
+        return ChromaThreadContext.randomFloatClosedOpen() > Constants.RR_LIMIT ? 0.f : 1.0f/Constants.RR_LIMIT;
+//        return 1.0f;
     }
 
 }

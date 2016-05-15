@@ -39,12 +39,10 @@ class DiffuseShader {
                 return new Radiance(COLORS.BLACK, shadowRay);
             } else {
                 float geomTerm = (cosThetaSceneHit * cosThetaContribHit) / (distToLight * distToLight);
-                Vector3 rhoDiffuse = hitpoint.getHitGeometry().getMaterial().getColor();
+                ImmutableVector3 rhoDiffuse = hitpoint.getHitGeometry().getMaterial().getColor();
                 float precisionBound = 10.0f / (rhoDiffuse.getMaxValue());      // bound can include brdf which can soften the geometric term
-                Material emittingMaterial = lightSourceSample.getHitGeometry().getMaterial();
-                ImmutableVector3 lightSourceEmission = emittingMaterial.getEmittance();
-                ImmutableVector3 result = lightSourceEmission.mult(rhoDiffuse.div(Constants.PI_f * 1.0f /*diffuse case probability*/)).mult(FastMath.min(precisionBound, geomTerm) * lightSourceSample.getInverseSampleWeight());
-                return new Radiance(result, shadowRay);
+                ImmutableVector3 result = rhoDiffuse.div(Constants.PI_f * 1.0f /*diffuse case probability*/).mult(FastMath.min(precisionBound, geomTerm) * lightSourceSample.getInverseSampleWeight());
+                return new Radiance(result.mult(lightSourceSample.getHitGeometry().getMaterial().getEmittance()), shadowRay);
             }
         }
     }
