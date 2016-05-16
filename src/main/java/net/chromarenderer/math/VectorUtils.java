@@ -1,5 +1,6 @@
 package net.chromarenderer.math;
 
+import net.chromarenderer.math.raytracing.CoordinateSystem;
 import org.apache.commons.math3.util.FastMath;
 
 /**
@@ -27,5 +28,14 @@ public class VectorUtils {
                 FastMath.min(p0.getY(), p1.getY()),
                 FastMath.min(p0.getZ(), p1.getZ())
         );
+    }
+
+    public static CoordinateSystem buildCoordSystem(ImmutableVector3 vector){
+        MutableVector3 t1 = new MutableVector3(vector);
+        t1.setValue(t1.getMinIndexAbs(), 1.0f);
+        t1.crossProduct(vector);
+        t1.normalize();
+        ImmutableVector3 t2 = vector.crossProduct(t1).normalize();
+        return new CoordinateSystem(new ImmutableVector3(t1), t2, vector);
     }
 }

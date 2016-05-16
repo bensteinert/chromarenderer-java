@@ -2,10 +2,10 @@ package net.chromarenderer.math.raytracing;
 
 import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.ImmutableVector3;
-import net.chromarenderer.math.MutableVector3;
+import net.chromarenderer.math.VectorUtils;
 import net.chromarenderer.math.geometry.Geometry;
-import net.chromarenderer.renderer.shader.MaterialType;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
+import net.chromarenderer.renderer.shader.MaterialType;
 import org.apache.commons.math3.util.FastMath;
 
 
@@ -51,12 +51,7 @@ public class Hitpoint {
 
 
     public CoordinateSystem getCoordinateSystem() {
-        MutableVector3 t1 = new MutableVector3(hitpointNormal);
-        t1.setValue(t1.getMinIndexAbs(), 1.0f);
-        t1.crossProduct(hitpointNormal);
-        t1.normalize();
-        ImmutableVector3 t2 = hitpointNormal.crossProduct(t1).normalize();
-        return new CoordinateSystem(new ImmutableVector3(t1), t2, hitpointNormal);
+        return VectorUtils.buildCoordSystem(hitpointNormal);
     }
 
 

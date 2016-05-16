@@ -13,6 +13,7 @@ public class Ray {
     private final ImmutableVector3 invDirection;
     private final float tMin;
     private final float tMax;
+    private float sampleWeight = 1.0f;
 
     // if the direction is negative, sign =
     private final byte signX;
@@ -84,5 +85,15 @@ public class Ray {
 
     public byte getSignZ() {
         return signZ;
+    }
+
+
+    public float getSampleWeight() {
+        return sampleWeight;
+    }
+
+
+    public void setSampleWeight(float sampleWeight) {
+        this.sampleWeight = sampleWeight;
     }
 }

@@ -70,6 +70,11 @@ class DiffuseShader {
      */
 
 
+    /**
+     * Produces a cosine distributed ray sampled over the hemisphere around hitpoint.
+     * @param hitpoint
+     * @return new sampled ray.
+     */
     static Ray getRecursiveRaySample(Hitpoint hitpoint) {
         float u = ChromaThreadContext.randomFloatClosedOpen();
         float v = ChromaThreadContext.randomFloatClosedOpen();
