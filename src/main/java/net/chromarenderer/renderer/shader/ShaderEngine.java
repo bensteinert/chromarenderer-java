@@ -2,6 +2,7 @@ package net.chromarenderer.renderer.shader;
 
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
+import net.chromarenderer.renderer.core.ChromaThreadContext;
 import net.chromarenderer.renderer.scene.ChromaScene;
 import net.chromarenderer.renderer.scene.Radiance;
 
@@ -18,11 +19,14 @@ public class ShaderEngine {
 
             case EMITTING:
                 // temporary handling of emitting materials in order to let them participate in reflections
-                return DiffuseShader.sampleDirectRadiance(hitpoint);
+                //return DiffuseShader.sampleDirectRadiance(hitpoint);
+                return Radiance.NO_CONTRIBUTION;
 
-            case MIRROR: {
+            case MIRROR:
                 return MirrorShader.getDirectRadiance(incomingRay, hitpoint);
-            }
+
+            case PLASTIC:
+                return BlinnPhongShader.sampleDirectRadiance(incomingRay, hitpoint);
 
             default:
                 return Radiance.NO_CONTRIBUTION;
@@ -43,6 +47,14 @@ public class ShaderEngine {
             case MIRROR:
                 return MirrorShader.getRecursiveRaySample(incomingRay, hitpoint);
 
+            case PLASTIC:
+                final float diffSpecRoulette = ChromaThreadContext.randomFloatClosedOpen();
+                if (diffSpecRoulette > 0.5f) {  // todo add pdf for diff/spec sampling ...
+                    return BlinnPhongShader.getRecursiveRaySample(incomingRay, hitpoint);
+                } else {
+                    return DiffuseShader.getRecursiveRaySample(hitpoint);
+                }
+
             default:
                 throw new RuntimeException("Unknown MaterialType");
 
@@ -51,13 +63,26 @@ public class ShaderEngine {
 
 
     public static Radiance brdf(Hitpoint hitpoint, Ray ray) {
-        return new Radiance(hitpoint.getHitGeometry().getMaterial().getColor(), getRecursiveRaySample(ray, hitpoint));
+        switch (hitpoint.getHitGeometry().getMaterial().getType()) {
+            case EMITTING:
+                // temporary handling of emitting materials in order to let them participate in reflections
+                return Radiance.NO_CONTRIBUTION;
+            case DIFFUSE:
+            case MIRROR:
+            case PLASTIC:
+                return new Radiance(hitpoint.getHitGeometry().getMaterial().getColor(), getRecursiveRaySample(ray, hitpoint));
+
+            default:
+                throw new RuntimeException("Unknown MaterialType");
+
+        }
     }
 
 
     public static void setScene(ChromaScene scene) {
         DiffuseShader.scene = scene;
         MirrorShader.scene = scene;
+        BlinnPhongShader.scene = scene;
     }
 
 }

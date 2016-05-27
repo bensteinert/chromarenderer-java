@@ -2,6 +2,7 @@ package net.chromarenderer.math.raytracing;
 
 import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.ImmutableVector3;
+import net.chromarenderer.math.geometry.Geometry;
 
 /**
  * @author steinerb
@@ -19,6 +20,7 @@ public class Ray {
     private final byte signX;
     private final byte signY;
     private final byte signZ;
+    private Geometry lastHitGeomerty;
 
 
     public Ray(ImmutableVector3 origin, ImmutableVector3 direction) {
@@ -95,5 +97,15 @@ public class Ray {
 
     public void setSampleWeight(float sampleWeight) {
         this.sampleWeight = sampleWeight;
+    }
+
+
+    public void mailbox(Geometry geometry) {
+        lastHitGeomerty = geometry;
+    }
+
+
+    public Geometry getLastHitGeomerty() {
+        return lastHitGeomerty;
     }
 }

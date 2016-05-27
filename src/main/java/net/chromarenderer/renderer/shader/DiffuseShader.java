@@ -86,7 +86,8 @@ class DiffuseShader {
         float sampleZ = (float) FastMath.sqrt(1.0f - u);
         CoordinateSystem coordinateSystem = hitpoint.getCoordinateSystem();
 
-        Vector3 newDirection = new MutableVector3(coordinateSystem.getT1()).mult(sampleX)
+        Vector3 newDirection = new MutableVector3(
+                      coordinateSystem.getT1()).mult(sampleX)
                 .plus(coordinateSystem.getT2().mult(sampleY))
                 .plus(coordinateSystem.getN().mult(sampleZ)).normalize();
 

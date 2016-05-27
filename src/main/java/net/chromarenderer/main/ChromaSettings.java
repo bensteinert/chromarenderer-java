@@ -13,7 +13,7 @@ public class ChromaSettings {
     private final boolean lightSourceSamplingMode;
     private final AccStructType accStructType;
     // TODO make configurable
-    private final int maxRayDepth = 10;
+    private final int maxRayDepth = 9;
 
     private boolean computeL1 = false;
 

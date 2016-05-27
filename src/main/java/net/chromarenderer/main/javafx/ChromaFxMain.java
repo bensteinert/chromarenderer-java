@@ -25,7 +25,7 @@ import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.renderer.ChromaRenderMode;
 import net.chromarenderer.renderer.scene.ChromaScene;
-import net.chromarenderer.renderer.scene.FurnaceTest;
+import net.chromarenderer.renderer.scene.SceneFactory;
 import net.chromarenderer.renderer.scene.acc.AccStructType;
 import net.chromarenderer.utils.BufferPressedKeysEventHandler;
 
@@ -293,8 +293,8 @@ public class ChromaFxMain extends Application {
 
     public static void main(String[] args) {
         Thread thread = new Thread(chroma);
-        //scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, SceneFactory.createSomeSpheres());
-        scene = new FurnaceTest();
+        scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, SceneFactory.createSomeSpheres());
+        //scene = new FurnaceTest();
         settings = new ChromaSettings(true, 512, 512, ChromaRenderMode.MT_PTDL, true, AccStructType.AABB_BVH);
         chroma.reinit(settings, scene);
         thread.start();

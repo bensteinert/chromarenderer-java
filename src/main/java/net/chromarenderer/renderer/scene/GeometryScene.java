@@ -86,9 +86,10 @@ public class GeometryScene implements ChromaScene {
 
         if (intersectionContext.hitGeometry != null) {
             ImmutableVector3 hitpoint = ray.onRay(intersectionContext.hitDistance);
-            hitpoint = increaseHitpointPrecision(ray, intersectionContext.hitGeometry, hitpoint, intersectionContext.hitDistance);
+            //hitpoint = increaseHitpointPrecision(ray, intersectionContext.hitGeometry, hitpoint, intersectionContext.hitDistance);
             ImmutableVector3 hitpointNormal = intersectionContext.hitGeometry.getNormal(hitpoint);
             hitpoint = hitpoint.plus(hitpointNormal.mult(Constants.FLT_EPSILON));
+            ray.mailbox(intersectionContext.hitGeometry);
             return new Hitpoint(intersectionContext.hitGeometry, hitpoint, hitpointNormal);
         } else {
             return Hitpoint.INFINITY;

@@ -30,19 +30,19 @@ public class MonteCarloPathTracer extends AccumulativeRenderer  {
 
     private void kernel(Ray incomingRay, MutableVector3 pixel) {
         pixel.reset();
-        int depth = 0;
 
         if (settings.isDirectLightEstimationEnabled()) {
-            ptdlKernel(incomingRay, depth, pixel);
+            ptdlKernel(incomingRay, pixel);
         }
         else {
-            ptKernel(incomingRay, depth, pixel);
+            ptKernel(incomingRay, pixel);
         }
     }
 
 
-    private void ptKernel(Ray incomingRay, int depth, MutableVector3 result) {
+    private void ptKernel(Ray incomingRay, MutableVector3 result) {
         MutableVector3 pathWeight = new MutableVector3(1.f, 1.f, 1.f);
+        int depth = 0;
         Hitpoint hitpoint;
         // L = Le + ∫ fr * Li
         while (pathWeight.getMaxValue() > Constants.FLT_EPSILON && depth < settings.getMaxRayDepth()) {
@@ -58,31 +58,31 @@ public class MonteCarloPathTracer extends AccumulativeRenderer  {
                 }
 
                 Radiance fr = ShaderEngine.brdf(hitpoint, incomingRay);
-                pathWeight = pathWeight.mult(russianRoulette()).mult(fr.getColor());
+                pathWeight = pathWeight.mult(russianRoulette()).mult(fr.getContribution());
                 incomingRay = fr.getLightRay();
             }
         }
     }
 
 
-    private void ptdlKernel(Ray incomingRay, int depth, MutableVector3 result) {
+    private void ptdlKernel(Ray incomingRay, MutableVector3 result) {
         MutableVector3 pathWeight = new MutableVector3(1.f, 1.f, 1.f);
+        int depth = 1;
         Hitpoint hitpoint;
         Radiance fr;
         hitpoint = scene.intersect(incomingRay);
         if (hitpoint.hit()) {
 
             Material material = hitpoint.getHitGeometry().getMaterial();
-            // Add Le - returns 0 if not emitting
+
+            // Add Le - getEmittance() returns 0 if not emitting
             result.plus(material.getEmittance());
 
             Radiance frDL = ShaderEngine.getDirectRadiance(incomingRay, hitpoint);
-            if (frDL.getColor().getMaxValue() > Constants.FLT_EPSILON) {
-                result.plus(frDL.getColor());
-            }
+            result.plus(frDL.getContribution());
 
             fr = ShaderEngine.brdf(hitpoint, incomingRay);
-            pathWeight = pathWeight.mult(fr.getColor());
+            pathWeight = pathWeight.mult(fr.getContribution());
             incomingRay = fr.getLightRay();
 
             while (pathWeight.getMaxValue() > Constants.FLT_EPSILON && depth < settings.getMaxRayDepth()) {
@@ -90,12 +90,10 @@ public class MonteCarloPathTracer extends AccumulativeRenderer  {
                 depth++;
                 if (hitpoint.hit()) {
                     frDL = ShaderEngine.getDirectRadiance(incomingRay, hitpoint);
-                    if (frDL.getColor().getMaxValue() > Constants.FLT_EPSILON) {
-                        result.plus(frDL.getColor().mult(pathWeight));
-                    }
+                    result.plus(frDL.getContribution().mult(pathWeight));
 
                     fr = ShaderEngine.brdf(hitpoint, incomingRay);
-                    pathWeight = pathWeight.mult(russianRoulette()).mult(fr.getColor());
+                    pathWeight = pathWeight.mult(russianRoulette()).mult(fr.getContribution());
                     incomingRay = fr.getLightRay();
                 }
                 else break;
@@ -106,7 +104,6 @@ public class MonteCarloPathTracer extends AccumulativeRenderer  {
 
     private float russianRoulette() {
         return ChromaThreadContext.randomFloatClosedOpen() > Constants.RR_LIMIT ? 0.f : 1.0f/Constants.RR_LIMIT;
-//        return 1.0f;
     }
 
 }

@@ -25,6 +25,14 @@ public class Radiance {
         return color;
     }
 
+    public Vector3 getContribution() {
+        return color.mult(getInvSampleWeight());
+    }
+
+    public float getInvSampleWeight() {
+        return  lightRay != null? lightRay.getSampleWeight() : 0.0f;
+    }
+
 
     public Ray getLightRay() {
         return lightRay;
