@@ -118,7 +118,7 @@ class ChromaFxStatusWindowFactory extends StackPane {
                     intersectionsPeak.setText(String.valueOf(maxIntersections));
 
                     precisionFixedCount.setText(String.valueOf(ChromaStatistics.getSubsurfaceCorrectionsCount()));
-                    cameraPosition.setText(chroma.getCamera().getPosition().toString());
+                    cameraPosition.setText(chroma.getCamera().getPosition().toString() + "\n" + chroma.getCamera().getCoordinateSystem().toString());
                     framesTotal.setText(String.valueOf(ChromaStatistics.getTotalFrameCount()));
                     lastTimeStamp = now;
 

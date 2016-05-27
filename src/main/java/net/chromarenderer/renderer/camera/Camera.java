@@ -1,5 +1,6 @@
 package net.chromarenderer.renderer.camera;
 
+import net.chromarenderer.math.ImmutableMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Ray;
@@ -20,6 +21,8 @@ public interface Camera {
     void move(Vector3 mutableVector3, Vector3 rotation);
 
     ImmutableVector3 getPosition();
+
+    ImmutableMatrix3x3 getCoordinateSystem();
 
     float getFocalDistance();
 

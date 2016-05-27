@@ -67,6 +67,10 @@ public class PinholeCamera implements Camera {
         return position;
     }
 
+    @Override
+    public ImmutableMatrix3x3 getCoordinateSystem() {
+        return coordinateSystem;
+    }
 
     @Override
     public float getFocalDistance() {

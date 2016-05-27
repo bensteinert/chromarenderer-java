@@ -14,7 +14,7 @@ import net.chromarenderer.renderer.shader.Material;
 public class FurnaceTest implements ChromaScene {
 
     Sphere innerSphere = new Sphere(Vector3.ORIGIN, 1.0f, Material.createDiffuseMaterial(COLORS.GREY));
-    Sphere outerSphere = new Sphere(Vector3.ORIGIN, 100000000.0f, Material.createDiffuseMaterial(COLORS.WHITE));
+    Sphere outerSphere = new Sphere(Vector3.ORIGIN, 10000000.0f, Material.createEmittingMaterial(COLORS.WHITE,1.0f));
 
     @Override
     public Hitpoint intersect(Ray ray) {
