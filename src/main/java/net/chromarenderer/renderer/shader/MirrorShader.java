@@ -12,12 +12,12 @@ import net.chromarenderer.renderer.scene.Radiance;
 /**
  * @author bensteinert
  */
-class MirrorShader {
+class MirrorShader implements ChromaShader {
 
-    static ChromaScene scene;
+    private ChromaScene scene;
 
-
-    static Radiance sampleDirectRadiance(Ray incomingRay, Hitpoint hitpoint) {
+    @Override
+    public Radiance sampleDirectRadiance(Hitpoint hitpoint, Ray incomingRay) {
         Ray directRadianceRay = getRecursiveRaySample(hitpoint, incomingRay);
         Hitpoint lightSourceSample = scene.intersect(directRadianceRay);
 
@@ -29,8 +29,8 @@ class MirrorShader {
         }
     }
 
-
-    static Radiance sampleBrdf(Hitpoint hitpoint, Ray incomingRay) {
+    @Override
+    public Radiance sampleBrdf(Hitpoint hitpoint, Ray incomingRay) {
         return new Radiance(COLORS.WHITE, getRecursiveRaySample(hitpoint, incomingRay));
     }
 
@@ -38,6 +38,11 @@ class MirrorShader {
     private static Ray getRecursiveRaySample(Hitpoint hitpoint, Ray incomingRay) {
         final ImmutableVector3 mirrorDirection = VectorUtils.mirror(incomingRay.getDirection().mult(-1.0f), hitpoint.getHitpointNormal());
         return new Ray(hitpoint.getPoint(), mirrorDirection);
+    }
+
+    @Override
+    public void setScene(ChromaScene scene) {
+        this.scene = scene;
     }
 
 }

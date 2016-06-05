@@ -9,7 +9,7 @@ import net.chromarenderer.math.raytracing.Ray;
  */
 public class Radiance {
 
-    public static final Radiance NO_CONTRIBUTION = new Radiance(COLORS.BLACK, null);
+    public static final Radiance NO_CONTRIBUTION = new Radiance(COLORS.BLACK, Ray.NOWHERE);
 
     private final Vector3 radiantIntensity;
     private final Ray lightRay;

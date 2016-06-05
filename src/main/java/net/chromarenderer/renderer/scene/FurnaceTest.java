@@ -3,7 +3,6 @@ package net.chromarenderer.renderer.scene;
 import net.chromarenderer.main.ChromaStatistics;
 import net.chromarenderer.math.COLORS;
 import net.chromarenderer.math.ImmutableVector3;
-import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.geometry.Sphere;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
@@ -14,8 +13,8 @@ import net.chromarenderer.renderer.shader.Material;
  */
 public class FurnaceTest implements ChromaScene {
 
-    Sphere innerSphere = new Sphere(Vector3.ORIGIN, 1.0f, Material.createDiffuseMaterial(COLORS.GREY));
-    Sphere outerSphere = new Sphere(Vector3.ORIGIN, 100000.0f, Material.createEmittingMaterial(COLORS.FULL_WHITE, 1.0f));
+    Sphere innerSphere = new Sphere(new ImmutableVector3(1.0f,1.0f,1.0f), 1.0f, Material.createDiffuseMaterial(COLORS.GREY));
+    Sphere outerSphere = new Sphere(new ImmutableVector3(1.0f,1.0f,1.0f), 100000.0f, Material.createEmittingMaterial(COLORS.FULL_WHITE, 1.0f));
 
 
     @Override

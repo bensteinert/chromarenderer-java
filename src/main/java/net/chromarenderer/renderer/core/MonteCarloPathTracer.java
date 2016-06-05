@@ -45,7 +45,7 @@ public class MonteCarloPathTracer extends AccumulativeRenderer  {
         int depth = 0;
         Hitpoint hitpoint;
         // L = Le + ∫ fr * Li
-        while (pathWeight.getMaxValue() > Constants.FLT_EPSILON && depth < settings.getMaxRayDepth()) {
+        while (pathWeight.getMaxValue() > Constants.FLT_EPSILON && depth <= settings.getMaxRayDepth()) {
             // scene intersection
             hitpoint = scene.intersect(incomingRay);
             depth++;
@@ -78,7 +78,7 @@ public class MonteCarloPathTracer extends AccumulativeRenderer  {
             // Add Le - getEmittance() returns 0 if not emitting
             result.plus(material.getEmittance());
 
-            Radiance irradiance = ShaderEngine.getDirectRadiance(incomingRay, hitpoint);
+            Radiance irradiance = ShaderEngine.getDirectRadiance(hitpoint, incomingRay);
             result.plus(irradiance.getContribution());
 
             fr = ShaderEngine.sampleBrdf(hitpoint, incomingRay);
@@ -89,7 +89,7 @@ public class MonteCarloPathTracer extends AccumulativeRenderer  {
                 hitpoint = scene.intersect(incomingRay);
                 depth++;
                 if (hitpoint.hit()) {
-                    irradiance = ShaderEngine.getDirectRadiance(incomingRay, hitpoint);
+                    irradiance = ShaderEngine.getDirectRadiance(hitpoint, incomingRay);
                     result.plus(irradiance.getContribution().mult(pathWeight));
 
                     fr = ShaderEngine.sampleBrdf(hitpoint, incomingRay);

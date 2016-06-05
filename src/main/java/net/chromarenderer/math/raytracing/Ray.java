@@ -2,6 +2,7 @@ package net.chromarenderer.math.raytracing;
 
 import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.ImmutableVector3;
+import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.geometry.Geometry;
 
 /**
@@ -9,6 +10,7 @@ import net.chromarenderer.math.geometry.Geometry;
  */
 public class Ray {
 
+    public static final Ray NOWHERE = new Ray(Vector3.FLT_MAX, Vector3.Z_AXIS);
     private final ImmutableVector3 origin;
     private final ImmutableVector3 direction;
     private final ImmutableVector3 invDirection;

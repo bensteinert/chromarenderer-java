@@ -16,9 +16,9 @@ import org.apache.commons.math3.util.FastMath;
 /**
  * @author bensteinert
  */
-class DiffuseShader {
+class DiffuseShader implements ChromaShader {
 
-    static ChromaScene scene;
+    private ChromaScene scene;
 
     /*
      * Simple path tracing with uniform hemisphere samples to determine path.
@@ -40,12 +40,14 @@ class DiffuseShader {
      * Ls(ω) = (Li * ρ(ωi, ωo)/π) * π
      * Ls(ω) = Li * ρ(ωi, ωo)
      */
-    static Radiance sampleBrdf(Hitpoint hitpoint, Ray incomingRay) {
+    @Override
+    public Radiance sampleBrdf(Hitpoint hitpoint, Ray incomingRay) {
         // The inverse sample weight of the sampled ray would be π which eliminates the division of rhoD by π.
         return new Radiance(hitpoint.getHitGeometry().getMaterial().getColor(), getCosineDistributedHemisphereSample(hitpoint));
     }
 
-    static Radiance sampleDirectRadiance(Hitpoint hitpoint) {
+    @Override
+    public Radiance sampleDirectRadiance(Hitpoint hitpoint, Ray incomingRay) {
         ImmutableVector3 point = hitpoint.getPoint();
         Hitpoint lightSourceSample = scene.getLightSourceSample();
         ImmutableVector3 directionToLightSource = point.minus(lightSourceSample.getPoint());
@@ -79,7 +81,7 @@ class DiffuseShader {
     /**
      * Produces a cosine distributed ray sampled over the hemisphere around hitpoint.
      * @param hitpoint
-     * @return new sampled AND yet UNWEIGTHED ray.
+     * @return new sampled AND yet UNWEIGHTED ray.
      */
     private static Ray getCosineDistributedHemisphereSample(Hitpoint hitpoint) {
         float u = ChromaThreadContext.randomFloatClosedOpen();
@@ -98,5 +100,10 @@ class DiffuseShader {
                 .plus(coordinateSystem.getN().mult(sampleZ)).normalize();
 
         return new Ray(hitpoint.getPoint(), new ImmutableVector3(newDirection));
+    }
+
+    @Override
+    public void setScene(ChromaScene scene) {
+        this.scene = scene;
     }
 }

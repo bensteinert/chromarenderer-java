@@ -17,18 +17,25 @@ import org.apache.commons.math3.util.FastMath;
 /**
  * @author bensteinert
  */
-class BlinnPhongShader {
+class BlinnPhongShader implements ChromaShader {
 
-    static ChromaScene scene;
+    private ChromaScene scene;
+    private DiffuseShader diffuseShader;
 
 
-    static Radiance sampleBrdf(Hitpoint hitpoint, Ray incomingRay) {
+    BlinnPhongShader(DiffuseShader diffuseShader) {
+        this.diffuseShader = diffuseShader;
+    }
+
+
+    @Override
+    public Radiance sampleBrdf(Hitpoint hitpoint, Ray incomingRay) {
         final float diffSpecRoulette = ChromaThreadContext.randomFloatClosedOpen();
 
         Radiance radiance;
         // TODO: might be material dependent in order to adapt according to diffuse color (rhoD=black doesn't need diffuse samples)
         if (diffSpecRoulette < 0.7f) {
-            radiance = DiffuseShader.sampleBrdf(hitpoint, incomingRay).addContributionFactor(0.7f);
+            radiance = diffuseShader.sampleBrdf(hitpoint, incomingRay).addContributionFactor(0.7f);
         } else {
             radiance = sampleGlossyPart(hitpoint, incomingRay).addContributionFactor(0.3f);
         }
@@ -55,7 +62,8 @@ class BlinnPhongShader {
     }
 
 
-    static Radiance sampleDirectRadiance(Hitpoint hitpoint, Ray incomingRay) {
+    @Override
+    public Radiance sampleDirectRadiance(Hitpoint hitpoint, Ray incomingRay) {
         Radiance sampledIrradiance = sampleBrdf(hitpoint, incomingRay);
         Radiance result;
 
@@ -101,6 +109,12 @@ class BlinnPhongShader {
                 .plus(coordinateSystem.getN().mult(sampleZ)).normalize();
 
         return new ImmutableVector3(newDirection);
+    }
+
+
+    @Override
+    public void setScene(ChromaScene scene) {
+        this.scene = scene;
     }
 
 }
