@@ -20,35 +20,7 @@ class DiffuseShader {
 
     static ChromaScene scene;
 
-    static Radiance sampleDirectRadiance(Hitpoint hitpoint) {
-        ImmutableVector3 point = hitpoint.getPoint();
-        Hitpoint lightSourceSample = scene.getLightSourceSample();
-        ImmutableVector3 directionToLightSource = point.minus(lightSourceSample.getPoint());
-        float distToLight = directionToLightSource.length();
-        directionToLightSource = directionToLightSource.div(distToLight); // manual normalize
-        Ray shadowRay = new Ray(lightSourceSample.getPoint(), directionToLightSource.normalize(), Constants.FLT_EPSILON, distToLight - Constants.FLT_EPSILON);
-
-        float cosThetaContribHit = directionToLightSource.dot(lightSourceSample.getHitpointNormal());
-        float cosThetaSceneHit = directionToLightSource.mult(-1.0f).dot(hitpoint.getHitpointNormal());
-
-        //lightSource hit from correct side?
-        if (cosThetaSceneHit < 0.0f || cosThetaContribHit < 0.0f) {
-            return new Radiance(COLORS.BLACK, shadowRay);
-        } else {
-            if (scene.isObstructed(shadowRay)) {
-                return new Radiance(COLORS.BLACK, shadowRay);
-            } else {
-                float geomTerm = (cosThetaSceneHit * cosThetaContribHit) / (distToLight * distToLight);
-                ImmutableVector3 rhoDiffuse = hitpoint.getHitGeometry().getMaterial().getColor();
-                float precisionBound = 10.0f / (rhoDiffuse.getMaxValue());      // bound can include brdf which can soften the geometric term
-                ImmutableVector3 result = rhoDiffuse.div(Constants.PI_f * 1.0f /*diffuse case probability*/).mult(FastMath.min(precisionBound, geomTerm) * lightSourceSample.getInverseSampleWeight());
-                return new Radiance(result.mult(lightSourceSample.getHitGeometry().getMaterial().getEmittance()), shadowRay);
-            }
-        }
-    }
-
-
-    /**
+    /*
      * Simple path tracing with uniform hemisphere samples to determine path.
      * Ls(ω) = ∫ Li * ρ(ωi, ωo) * cosθ dω
      * <p>
@@ -68,6 +40,39 @@ class DiffuseShader {
      * Ls(ω) = (Li * ρ(ωi, ωo)/π) * π
      * Ls(ω) = Li * ρ(ωi, ωo)
      */
+    static Radiance sampleBrdf(Hitpoint hitpoint, Ray incomingRay) {
+        // The inverse sample weight of the sampled ray would be π which eliminates the division of rhoD by π.
+        return new Radiance(hitpoint.getHitGeometry().getMaterial().getColor(), getRecursiveRaySample(hitpoint));
+    }
+
+    static Radiance sampleDirectRadiance(Hitpoint hitpoint) {
+        ImmutableVector3 point = hitpoint.getPoint();
+        Hitpoint lightSourceSample = scene.getLightSourceSample();
+        ImmutableVector3 directionToLightSource = point.minus(lightSourceSample.getPoint());
+        float distToLight = directionToLightSource.length();
+        directionToLightSource = directionToLightSource.div(distToLight); // manual normalize
+        Ray shadowRay = new Ray(lightSourceSample.getPoint(), directionToLightSource.normalize(), Constants.FLT_EPSILON, distToLight - Constants.FLT_EPSILON);
+        float cosThetaContribHit = directionToLightSource.dot(lightSourceSample.getHitpointNormal());
+        float cosThetaSceneHit = directionToLightSource.mult(-1.0f).dot(hitpoint.getHitpointNormal());
+
+        //lightSource hit from correct side?
+        if (cosThetaSceneHit < 0.0f || cosThetaContribHit < 0.0f) {
+            shadowRay.setInverseSampleWeight(0);
+            return new Radiance(COLORS.BLACK, shadowRay);
+        } else {
+            if (scene.isObstructed(shadowRay)) {
+                shadowRay.setInverseSampleWeight(0);
+                return new Radiance(COLORS.BLACK, shadowRay);
+            } else {
+                shadowRay.setInverseSampleWeight(lightSourceSample.getInverseSampleWeight());
+                float geomTerm = (cosThetaSceneHit * cosThetaContribHit) / (distToLight * distToLight);
+                ImmutableVector3 rhoDiffuse = hitpoint.getHitGeometry().getMaterial().getColor();
+                float precisionBound = 10.0f / (rhoDiffuse.getMaxValue());      // bound can include brdf which can soften the geometric term
+                ImmutableVector3 result = rhoDiffuse.div(Constants.PI_f).mult(FastMath.min(precisionBound, geomTerm));
+                return new Radiance(result.mult(lightSourceSample.getHitGeometry().getMaterial().getEmittance()), shadowRay);
+            }
+        }
+    }
 
 
     /**

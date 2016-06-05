@@ -54,6 +54,10 @@ public class Ray {
         return invDirection;
     }
 
+    public ImmutableVector3 getBackwardsDirection() {
+        return direction.mult(-1.0f);
+    }
+
 
     public float getTMin() {
         return tMin;
@@ -90,12 +94,12 @@ public class Ray {
     }
 
 
-    public float getSampleWeight() {
+    public float getInverseSampleWeight() {
         return sampleWeight;
     }
 
 
-    public void setSampleWeight(float sampleWeight) {
+    public void setInverseSampleWeight(float sampleWeight) {
         this.sampleWeight = sampleWeight;
     }
 

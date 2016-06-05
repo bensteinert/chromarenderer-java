@@ -26,7 +26,7 @@ public class SimplePathTracer extends AccumulativeRenderer implements RecursiveR
 
     protected void renderPixel(int j, int i) {
         Ray cameraRay = camera.getRay(i, j);
-        pixels[width * j + i].set(recursiveKernel(cameraRay, 0).getColor());
+        pixels[width * j + i].set(recursiveKernel(cameraRay, 0).getIntensity());
     }
 
 
@@ -41,7 +41,7 @@ public class SimplePathTracer extends AccumulativeRenderer implements RecursiveR
             result.plus(material.getEmittance());
 
             Radiance directRadianceSample = ShaderEngine.getDirectRadiance(incomingRay, hitpoint);
-            result.plus(directRadianceSample.getColor());
+            result.plus(directRadianceSample.getIntensity());
             if (settings.getMaxRayDepth() > depth) {
                 Radiance indirectRadianceSample;
                 // terminate the path via russian roulette
@@ -49,10 +49,10 @@ public class SimplePathTracer extends AccumulativeRenderer implements RecursiveR
                 if (russianRoulette > Constants.RR_LIMIT) {
                     indirectRadianceSample = Radiance.NO_CONTRIBUTION;
                 } else {
-                    Ray recursiveRaySample = ShaderEngine.getRecursiveRaySample(incomingRay, hitpoint);
+                    Ray recursiveRaySample = ShaderEngine.getRecursiveRaySample(hitpoint, incomingRay);
                     indirectRadianceSample = recursiveKernel(recursiveRaySample, depth + 1);
                 }
-                result.plus(material.getColor().mult(indirectRadianceSample.getColor()));//.mult(1.0f/Constants.RR_LIMIT));
+                result.plus(material.getColor().mult(indirectRadianceSample.getIntensity()));//.mult(1.0f/Constants.RR_LIMIT));
             }
         }
 

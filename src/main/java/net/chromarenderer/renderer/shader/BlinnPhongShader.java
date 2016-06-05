@@ -21,39 +21,65 @@ public class BlinnPhongShader {
 
     static ChromaScene scene;
 
-    static Ray getRecursiveRaySample(Ray incomingRay, Hitpoint hitpoint) {
-        final int lobeNumber = 20;
+
+    static Radiance sampleBrdf(Hitpoint hitpoint, Ray incomingRay) {
+        final float diffSpecRoulette = ChromaThreadContext.randomFloatClosedOpen();
+
+        Radiance radiance;
+        if (diffSpecRoulette < 0.7f) {
+            radiance = DiffuseShader.sampleBrdf(hitpoint, incomingRay).addContributionFactor(0.7f);
+        } else {
+            radiance = sampleGlossyPart(hitpoint, incomingRay).addContributionFactor(0.3f);
+        }
+
+        return radiance;
+    }
+
+
+    private static Radiance sampleGlossyPart(Hitpoint hitpoint, Ray incomingRay) {
+        final int lobeNumber = 20; // TODO read from hitpoint Material
         ImmutableVector3 mirrorDir = VectorUtils.mirror(incomingRay.getDirection().mult(-1.0f), hitpoint.getHitpointNormal());
         final ImmutableVector3 newDirection = getCosineDistributedLobeSample(mirrorDir, hitpoint, lobeNumber);
         float cosTheta = newDirection.dot(hitpoint.getHitpointNormal());
-        final Ray result = new Ray(hitpoint.getPoint(), new ImmutableVector3(newDirection));
+        final Ray sampledRay = new Ray(hitpoint.getPoint(), new ImmutableVector3(newDirection));
 
         if (cosTheta < Constants.FLT_EPSILON) {
-            result.setSampleWeight(0.0f);
+            // case: sample below surface ray weight gets 0
+            sampledRay.setInverseSampleWeight(0.0f);
         } else {
-            result.setSampleWeight(((lobeNumber + 2.0f) / (lobeNumber + 1.0f)) * cosTheta);
+            sampledRay.setInverseSampleWeight(((lobeNumber + 2.0f) / (lobeNumber + 1.0f)) * cosTheta);
         }
+
+        return new Radiance(COLORS.WHITE, sampledRay);
+    }
+
+
+    static Radiance sampleDirectRadiance(Hitpoint hitpoint, Ray incomingRay) {
+        Radiance sampledIrradiance = sampleBrdf(hitpoint, incomingRay);
+        Radiance result;
+
+        Hitpoint potentialLightSourceHitpoint = scene.intersect(sampledIrradiance.getLightRay());
+        if (potentialLightSourceHitpoint.isOn(MaterialType.EMITTING)) {
+            // A glossy plastic layer coating always reflects the full color of the light source!
+            // The reflection is not influenced by the material color!
+            float cosThetaLS = potentialLightSourceHitpoint.getHitpointNormal().dot(sampledIrradiance.getLightRay().getDirection());
+            Material emitting = potentialLightSourceHitpoint.getHitGeometry().getMaterial();
+            ImmutableVector3 radiantIntensity = emitting.getEmittance().mult(sampledIrradiance.getContribution());
+            result = new Radiance(radiantIntensity, sampledIrradiance.getLightRay()).addContributionFactor(sampledIrradiance.getContributionFactor());
+        } else {
+            sampledIrradiance.getLightRay().setInverseSampleWeight(0.0f);
+            result = new Radiance(COLORS.BLACK, sampledIrradiance.getLightRay());
+        }
+
         return result;
     }
 
 
-    static Radiance sampleDirectRadiance(Ray incomingRay, Hitpoint hitpoint) {
-        final Ray sampledDirection = getRecursiveRaySample(incomingRay, hitpoint);
-        if(sampledDirection.getSampleWeight() > Constants.FLT_EPSILON) {
-            Hitpoint lightSourceSample = scene.intersect(sampledDirection);
-            if (lightSourceSample.isOn(MaterialType.EMITTING)) {
-                Material emitting = lightSourceSample.getHitGeometry().getMaterial();
-                return new Radiance(emitting.getEmittance().mult(1.0f - Constants.FLT_EPSILON), sampledDirection);
-            }
-        }
-
-        return new Radiance(COLORS.BLACK, sampledDirection);
-    }
-
     /**
      * Produces a cosine distributed ray sampled within a lobe defined by lobeNumber around mirror direction.
-     * @param direction incoming direction
-     * @param hitpoint hitpoint on the surface to shade
+     *
+     * @param direction  incoming direction
+     * @param hitpoint   hitpoint on the surface to shade
      * @param lobeNumber characteristic
      * @return new sampled ray.
      */
@@ -75,5 +101,10 @@ public class BlinnPhongShader {
                 .plus(coordinateSystem.getN().mult(sampleZ)).normalize();
 
         return new ImmutableVector3(newDirection);
+    }
+
+
+    public static Ray getRecursiveRaySample(Hitpoint hitpoint, Ray incomingRay) {
+        return null;
     }
 }

@@ -57,7 +57,7 @@ public class MonteCarloPathTracer extends AccumulativeRenderer  {
                     result.plus(emitting.getEmittance().mult(pathWeight));
                 }
 
-                Radiance fr = ShaderEngine.brdf(hitpoint, incomingRay);
+                Radiance fr = ShaderEngine.sampleBrdf(hitpoint, incomingRay);
                 pathWeight = pathWeight.mult(russianRoulette()).mult(fr.getContribution());
                 incomingRay = fr.getLightRay();
             }
@@ -78,10 +78,10 @@ public class MonteCarloPathTracer extends AccumulativeRenderer  {
             // Add Le - getEmittance() returns 0 if not emitting
             result.plus(material.getEmittance());
 
-            Radiance frDL = ShaderEngine.getDirectRadiance(incomingRay, hitpoint);
-            result.plus(frDL.getContribution());
+            Radiance irradiance = ShaderEngine.getDirectRadiance(incomingRay, hitpoint);
+            result.plus(irradiance.getContribution());
 
-            fr = ShaderEngine.brdf(hitpoint, incomingRay);
+            fr = ShaderEngine.sampleBrdf(hitpoint, incomingRay);
             pathWeight = pathWeight.mult(fr.getContribution());
             incomingRay = fr.getLightRay();
 
@@ -89,10 +89,10 @@ public class MonteCarloPathTracer extends AccumulativeRenderer  {
                 hitpoint = scene.intersect(incomingRay);
                 depth++;
                 if (hitpoint.hit()) {
-                    frDL = ShaderEngine.getDirectRadiance(incomingRay, hitpoint);
-                    result.plus(frDL.getContribution().mult(pathWeight));
+                    irradiance = ShaderEngine.getDirectRadiance(incomingRay, hitpoint);
+                    result.plus(irradiance.getContribution().mult(pathWeight));
 
-                    fr = ShaderEngine.brdf(hitpoint, incomingRay);
+                    fr = ShaderEngine.sampleBrdf(hitpoint, incomingRay);
                     pathWeight = pathWeight.mult(russianRoulette()).mult(fr.getContribution());
                     incomingRay = fr.getLightRay();
                 }

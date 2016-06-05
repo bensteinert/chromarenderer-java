@@ -2,7 +2,6 @@ package net.chromarenderer.renderer.shader;
 
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
-import net.chromarenderer.renderer.core.ChromaThreadContext;
 import net.chromarenderer.renderer.scene.ChromaScene;
 import net.chromarenderer.renderer.scene.Radiance;
 
@@ -19,22 +18,22 @@ public class ShaderEngine {
 
             case EMITTING:
                 // temporary handling of emitting materials in order to let them participate in reflections
-                //return DiffuseShader.sampleDirectRadiance(hitpoint);
-                return Radiance.NO_CONTRIBUTION;
+                return DiffuseShader.sampleDirectRadiance(hitpoint);
+                //return Radiance.NO_CONTRIBUTION;
 
             case MIRROR:
-                return MirrorShader.getDirectRadiance(incomingRay, hitpoint);
+                return MirrorShader.sampleDirectRadiance(incomingRay, hitpoint);
 
             case PLASTIC:
-                return BlinnPhongShader.sampleDirectRadiance(incomingRay, hitpoint);
+                return BlinnPhongShader.sampleDirectRadiance(hitpoint, incomingRay);
 
             default:
-                return Radiance.NO_CONTRIBUTION;
+                throw new RuntimeException("Unknown MaterialType");
         }
     }
 
 
-    public static Ray getRecursiveRaySample(Ray incomingRay, Hitpoint hitpoint) {
+    public static Ray getRecursiveRaySample(Hitpoint hitpoint, Ray incomingRay) {
 
         switch (hitpoint.getHitGeometry().getMaterial().getType()) {
             case DIFFUSE:
@@ -45,15 +44,10 @@ public class ShaderEngine {
                 return DiffuseShader.getRecursiveRaySample(hitpoint);
 
             case MIRROR:
-                return MirrorShader.getRecursiveRaySample(incomingRay, hitpoint);
+                return MirrorShader.getRecursiveRaySample(hitpoint, incomingRay);
 
             case PLASTIC:
-                final float diffSpecRoulette = ChromaThreadContext.randomFloatClosedOpen();
-                if (diffSpecRoulette > 0.5f) {  // todo add pdf for diff/spec sampling ...
-                    return BlinnPhongShader.getRecursiveRaySample(incomingRay, hitpoint);
-                } else {
-                    return DiffuseShader.getRecursiveRaySample(hitpoint);
-                }
+                return BlinnPhongShader.getRecursiveRaySample(hitpoint, incomingRay);
 
             default:
                 throw new RuntimeException("Unknown MaterialType");
@@ -62,16 +56,17 @@ public class ShaderEngine {
     }
 
 
-    public static Radiance brdf(Hitpoint hitpoint, Ray ray) {
+    public static Radiance sampleBrdf(Hitpoint hitpoint, Ray ray) {
         switch (hitpoint.getHitGeometry().getMaterial().getType()) {
             case EMITTING:
                 // temporary handling of emitting materials in order to let them participate in reflections
-                return Radiance.NO_CONTRIBUTION;
+                //return Radiance.NO_CONTRIBUTION;
             case DIFFUSE:
+                return DiffuseShader.sampleBrdf(hitpoint, ray);
             case MIRROR:
+                return MirrorShader.sampleBrdf(hitpoint, ray);
             case PLASTIC:
-                return new Radiance(hitpoint.getHitGeometry().getMaterial().getColor(), getRecursiveRaySample(ray, hitpoint));
-
+                return BlinnPhongShader.sampleBrdf(hitpoint, ray);
             default:
                 throw new RuntimeException("Unknown MaterialType");
 

@@ -17,8 +17,8 @@ class MirrorShader {
     static ChromaScene scene;
 
 
-    static Radiance getDirectRadiance(Ray incomingRay, Hitpoint hitpoint) {
-        Ray directRadianceRay = getRecursiveRaySample(incomingRay, hitpoint);
+    static Radiance sampleDirectRadiance(Ray incomingRay, Hitpoint hitpoint) {
+        Ray directRadianceRay = getRecursiveRaySample(hitpoint, incomingRay);
         Hitpoint lightSourceSample = scene.intersect(directRadianceRay);
 
         if (lightSourceSample.isOn(MaterialType.EMITTING)) {
@@ -30,8 +30,13 @@ class MirrorShader {
     }
 
 
-    static Ray getRecursiveRaySample(Ray incomingRay, Hitpoint hitpoint) {
-        ImmutableVector3 mirrorDirection = VectorUtils.mirror(incomingRay.getDirection().mult(-1.0f), hitpoint.getHitpointNormal());
+    static Radiance sampleBrdf(Hitpoint hitpoint, Ray incomingRay) {
+        return new Radiance(COLORS.WHITE, getRecursiveRaySample(hitpoint, incomingRay));
+    }
+
+
+    static Ray getRecursiveRaySample(Hitpoint hitpoint, Ray incomingRay) {
+        final ImmutableVector3 mirrorDirection = VectorUtils.mirror(incomingRay.getDirection().mult(-1.0f), hitpoint.getHitpointNormal());
         return new Ray(hitpoint.getPoint(), mirrorDirection);
     }
 
