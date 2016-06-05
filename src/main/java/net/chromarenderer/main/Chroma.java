@@ -8,7 +8,6 @@ import net.chromarenderer.renderer.camera.PinholeCamera;
 import net.chromarenderer.renderer.core.ColorCubeRenderer;
 import net.chromarenderer.renderer.core.MonteCarloPathTracer;
 import net.chromarenderer.renderer.core.MovingAverageRenderer;
-import net.chromarenderer.renderer.core.SimplePathTracer;
 import net.chromarenderer.renderer.core.SimpleRayCaster;
 import net.chromarenderer.renderer.scene.ChromaScene;
 import net.chromarenderer.renderer.scene.GeometryScene;
@@ -135,9 +134,6 @@ public class Chroma implements Runnable {
                 break;
             case COLOR_CUBE:
                 setRenderer(new ColorCubeRenderer(settings));
-                break;
-            case SIMPLE_PTDL:
-                setRenderer(new SimplePathTracer(settings, scene, camera));
                 break;
             case MT_PTDL:
                 setRenderer(new MonteCarloPathTracer(settings, scene, camera));

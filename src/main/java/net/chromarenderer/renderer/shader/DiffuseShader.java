@@ -42,7 +42,7 @@ class DiffuseShader {
      */
     static Radiance sampleBrdf(Hitpoint hitpoint, Ray incomingRay) {
         // The inverse sample weight of the sampled ray would be π which eliminates the division of rhoD by π.
-        return new Radiance(hitpoint.getHitGeometry().getMaterial().getColor(), getRecursiveRaySample(hitpoint));
+        return new Radiance(hitpoint.getHitGeometry().getMaterial().getColor(), getCosineDistributedHemisphereSample(hitpoint));
     }
 
     static Radiance sampleDirectRadiance(Hitpoint hitpoint) {
@@ -52,6 +52,7 @@ class DiffuseShader {
         float distToLight = directionToLightSource.length();
         directionToLightSource = directionToLightSource.div(distToLight); // manual normalize
         Ray shadowRay = new Ray(lightSourceSample.getPoint(), directionToLightSource.normalize(), Constants.FLT_EPSILON, distToLight - Constants.FLT_EPSILON);
+
         float cosThetaContribHit = directionToLightSource.dot(lightSourceSample.getHitpointNormal());
         float cosThetaSceneHit = directionToLightSource.mult(-1.0f).dot(hitpoint.getHitpointNormal());
 
@@ -78,9 +79,9 @@ class DiffuseShader {
     /**
      * Produces a cosine distributed ray sampled over the hemisphere around hitpoint.
      * @param hitpoint
-     * @return new sampled ray.
+     * @return new sampled AND yet UNWEIGTHED ray.
      */
-    static Ray getRecursiveRaySample(Hitpoint hitpoint) {
+    private static Ray getCosineDistributedHemisphereSample(Hitpoint hitpoint) {
         float u = ChromaThreadContext.randomFloatClosedOpen();
         float v = ChromaThreadContext.randomFloatClosedOpen();
         float sqrtU = (float) FastMath.sqrt(u);

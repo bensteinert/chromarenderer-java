@@ -17,7 +17,7 @@ import org.apache.commons.math3.util.FastMath;
 /**
  * @author bensteinert
  */
-public class BlinnPhongShader {
+class BlinnPhongShader {
 
     static ChromaScene scene;
 
@@ -26,6 +26,7 @@ public class BlinnPhongShader {
         final float diffSpecRoulette = ChromaThreadContext.randomFloatClosedOpen();
 
         Radiance radiance;
+        // TODO: might be material dependent in order to adapt according to diffuse color (rhoD=black doesn't need diffuse samples)
         if (diffSpecRoulette < 0.7f) {
             radiance = DiffuseShader.sampleBrdf(hitpoint, incomingRay).addContributionFactor(0.7f);
         } else {
@@ -62,7 +63,6 @@ public class BlinnPhongShader {
         if (potentialLightSourceHitpoint.isOn(MaterialType.EMITTING)) {
             // A glossy plastic layer coating always reflects the full color of the light source!
             // The reflection is not influenced by the material color!
-            float cosThetaLS = potentialLightSourceHitpoint.getHitpointNormal().dot(sampledIrradiance.getLightRay().getDirection());
             Material emitting = potentialLightSourceHitpoint.getHitGeometry().getMaterial();
             ImmutableVector3 radiantIntensity = emitting.getEmittance().mult(sampledIrradiance.getContribution());
             result = new Radiance(radiantIntensity, sampledIrradiance.getLightRay()).addContributionFactor(sampledIrradiance.getContributionFactor());
@@ -83,7 +83,7 @@ public class BlinnPhongShader {
      * @param lobeNumber characteristic
      * @return new sampled ray.
      */
-    static ImmutableVector3 getCosineDistributedLobeSample(ImmutableVector3 direction, Hitpoint hitpoint, int lobeNumber) {
+    private static ImmutableVector3 getCosineDistributedLobeSample(ImmutableVector3 direction, Hitpoint hitpoint, int lobeNumber) {
 
         final CoordinateSystem coordinateSystem = VectorUtils.buildCoordSystem(direction);
         float u = ChromaThreadContext.randomFloatClosedOpen();
@@ -103,8 +103,4 @@ public class BlinnPhongShader {
         return new ImmutableVector3(newDirection);
     }
 
-
-    public static Ray getRecursiveRaySample(Hitpoint hitpoint, Ray incomingRay) {
-        return null;
-    }
 }

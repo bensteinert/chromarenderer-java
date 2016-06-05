@@ -35,7 +35,7 @@ class MirrorShader {
     }
 
 
-    static Ray getRecursiveRaySample(Hitpoint hitpoint, Ray incomingRay) {
+    private static Ray getRecursiveRaySample(Hitpoint hitpoint, Ray incomingRay) {
         final ImmutableVector3 mirrorDirection = VectorUtils.mirror(incomingRay.getDirection().mult(-1.0f), hitpoint.getHitpointNormal());
         return new Ray(hitpoint.getPoint(), mirrorDirection);
     }

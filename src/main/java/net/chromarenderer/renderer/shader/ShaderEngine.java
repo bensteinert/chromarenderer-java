@@ -33,29 +33,6 @@ public class ShaderEngine {
     }
 
 
-    public static Ray getRecursiveRaySample(Hitpoint hitpoint, Ray incomingRay) {
-
-        switch (hitpoint.getHitGeometry().getMaterial().getType()) {
-            case DIFFUSE:
-                return DiffuseShader.getRecursiveRaySample(hitpoint);
-
-            case EMITTING:
-                // temporary handling of emitting materials in order to let them participate in reflections
-                return DiffuseShader.getRecursiveRaySample(hitpoint);
-
-            case MIRROR:
-                return MirrorShader.getRecursiveRaySample(hitpoint, incomingRay);
-
-            case PLASTIC:
-                return BlinnPhongShader.getRecursiveRaySample(hitpoint, incomingRay);
-
-            default:
-                throw new RuntimeException("Unknown MaterialType");
-
-        }
-    }
-
-
     public static Radiance sampleBrdf(Hitpoint hitpoint, Ray ray) {
         switch (hitpoint.getHitGeometry().getMaterial().getType()) {
             case EMITTING:

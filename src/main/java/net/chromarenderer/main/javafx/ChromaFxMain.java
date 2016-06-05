@@ -67,7 +67,6 @@ public class ChromaFxMain extends Application {
         controlPane.add(new Text("Render Mode:"), 0, rowIdx);
         ComboBox<ChromaRenderMode> renderModeCombo = new ComboBox<>(FXCollections.observableArrayList(
                 ChromaRenderMode.SIMPLE,
-                ChromaRenderMode.SIMPLE_PTDL,
                 ChromaRenderMode.MT_PTDL,
                 ChromaRenderMode.COLOR_CUBE,
                 ChromaRenderMode.AVG
