@@ -45,7 +45,7 @@ class BlinnPhongShader implements ChromaShader {
 
 
     private static Radiance sampleGlossyPart(Hitpoint hitpoint, Ray incomingRay) {
-        final int lobeNumber = 20; // TODO read from hitpoint Material
+        final float lobeNumber = hitpoint.getHitGeometry().getMaterial().getSpecularityHardness();
         ImmutableVector3 mirrorDir = VectorUtils.mirror(incomingRay.getDirection().mult(-1.0f), hitpoint.getHitpointNormal());
         final ImmutableVector3 newDirection = getCosineDistributedLobeSample(mirrorDir, hitpoint, lobeNumber);
         float cosTheta = newDirection.dot(hitpoint.getHitpointNormal());
@@ -91,7 +91,7 @@ class BlinnPhongShader implements ChromaShader {
      * @param lobeNumber characteristic
      * @return new sampled ray.
      */
-    private static ImmutableVector3 getCosineDistributedLobeSample(ImmutableVector3 direction, Hitpoint hitpoint, int lobeNumber) {
+    private static ImmutableVector3 getCosineDistributedLobeSample(ImmutableVector3 direction, Hitpoint hitpoint, float lobeNumber) {
 
         final CoordinateSystem coordinateSystem = VectorUtils.buildCoordSystem(direction);
         float u = ChromaThreadContext.randomFloatClosedOpen();

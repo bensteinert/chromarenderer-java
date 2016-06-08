@@ -21,7 +21,7 @@ public class ParallelStreamAccumulationBuffer extends SingleThreadedAccumulation
         // 10% performance loss when DRYED up in common method...
         final int next = accCount + 1;
         IntStream.range(0, input.length).parallel().forEach(i ->
-                pixels[i] = (pixels[i].mult(accCount).plus(input[i])).div(next)
+                pixels[i].mult(accCount).plus(input[i]).div(next)
         );
 
         accCount++;
