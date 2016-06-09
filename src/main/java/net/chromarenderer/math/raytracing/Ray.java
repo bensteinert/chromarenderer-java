@@ -101,8 +101,9 @@ public class Ray {
     }
 
 
-    public void setInverseSampleWeight(float sampleWeight) {
+    public Ray inverseSampleWeight(float sampleWeight) {
         this.sampleWeight = sampleWeight;
+        return this;
     }
 
 

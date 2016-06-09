@@ -53,9 +53,9 @@ class BlinnPhongShader implements ChromaShader {
 
         if (cosTheta < Constants.FLT_EPSILON) {
             // case: sample below surface ray weight gets 0
-            sampledRay.setInverseSampleWeight(0.0f);
+            sampledRay.inverseSampleWeight(0.0f);
         } else {
-            sampledRay.setInverseSampleWeight(((lobeNumber + 2.0f) / (lobeNumber + 1.0f)) * cosTheta);
+            sampledRay.inverseSampleWeight(((lobeNumber + 2.0f) / (lobeNumber + 1.0f)) * cosTheta);
         }
 
         return new Radiance(COLORS.WHITE, sampledRay);
@@ -75,7 +75,7 @@ class BlinnPhongShader implements ChromaShader {
             ImmutableVector3 radiantIntensity = emitting.getEmittance().mult(sampledIrradiance.getContribution());
             result = new Radiance(radiantIntensity, sampledIrradiance.getLightRay()).addContributionFactor(sampledIrradiance.getContributionFactor());
         } else {
-            sampledIrradiance.getLightRay().setInverseSampleWeight(0.0f);
+            sampledIrradiance.getLightRay().inverseSampleWeight(0.0f);
             result = new Radiance(COLORS.BLACK, sampledIrradiance.getLightRay());
         }
 

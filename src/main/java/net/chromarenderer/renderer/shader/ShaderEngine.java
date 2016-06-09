@@ -13,11 +13,12 @@ public class ShaderEngine {
     private static ChromaShader[] shaders;
 
     static {
-        shaders = new ChromaShader[4];
+        shaders = new ChromaShader[5];
         final DiffuseShader diffuseShader = new DiffuseShader();
         shaders[MaterialType.DIFFUSE.ordinal()] = diffuseShader;
         shaders[MaterialType.PLASTIC.ordinal()] = new BlinnPhongShader(diffuseShader);
         shaders[MaterialType.MIRROR.ordinal()] = new MirrorShader();
+        shaders[MaterialType.GLASS.ordinal()] = new GlassShader();
         shaders[MaterialType.EMITTING.ordinal()] = new NoContributionShader();
     }
 

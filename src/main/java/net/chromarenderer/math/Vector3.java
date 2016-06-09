@@ -8,6 +8,7 @@ import org.apache.commons.math3.util.FastMath;
 public interface Vector3 {
 
     ImmutableVector3 ONE = new ImmutableVector3(1.0f, 1.0f, 1.0f);
+    ImmutableVector3 ZERO = new ImmutableVector3(0.0f, 0.0f, 0.0f);
     ImmutableVector3 FLT_MAX = new ImmutableVector3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     ImmutableVector3 MINUS_FLT_MAX = new ImmutableVector3(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
     ImmutableVector3 X_AXIS = new ImmutableVector3(1.0f, 0.0f, 0.0f);

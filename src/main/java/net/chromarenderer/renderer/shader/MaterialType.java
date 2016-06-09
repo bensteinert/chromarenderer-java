@@ -5,5 +5,5 @@ package net.chromarenderer.renderer.shader;
  */
 public enum MaterialType {
 
-    DIFFUSE, PLASTIC, MIRROR, EMITTING, NULL
+    DIFFUSE, PLASTIC, MIRROR, EMITTING, GLASS, NULL
 }

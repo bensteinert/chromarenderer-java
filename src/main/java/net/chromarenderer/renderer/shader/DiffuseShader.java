@@ -60,14 +60,14 @@ class DiffuseShader implements ChromaShader {
 
         //lightSource hit from correct side?
         if (cosThetaSceneHit < 0.0f || cosThetaContribHit < 0.0f) {
-            shadowRay.setInverseSampleWeight(0);
+            shadowRay.inverseSampleWeight(0);
             return new Radiance(COLORS.BLACK, shadowRay);
         } else {
             if (scene.isObstructed(shadowRay)) {
-                shadowRay.setInverseSampleWeight(0);
+                shadowRay.inverseSampleWeight(0);
                 return new Radiance(COLORS.BLACK, shadowRay);
             } else {
-                shadowRay.setInverseSampleWeight(lightSourceSample.getInverseSampleWeight());
+                shadowRay.inverseSampleWeight(lightSourceSample.getInverseSampleWeight());
                 float geomTerm = (cosThetaSceneHit * cosThetaContribHit) / (distToLight * distToLight);
                 ImmutableVector3 rhoDiffuse = hitpoint.getHitGeometry().getMaterial().getColor();
                 float precisionBound = 10.0f / (rhoDiffuse.getMaxValue());      // bound can include brdf which can soften the geometric term
