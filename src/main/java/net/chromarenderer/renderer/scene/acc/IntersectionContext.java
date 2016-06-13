@@ -1,5 +1,6 @@
 package net.chromarenderer.renderer.scene.acc;
 
+import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.geometry.Geometry;
 import net.chromarenderer.math.raytracing.Ray;
 
@@ -33,7 +34,7 @@ public class IntersectionContext {
     public void checkGeometry(Geometry geometry) {
         if (geometry != ray.getLastHitGeomerty()) {
             float distance = geometry.intersect(ray);
-            if (ray.isOnRay(distance) && distance < hitDistance) {
+            if (ray.isOnRay(distance) && distance < hitDistance && distance > Constants.FLT_EPSILON) {
                 hitGeometry = geometry;
                 hitDistance = distance;
             }

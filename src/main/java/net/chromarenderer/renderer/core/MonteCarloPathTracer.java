@@ -59,7 +59,9 @@ public class MonteCarloPathTracer extends AccumulativeRenderer  {
 
                 Radiance fr = ShaderEngine.sampleBrdf(hitpoint, incomingRay);
                 pathWeight = pathWeight.mult(russianRoulette()).mult(fr.getContribution());
-                incomingRay = fr.getLightRay().mailbox(incomingRay.getLastHitGeomerty());
+                incomingRay = fr.getLightRay();
+            } else {
+                return;
             }
         }
     }
@@ -96,7 +98,7 @@ public class MonteCarloPathTracer extends AccumulativeRenderer  {
                     pathWeight = pathWeight.mult(russianRoulette()).mult(fr.getContribution());
                     incomingRay = fr.getLightRay();
                 }
-                else break;
+                else return;
             }
         }
     }

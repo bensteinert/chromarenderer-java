@@ -24,7 +24,7 @@ public class FurnaceTest implements ChromaScene {
             if (ray.isOnRay(distance)) {
                 final ImmutableVector3 point = ray.onRay(distance);
                 ray.mailbox(innerSphere);
-                return new Hitpoint(innerSphere, point, innerSphere.getNormal(point));
+                return new Hitpoint(innerSphere, distance, point, innerSphere.getNormal(point));
             }
         } else {
             ChromaStatistics.subsurfaceHitpointCorrected();
@@ -32,7 +32,7 @@ public class FurnaceTest implements ChromaScene {
 
         float envHit = outerSphere.intersect(ray);
         final ImmutableVector3 point = ray.onRay(envHit);
-        return new Hitpoint(outerSphere, point, outerSphere.getNormal(point).mult(-1.0f));
+        return new Hitpoint(outerSphere, Float.MAX_VALUE, point, outerSphere.getNormal(point).mult(-1.0f));
     }
 
 

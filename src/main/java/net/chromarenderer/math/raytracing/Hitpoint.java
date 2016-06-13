@@ -11,16 +11,18 @@ import org.apache.commons.math3.util.FastMath;
 
 public class Hitpoint {
 
-    public static final Hitpoint INFINITY = new Hitpoint(null, null, null);
+    public static final Hitpoint INFINITY = new Hitpoint(null, Float.MAX_VALUE, null, null);
 
     private final Geometry hitGeometry;
+    private float distance;
     private final ImmutableVector3 point;
     private final ImmutableVector3 hitpointNormal;
     private final float inverseSampleWeight;
 
 
-    public Hitpoint(Geometry hitGeometry, ImmutableVector3 point, ImmutableVector3 hitpointNormal) {
+    public Hitpoint(Geometry hitGeometry, float distance, ImmutableVector3 point, ImmutableVector3 hitpointNormal) {
         this.hitGeometry = hitGeometry;
+        this.distance = distance;
         this.point = point;
         this.hitpointNormal = hitpointNormal;
         this.inverseSampleWeight = 1.0f;
@@ -82,4 +84,13 @@ public class Hitpoint {
         return hit() && getHitGeometry().getMaterial().getType().equals(materialType);
     }
 
+
+    public float getDistance() {
+        return distance;
+    }
+
+
+    public void setDistance(float distance) {
+        this.distance = distance;
+    }
 }
