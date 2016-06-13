@@ -1,12 +1,10 @@
 package net.chromarenderer.renderer.scene;
 
 import net.chromarenderer.main.ChromaStatistics;
-import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.geometry.Geometry;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
-import net.chromarenderer.renderer.shader.MaterialType;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
 import net.chromarenderer.renderer.scene.acc.AccStructType;
 import net.chromarenderer.renderer.scene.acc.AccelerationStructure;
@@ -14,6 +12,7 @@ import net.chromarenderer.renderer.scene.acc.BvhStrategyType;
 import net.chromarenderer.renderer.scene.acc.BvhTreeBuilder;
 import net.chromarenderer.renderer.scene.acc.IntersectionContext;
 import net.chromarenderer.renderer.scene.acc.NoAccelerationImpl;
+import net.chromarenderer.renderer.shader.MaterialType;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -88,7 +87,7 @@ public class GeometryScene implements ChromaScene {
             ImmutableVector3 hitpoint = ray.onRay(intersectionContext.hitDistance);
             //hitpoint = increaseHitpointPrecision(ray, intersectionContext.hitGeometry, hitpoint, intersectionContext.hitDistance);
             ImmutableVector3 hitpointNormal = intersectionContext.hitGeometry.getNormal(hitpoint);
-            hitpoint = hitpoint.plus(hitpointNormal.mult(Constants.FLT_EPSILON));
+            //hitpoint = hitpoint.plus(hitpointNormal.mult(Constants.FLT_EPSILON));
             ray.mailbox(intersectionContext.hitGeometry);
             return new Hitpoint(intersectionContext.hitGeometry, hitpoint, hitpointNormal);
         } else {
@@ -97,6 +96,7 @@ public class GeometryScene implements ChromaScene {
     }
 
     public boolean isObstructed(Ray ray) {
+        ChromaStatistics.ray();
         IntersectionContext intersectionContext = intersectionContextHolder.get();
         intersectionContext.reinit(ray, IntersectionContext.ANY);
         accStruct.intersect(intersectionContext);

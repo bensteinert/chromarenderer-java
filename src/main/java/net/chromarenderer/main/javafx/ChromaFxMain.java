@@ -24,6 +24,8 @@ import net.chromarenderer.main.ChromaSettings;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.renderer.ChromaRenderMode;
+import net.chromarenderer.renderer.camera.Camera;
+import net.chromarenderer.renderer.camera.PinholeCamera;
 import net.chromarenderer.renderer.scene.ChromaScene;
 import net.chromarenderer.renderer.scene.SceneFactory;
 import net.chromarenderer.renderer.scene.acc.AccStructType;
@@ -39,6 +41,7 @@ public class ChromaFxMain extends Application {
 
     private static ChromaSettings settings;
     private static ChromaScene scene;
+    private static Camera camera;
 
     private Stage previewStage;
     private Stage statisticsStage;
@@ -113,7 +116,7 @@ public class ChromaFxMain extends Application {
                     directLightEstimation.selectedProperty().getValue(),
                     accStructCombo.getValue()
                     );
-            chroma.reinit(settings, scene);
+            chroma.reinit(settings, scene, camera);
             if (recreatePreview[0]) {
                 previewStage.close();
                 previewStage = ChromaFxPreviewWindowFactory.createPreviewWindow(chroma);
@@ -175,7 +178,11 @@ public class ChromaFxMain extends Application {
             @Override
             public void handle(long now) {
                 Set<KeyCode> pressedKeys = bufferPressedKeysEventHandler.getPressedKeys();
-                chroma.moveCamera(getTranslationVector(pressedKeys), getRotationVector(pressedKeys));
+                final Vector3 translation = getTranslationVector(pressedKeys);
+                final Vector3 rotation = getRotationVector(pressedKeys);
+                if (translation.nonZero() || rotation.nonZero()) {
+                    camera.move(translation, rotation);
+                }
             }
         }.start();
 
@@ -278,7 +285,7 @@ public class ChromaFxMain extends Application {
         return event -> {
             switch (event.getCode()) {
                 case R:
-                    chroma.getCamera().resetToInitial();
+                    camera.resetToInitial();
                     chroma.flushOnNextImage();
                     break;
                 case L:
@@ -295,7 +302,8 @@ public class ChromaFxMain extends Application {
         scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, SceneFactory.createSomeSpheres());
         //scene = new FurnaceTest();
         settings = new ChromaSettings(true, 512, 512, ChromaRenderMode.MT_PTDL, true, AccStructType.AABB_BVH);
-        chroma.reinit(settings, scene);
+        camera = new PinholeCamera(new ImmutableVector3(0, 0, 10), 100.0f, 0.09f, 0.09f, 512, 512);
+        chroma.reinit(settings, scene, camera);
         thread.start();
 
         launch(ChromaFxMain.class, args);

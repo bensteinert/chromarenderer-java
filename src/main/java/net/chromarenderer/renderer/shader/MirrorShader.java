@@ -36,8 +36,8 @@ class MirrorShader implements ChromaShader {
 
 
     private Ray getRecursiveRaySample(Hitpoint hitpoint, Ray incomingRay) {
-        final ImmutableVector3 mirrorDirection = VectorUtils.mirror(incomingRay.getDirection().mult(-1.0f), hitpoint.getHitpointNormal());
-        return new Ray(hitpoint.getPoint(), mirrorDirection);
+        final ImmutableVector3 mirrorDirection = VectorUtils.mirror(incomingRay.getBackwardsDirection(), hitpoint.getHitpointNormal());
+        return new Ray(hitpoint.getPoint(), mirrorDirection).mailbox(hitpoint.getHitGeometry());
     }
 
     @Override

@@ -3,7 +3,6 @@ package net.chromarenderer.renderer.scene.acc;
 import net.chromarenderer.math.geometry.Geometry;
 
 import java.util.Arrays;
-import java.util.logging.Logger;
 
 /**
  * @author bensteinert
@@ -29,8 +28,8 @@ class BvhNode {
             Arrays.stream(indexList).forEach(idx -> {
                 if (geometry[idx] != ctx.hitGeometry) {
                     ctx.checkGeometry(geometry[idx]);
-                } else {
-                    Logger.getGlobal().warning("re-intersection prevented.");
+                //} else {
+                //    Logger.getGlobal().warning("re-intersection prevented.");
                 }
             });
         } else {

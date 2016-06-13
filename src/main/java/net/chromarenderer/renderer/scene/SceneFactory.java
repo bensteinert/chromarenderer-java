@@ -32,13 +32,13 @@ public class SceneFactory {
 
     public static List<Geometry> createSomeSpheres() {
         List<Geometry> result = new ArrayList<>();
-        result.add(new Sphere(new ImmutableVector3(0.0f, -0.3f, 0.0f), 0.1, Material.createDiffuseMaterial(COLORS.BLUE)));
+        result.add(new Sphere(new ImmutableVector3(0.0f, 0.2f, 0.0f), 0.1, Material.createDiffuseMaterial(COLORS.BLUE)));
         result.add(new Sphere(new ImmutableVector3(-1.0f, 1.0f, 0.5f), 0.2, Material.createDiffuseMaterial(COLORS.RED)));
         result.add(new Sphere(new ImmutableVector3(1.0f, -0.4f, 1.0f), 0.2, Material.createDiffuseMaterial(COLORS.PURPLE)));
-        result.add(new Sphere(new ImmutableVector3(-0.7, -0.4f, -1.2f), 0.4, Material.createPlasticMaterial(new ImmutableVector3(0.7f,0.3f,0.1f), 5.0f)));
+        result.add(new Sphere(new ImmutableVector3(-0.7, -0.4f, -1.2f), 0.4, Material.createPlasticMaterial(new ImmutableVector3(0.7f,0.3f,0.1f), 100.0f)));
         result.add(new Sphere(new ImmutableVector3(-1.0f, 1.7f, 1.0f), 0.2, Material.createDiffuseMaterial(COLORS.GREEN)));
         result.add(new Sphere(new ImmutableVector3(1.0f, -1.6f, -1.0f), 0.4, Material.MIRROR));
-        result.add(new Sphere(new ImmutableVector3(-0.8f, -1.6f, 0.7f), 0.3999, Material.createGlassMaterial(COLORS.WHITE, 1.667f)));
+        result.add(new Sphere(new ImmutableVector3(-0.0f, -0f, 1f), 0.8, Material.createGlassMaterial(COLORS.WHITE, 1.3f)));
         //result.add(new Sphere(new ImmutableVector3(0.0f, 1.8f, 0.0f), 0.4,  Material.createEmittingMaterial(COLORS.WHITE, 10.f)));
         final SimpleTriangle e = new SimpleTriangle(new ImmutableVector3(-0.6f, 1.999f, 0.6f), new ImmutableVector3(0.0f, 1.999f, -0.6f), new ImmutableVector3(0.6f, 1.999f, 0.6f), Material.createEmittingMaterial(COLORS.WHITE, 30.f));
         result.add(e);

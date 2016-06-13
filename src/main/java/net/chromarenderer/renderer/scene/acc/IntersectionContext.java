@@ -31,10 +31,12 @@ public class IntersectionContext {
 
 
     public void checkGeometry(Geometry geometry) {
-        float distance = geometry.intersect(ray);
-        if (ray.isOnRay(distance) && distance < hitDistance) {
-            hitGeometry = geometry;
-            hitDistance = distance;
+        if (geometry != ray.getLastHitGeomerty()) {
+            float distance = geometry.intersect(ray);
+            if (ray.isOnRay(distance) && distance < hitDistance) {
+                hitGeometry = geometry;
+                hitDistance = distance;
+            }
         }
     }
 

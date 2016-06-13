@@ -1,10 +1,7 @@
 package net.chromarenderer.main;
 
-import net.chromarenderer.math.ImmutableVector3;
-import net.chromarenderer.math.Vector3;
 import net.chromarenderer.renderer.Renderer;
 import net.chromarenderer.renderer.camera.Camera;
-import net.chromarenderer.renderer.camera.PinholeCamera;
 import net.chromarenderer.renderer.core.ColorCubeRenderer;
 import net.chromarenderer.renderer.core.MonteCarloPathTracer;
 import net.chromarenderer.renderer.core.MovingAverageRenderer;
@@ -107,17 +104,11 @@ public class Chroma implements Runnable {
     }
 
 
-    public void reinit(ChromaSettings settingsIn, ChromaScene scene) {
+    public void reinit(ChromaSettings settingsIn, ChromaScene scene, Camera cameraIn) {
         this.settings = settingsIn;
-        int pixelsX = this.settings.getImgWidth();
-        int pixelsY = this.settings.getImgHeight();
 
-        //RHS with depth along negative z-axis
-        if (camera == null) {
-            camera = new PinholeCamera(new ImmutableVector3(0.0f, 0.0f, 10.0f), 100.0f, 0.09f, 0.09f, pixelsX, pixelsY);
-        } else {
-            camera.recalibrateSensor(settings.getImgWidth(), settings.getImgHeight());
-        }
+        camera = cameraIn;
+        camera.recalibrateSensor(settings.getImgWidth(), settings.getImgHeight());
 
         if(scene instanceof GeometryScene) {
             ((GeometryScene) scene).buildAccelerationStructure(settings.getAccStructType());
@@ -140,12 +131,6 @@ public class Chroma implements Runnable {
                 break;
             default:
                 break;
-        }
-    }
-
-    public void moveCamera(Vector3 translation, Vector3 rotation){
-        if (translation.nonZero() || rotation.nonZero()) {
-            camera.move(translation, rotation);
         }
     }
 

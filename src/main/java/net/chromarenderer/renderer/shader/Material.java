@@ -11,7 +11,7 @@ public class Material {
 
     public static final Material NULL = new Material(MaterialType.NULL, COLORS.BLACK, Vector3.ZERO, 0, 0, 0);
     public static final Material MIRROR = new Material(MaterialType.MIRROR, COLORS.WHITE, Vector3.ZERO, 0, 0, 99999);
-    public static final Material FREE_SPACE = new Material(MaterialType.NULL, COLORS.BLACK, COLORS.WHITE, 0, 0, 1);
+    public static final Material FREE_SPACE = new Material(MaterialType.NULL, COLORS.BLACK, COLORS.WHITE, 1, 0, 1);
 
     private final MaterialType type;
     private final ImmutableVector3 color;

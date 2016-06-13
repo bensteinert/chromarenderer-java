@@ -55,10 +55,12 @@ class BlinnPhongShader implements ChromaShader {
             // case: sample below surface ray weight gets 0
             sampledRay.inverseSampleWeight(0.0f);
         } else {
-            sampledRay.inverseSampleWeight(((lobeNumber + 2.0f) / (lobeNumber + 1.0f)) * cosTheta);
+            sampledRay.inverseSampleWeight(((lobeNumber + 2.0f) / (lobeNumber + 1.0f)));// * cosTheta);
+            // prevent reintersection for the same surface
+            sampledRay.mailbox(hitpoint.getHitGeometry());
         }
 
-        return new Radiance(COLORS.WHITE, sampledRay);
+        return new Radiance(COLORS.GREY, sampledRay);
     }
 
 

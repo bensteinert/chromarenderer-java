@@ -43,7 +43,10 @@ class DiffuseShader implements ChromaShader {
     @Override
     public Radiance sampleBrdf(Hitpoint hitpoint, Ray incomingRay) {
         // The inverse sample weight of the sampled ray would be π which eliminates the division of rhoD by π.
-        return new Radiance(hitpoint.getHitGeometry().getMaterial().getColor(), getCosineDistributedHemisphereSample(hitpoint));
+        final Ray cosineDistributedHemisphereSample = getCosineDistributedHemisphereSample(hitpoint);
+        // prevent reintersection for the same surface
+        cosineDistributedHemisphereSample.mailbox(hitpoint.getHitGeometry());
+        return new Radiance(hitpoint.getHitGeometry().getMaterial().getColor(), cosineDistributedHemisphereSample);
     }
 
     @Override

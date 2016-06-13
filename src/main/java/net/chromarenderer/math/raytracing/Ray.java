@@ -107,8 +107,9 @@ public class Ray {
     }
 
 
-    public void mailbox(Geometry geometry) {
+    public Ray mailbox(Geometry geometry) {
         lastHitGeomerty = geometry;
+        return this;
     }
 
 
