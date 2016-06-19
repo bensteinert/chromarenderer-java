@@ -6,6 +6,7 @@ import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.VectorUtils;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
+import net.chromarenderer.renderer.core.ChromaThreadContext;
 import net.chromarenderer.renderer.scene.ChromaScene;
 import net.chromarenderer.renderer.scene.Radiance;
 import org.apache.commons.math3.util.FastMath;
@@ -13,7 +14,7 @@ import org.apache.commons.math3.util.FastMath;
 /**
  * @author bensteinert
  */
-public class GlassShader implements ChromaShader {
+public class DielectricShader implements ChromaShader {
 
     private ChromaScene scene;
 
@@ -41,7 +42,7 @@ public class GlassShader implements ChromaShader {
             matTo = Material.FREE_SPACE;
             matFrom = hitpoint.getHitGeometry().getMaterial();
             // flip normal because it points outwards by convention
-            //cosTheta = -cosTheta;
+            cosTheta = -cosTheta;
             n = n.mult(-1);
             insideGlass = true;
         }
@@ -60,33 +61,34 @@ public class GlassShader implements ChromaShader {
         if (powCosPhi > 0.0f) {
 
             //Schlicks approximation for reflectivity:
-            //double R0 = FastMath.pow((etaTo - 1) / (etaTo + 1), 2);
-            //float reflectance = (float) (R0 + (1 - R0) * FastMath.pow(1 - cosTheta, 5));
-            //float brdfCase = ChromaThreadContext.randomFloatClosedOpen();
+            double R0 = FastMath.pow((etaTo - 1) / (etaTo + 1), 2);
+            float reflectance = (float) (R0 + (1 - R0) * FastMath.pow(1 - cosTheta, 5));
+            float brdfCase = ChromaThreadContext.randomFloatClosedOpen();
 
             // inversion method to sample case
-            //if (brdfCase > reflectance) {
+            if (brdfCase > reflectance) {
                 //refaction case:
                 ImmutableVector3 outDirection = ((inDir.minus(n.mult(inDirDotN))).mult(etaFrom)).div(etaTo).minus(n.mult((float) FastMath.sqrt(powCosPhi))).normalize();
-                final ImmutableVector3 attenuation = getAttenuation(matFrom, hitpoint.getDistance());  // TODO: calc distance for attenuation
-                return new Radiance(attenuation, new Ray(hitpoint.getPoint(), outDirection));//.inverseSampleWeight((1 - reflectance)/reflectance));
-//            } else {
+                final ImmutableVector3 attenuation = getAttenuation(matFrom, hitpoint.getDistance());
+                return new Radiance(attenuation, new Ray(hitpoint.getPoint(), outDirection, Constants.FLT_EPSILON*10.0f, Float.MAX_VALUE));
+            }
+            else {
 //                //reflection case:
-//                ImmutableVector3 outDirection = VectorUtils.mirror(incomingRay.getDirection().mult(-1.0f), hitpoint.getHitpointNormal());
-//                final ImmutableVector3 attenuation = getAttenuation(matFrom, 1);  // TODO: calc distance for attenuation
-//                return new Radiance(attenuation, new Ray(hitpoint.getPoint(), outDirection));
-                // TODO set mailboxing if outside...
+                ImmutableVector3 outDirection = VectorUtils.mirror(backwardsDirection, n);
+                final ImmutableVector3 attenuation = getAttenuation(matFrom, hitpoint.getDistance());
+                final Ray lightRay = new Ray(hitpoint.getPoint(), outDirection);
+                if (!insideGlass) {
+                    lightRay.mailbox(hitpoint.getHitGeometry());
+                }
+                return new Radiance(attenuation, lightRay);
+            }
 //            }
         }
         else {
-            // total internal reflection:
-            ImmutableVector3 outDirection = VectorUtils.mirror(incomingRay.getDirection().mult(-1.0f), hitpoint.getHitpointNormal());
-            final ImmutableVector3 attenuation = getAttenuation(matFrom, hitpoint.getDistance());   // TODO: calc distance for attenuation
+//            // total internal reflection:
+            ImmutableVector3 outDirection = VectorUtils.mirror(backwardsDirection, n);
+            final ImmutableVector3 attenuation = getAttenuation(matFrom, hitpoint.getDistance());
             final Ray lightRay = new Ray(hitpoint.getPoint(), outDirection);
-            // prevent reintersection for the same surface
-            if(!insideGlass) {
-                lightRay.mailbox(hitpoint.getHitGeometry());
-            }
             return new Radiance(attenuation, lightRay);
         }
     }

@@ -3,11 +3,21 @@ package net.chromarenderer.math;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @author steinerb
+ * @author bensteinert
  */
 public class Constants {
 
-    public static final float FLT_EPSILON =  0.000001f;
+    private static float calculateMachineEpsilonFloat() {
+        float machEps = 1.0f;
+
+        do
+            machEps /= 2.0f;
+        while ((float) (1.0 + (machEps / 2.0)) != 1.0);
+
+        return machEps;
+    }
+
+    public static final float FLT_EPSILON =  calculateMachineEpsilonFloat();
     public static final double DBL_EPSILON = 0.000001;
     public static final float SPHERE_NAN_LIMIT = 1000000.0f;
     public static final float PI_f = 3.141593f;

@@ -18,7 +18,7 @@ public class ShaderEngine {
         shaders[MaterialType.DIFFUSE.ordinal()] = diffuseShader;
         shaders[MaterialType.PLASTIC.ordinal()] = new BlinnPhongShader(diffuseShader);
         shaders[MaterialType.MIRROR.ordinal()] = new MirrorShader();
-        shaders[MaterialType.GLASS.ordinal()] = new GlassShader();
+        shaders[MaterialType.GLASS.ordinal()] = new DielectricShader();
         shaders[MaterialType.EMITTING.ordinal()] = new NoContributionShader();
     }
 

@@ -302,7 +302,7 @@ public class ChromaFxMain extends Application {
         scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, SceneFactory.createSomeSpheres());
         //scene = new FurnaceTest();
         settings = new ChromaSettings(true, 512, 512, ChromaRenderMode.MT_PTDL, true, AccStructType.AABB_BVH);
-        camera = new PinholeCamera(new ImmutableVector3(0, 0, 10), 100.0f, 0.09f, 0.09f, 512, 512);
+        camera = new PinholeCamera(new ImmutableVector3(-0.9, -1.6, 1.5), 50.0f, 0.09f, 0.09f, 512, 512);
         chroma.reinit(settings, scene, camera);
         thread.start();
 
