@@ -95,7 +95,7 @@ public class DielectricShader implements ChromaShader {
 
 
     private ImmutableVector3 getAttenuation(Material matFrom, float distance) {
-        final ImmutableVector3 transmission = matFrom.getTransmission();
+        final ImmutableVector3 transmission = matFrom.getColor();
         double attR = FastMath.exp(-(1 - transmission.getX()) * distance);    // pathWeight will be attenuted by Beers law
         double attG = FastMath.exp(-(1 - transmission.getY()) * distance);
         double attB = FastMath.exp(-(1 - transmission.getZ()) * distance);
