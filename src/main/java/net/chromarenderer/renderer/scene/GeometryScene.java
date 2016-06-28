@@ -5,6 +5,7 @@ import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.geometry.Geometry;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
+import net.chromarenderer.renderer.camera.Camera;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
 import net.chromarenderer.renderer.scene.acc.AccStructType;
 import net.chromarenderer.renderer.scene.acc.AccelerationStructure;
@@ -29,7 +30,9 @@ public class GeometryScene implements ChromaScene {
     private final float[] lightSourceDistributions;
     private final float totalLightSourceArea;
 
+    private Camera camera;
     private AccelerationStructure accStruct;
+
 
     public GeometryScene(List<Geometry> geometryList) {
         this.geometryList = geometryList;
@@ -152,4 +155,13 @@ public class GeometryScene implements ChromaScene {
         }
     }
 
+
+    public Camera getCamera() {
+        return camera;
+    }
+
+
+    public void setCamera(Camera camera) {
+        this.camera = camera;
+    }
 }
