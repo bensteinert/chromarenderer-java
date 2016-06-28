@@ -8,7 +8,7 @@ import net.chromarenderer.renderer.core.ChromaThreadContext;
 import org.apache.commons.math3.util.FastMath;
 
 /**
- * @author steinerb
+ * @author bensteinert
  */
 public class PinholeCamera implements Camera {
 
@@ -23,6 +23,7 @@ public class PinholeCamera implements Camera {
     private float shiftX;
     private float shiftY;
 
+
     public PinholeCamera(ImmutableVector3 position, float focalDistance, float pixelSizeX, float pixelSizeY, int pixelsX, int pixelsY) {
         this.initialPosition = new ImmutableVector3(position);
         this.position = position;
@@ -34,9 +35,9 @@ public class PinholeCamera implements Camera {
         this.shiftY = (pixelsY / 2) * pixelSizeY;
     }
 
+
     @Override
-    public Ray getRay(int x, int y){
-        // No rotation yet...
+    public Ray getRay(int x, int y) {
         float subSampleX = ChromaThreadContext.randomFloatClosedOpen();
         float subSampleY = ChromaThreadContext.randomFloatClosedOpen();
 
@@ -49,28 +50,31 @@ public class PinholeCamera implements Camera {
     public void move(Vector3 translation, Vector3 rotationVector) {
         position = position.plus(coordinateSystem.mult(translation));
 
-        //SLEEF FastMath useful here probably!
         float sin_t = (float) FastMath.sin(rotationVector.getY());
         float cos_t = (float) FastMath.cos(rotationVector.getY());
         float sin_p = (float) FastMath.sin(rotationVector.getX());
         float cos_p = (float) FastMath.cos(rotationVector.getX());
 
-        ImmutableMatrix3x3 rotation = new ImmutableMatrix3x3(cos_p,        0.0f,   sin_p,
-                                                                       sin_t*sin_p,  cos_t, -1.0f*sin_t*cos_p,
-                                                                       -sin_p*cos_t, sin_t, cos_t*cos_p);
+        ImmutableMatrix3x3 rotation = new ImmutableMatrix3x3(
+                cos_p, 0.0f, sin_p,
+                sin_t * sin_p, cos_t, -1.0f * sin_t * cos_p,
+                -sin_p * cos_t, sin_t, cos_t * cos_p);
 
         this.coordinateSystem = rotation.mult(coordinateSystem).normalizeCols();
     }
+
 
     @Override
     public ImmutableVector3 getPosition() {
         return position;
     }
 
+
     @Override
     public ImmutableMatrix3x3 getCoordinateSystem() {
         return coordinateSystem;
     }
+
 
     @Override
     public float getFocalDistance() {
@@ -99,6 +103,7 @@ public class PinholeCamera implements Camera {
 
     @Override
     public void recalibrateSensor(int newWidth, int newHeight) {
+        //TODO: Add some sort of focal length compensation in order to keep field of view.
         this.shiftX = (newWidth / 2) * pixelSizeX;
         this.shiftY = (newHeight / 2) * pixelSizeY;
     }
