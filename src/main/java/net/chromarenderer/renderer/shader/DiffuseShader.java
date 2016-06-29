@@ -57,7 +57,7 @@ class DiffuseShader implements ChromaShader {
         float distToLight = directionToLightSource.length();
         hitpoint.setDistance(distToLight);
         directionToLightSource = directionToLightSource.div(distToLight); // manual normalize
-        Ray shadowRay = new Ray(lightSourceSample.getPoint(), directionToLightSource.normalize(), Constants.FLT_EPSILON, distToLight - Constants.FLT_EPSILON);
+        Ray shadowRay = new Ray(lightSourceSample.getPoint(), directionToLightSource.normalize(), Constants.FLT_EPSILON, distToLight - Constants.FLT_EPSILON, false);
 
         float cosThetaContribHit = directionToLightSource.dot(lightSourceSample.getHitpointNormal());
         float cosThetaSceneHit = directionToLightSource.mult(-1.0f).dot(hitpoint.getHitpointNormal());

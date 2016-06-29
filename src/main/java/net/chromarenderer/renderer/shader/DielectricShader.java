@@ -14,7 +14,7 @@ import org.apache.commons.math3.util.FastMath;
 /**
  * @author bensteinert
  */
-public class DielectricShader implements ChromaShader {
+class DielectricShader implements ChromaShader {
 
     private ChromaScene scene;
 
@@ -59,7 +59,6 @@ public class DielectricShader implements ChromaShader {
 
         // not sure, contrary to FCG p164
         if (powCosPhi > 0.0f) {
-
             //Schlicks approximation for reflectivity:
             double R0 = FastMath.pow((etaTo - 1) / (etaTo + 1), 2);
             float reflectance = (float) (R0 + (1 - R0) * FastMath.pow(1 - cosTheta, 5));
@@ -70,25 +69,24 @@ public class DielectricShader implements ChromaShader {
                 //refaction case:
                 ImmutableVector3 outDirection = ((inDir.minus(n.mult(inDirDotN))).mult(etaFrom)).div(etaTo).minus(n.mult((float) FastMath.sqrt(powCosPhi))).normalize();
                 final ImmutableVector3 attenuation = getAttenuation(matFrom, hitpoint.getDistance());
-                return new Radiance(attenuation, new Ray(hitpoint.getPoint(), outDirection, Constants.FLT_EPSILON*10.0f, Float.MAX_VALUE));
+                return new Radiance(attenuation, new Ray(hitpoint.getPoint(), outDirection, Constants.FLT_EPSILON*10.0f, Float.MAX_VALUE, !insideGlass));
             }
             else {
 //                //reflection case:
                 ImmutableVector3 outDirection = VectorUtils.mirror(backwardsDirection, n);
                 final ImmutableVector3 attenuation = getAttenuation(matFrom, hitpoint.getDistance());
-                final Ray lightRay = new Ray(hitpoint.getPoint(), outDirection);
+                final Ray lightRay = new Ray(hitpoint.getPoint(), outDirection, Constants.FLT_EPSILON, Float.MAX_VALUE, insideGlass);
                 if (!insideGlass) {
                     lightRay.mailbox(hitpoint.getHitGeometry());
                 }
                 return new Radiance(attenuation, lightRay);
             }
-//            }
         }
         else {
 //            // total internal reflection:
             ImmutableVector3 outDirection = VectorUtils.mirror(backwardsDirection, n);
             final ImmutableVector3 attenuation = getAttenuation(matFrom, hitpoint.getDistance());
-            final Ray lightRay = new Ray(hitpoint.getPoint(), outDirection);
+            final Ray lightRay = new Ray(hitpoint.getPoint(), outDirection, Constants.FLT_EPSILON, Float.MAX_VALUE, insideGlass);
             return new Radiance(attenuation, lightRay);
         }
     }

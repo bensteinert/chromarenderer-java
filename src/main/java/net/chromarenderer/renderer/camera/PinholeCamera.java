@@ -42,7 +42,7 @@ public class PinholeCamera implements Camera {
         float subSampleY = ChromaThreadContext.randomFloatClosedOpen();
 
         ImmutableVector3 direction = new ImmutableVector3(((x + subSampleX) * pixelSizeX) - shiftX, ((y + subSampleY) * pixelSizeY) - shiftY, -focalDistance).normalize();
-        return new Ray(new ImmutableVector3(position), coordinateSystem.mult(direction), 0, Float.MAX_VALUE);
+        return new Ray(new ImmutableVector3(position), coordinateSystem.mult(direction), 0, Float.MAX_VALUE, false);
     }
 
 

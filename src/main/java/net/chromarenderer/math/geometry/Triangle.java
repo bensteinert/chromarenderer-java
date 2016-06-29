@@ -47,9 +47,12 @@ public interface Triangle extends Geometry {
         ImmutableVector3 P, Q, T;
         float det;
 
-        /* if we hit the triangle from the back, it is not a valid intersection! */
+        /*
+        * If we hit the triangle from the back, usually it is not a valid intersection!
+        * Except if the ray passed the geometry due to shading.
+        **/
         float backFaceCulling = ray.getDirection().dot(getNormal());
-        if (backFaceCulling > 0.0f) {
+        if (backFaceCulling > 0.0f && !ray.isTransparent()) {
             return 0.f;
         }
 
@@ -87,13 +90,7 @@ public interface Triangle extends Geometry {
         }
 
 	    /* calculate distance, ray intersects triangle */
-        float distance = E2.dot(Q) * invDet;
-
-        if (ray.getTMin() > distance || ray.getTMax() < distance) {
-            return 0.f;
-        }
-
-        return distance;
+        return E2.dot(Q) * invDet;
     }
 
 //    private float internalIntersectPlainFloat(Ray ray) {

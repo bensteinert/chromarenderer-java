@@ -59,7 +59,6 @@ public class GeometryScene implements ChromaScene {
             totalLightSourceArea = 0.0f;
             lightSourceDistributions = null;
             System.err.println("No LightSources detected");
-            // TODO throw exception
         }
     }
 
@@ -80,7 +79,7 @@ public class GeometryScene implements ChromaScene {
 
     public Hitpoint intersect(Ray ray) {
         ChromaStatistics.ray();
-        //TODO-IMP: Measure overhead of ThreadLocal
+        //TODO-IMP: Measure overhead of ThreadLocal?
         IntersectionContext intersectionContext = intersectionContextHolder.get();
         intersectionContext.reinit(ray);
 
@@ -110,16 +109,16 @@ public class GeometryScene implements ChromaScene {
     /**
      * When ray suffered distance precision loss it is good to do a 2nd intersection in order to correct the actual hitpoint.
      */
-    private ImmutableVector3 increaseHitpointPrecision(Ray ray, Geometry hitGeometry, ImmutableVector3 hitpoint, float hitDistance) {
-        Ray reverseRay = new Ray(hitpoint, ray.getDirection().mult(-1.0f), 0.0f, hitDistance * 0.5f);
-        float reverseDistance = hitGeometry.intersect(reverseRay);
-        if (reverseDistance > 0) {
-            ChromaStatistics.subsurfaceHitpointCorrected();
-            return reverseRay.onRay(reverseDistance);
-        } else {
-            return hitpoint;
-        }
-    }
+//    private ImmutableVector3 increaseHitpointPrecision(Ray ray, Geometry hitGeometry, ImmutableVector3 hitpoint, float hitDistance) {
+//        Ray reverseRay = new Ray(hitpoint, ray.getDirection().mult(-1.0f), 0.0f, hitDistance * 0.5f);
+//        float reverseDistance = hitGeometry.intersect(reverseRay);
+//        if (reverseDistance > 0) {
+//            ChromaStatistics.subsurfaceHitpointCorrected();
+//            return reverseRay.onRay(reverseDistance);
+//        } else {
+//            return hitpoint;
+//        }
+//    }
 
 
     public Hitpoint getLightSourceSample() {

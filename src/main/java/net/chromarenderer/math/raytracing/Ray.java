@@ -23,14 +23,15 @@ public class Ray {
     private final byte signY;
     private final byte signZ;
     private Geometry lastHitGeomerty;
+    private final boolean transparent;
 
 
     public Ray(ImmutableVector3 origin, ImmutableVector3 direction) {
-        this(origin, direction, Constants.FLT_EPSILON, Float.MAX_VALUE);
+        this(origin, direction, Constants.FLT_EPSILON, Float.MAX_VALUE, false);
     }
 
 
-    public Ray(ImmutableVector3 origin, ImmutableVector3 direction, float tMin, float tMax) {
+    public Ray(ImmutableVector3 origin, ImmutableVector3 direction, float tMin, float tMax, boolean transparent) {
         this.origin = origin;
         this.direction = direction;
         invDirection = new ImmutableVector3(1.f / direction.getX(), 1.f / direction.getY(), 1.f / direction.getZ());
@@ -39,6 +40,7 @@ public class Ray {
         this.signX = (byte) (invDirection.getX() < 0 ? 1 : 0);
         this.signY = (byte) (invDirection.getY() < 0 ? 1 : 0);
         this.signZ = (byte) (invDirection.getZ() < 0 ? 1 : 0);
+        this.transparent = transparent;
     }
 
 
@@ -116,4 +118,10 @@ public class Ray {
     public Geometry getLastHitGeomerty() {
         return lastHitGeomerty;
     }
+
+
+    public boolean isTransparent() {
+        return transparent;
+    }
+
 }
