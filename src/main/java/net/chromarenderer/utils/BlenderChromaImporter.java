@@ -4,8 +4,8 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
+import net.chromarenderer.math.ImmutableMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
-import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.geometry.Geometry;
 import net.chromarenderer.math.geometry.SimpleTriangle;
 import net.chromarenderer.renderer.camera.Camera;
@@ -95,14 +95,37 @@ public class BlenderChromaImporter {
         //Currently only one camera per scene accepted!
         final JsonObject cameraJson = Json.parse(reader).asObject();
         ImmutableVector3 position = toImmVec(cameraJson.get("position").asArray());
-        ImmutableVector3 rotation = toImmVec(cameraJson.get("rotation").asArray());
-        float focalLength = cameraJson.get("focalLength").asFloat();
+        ImmutableVector3 upVector = toImmVec(cameraJson.get("upVector").asArray());
+        ImmutableVector3 viewDirection = toImmVec(cameraJson.get("viewDirection").asArray());
+        float focalLength = cameraJson.get("focalLength").asFloat() * 1000.0f * (32.0f/36.0f);// convert m to mm
 
         // Currently the only supported one ....
-        camera = new PinholeCamera(position, focalLength, 0.036f, 0.036f, 1000, 1000);
-        camera.move(Vector3.ZERO, rotation);
+
+        ImmutableVector3 col3 = viewDirection.normalize();
+        ImmutableVector3 col2 = upVector.normalize();
+        ImmutableVector3 col1 = col2.crossProduct(col3).normalize();
+        camera = new PinholeCamera(position, new ImmutableMatrix3x3(col1, col2, col3), focalLength, 0.036f, 0.036f, 1000, 1000);
         return camera;
     }
+
+//    void Camera::loadCameraSettings(const float* const vals){
+//
+//        pos = Vector3(vals);
+//        rot[2] = Vector3(vals+3).normalizedCopy();
+//        rot[1] = Vector3(vals+6).normalizedCopy();
+//        rot[0] = (rot[1] % rot[2]).normalizedCopy();
+//        if(!equals(sensorSizeX/sensorSizeY,4.0f/3.0f))
+//            cout << "non 4:3 sensor format!" << endl;
+//        float crop = 32.0f/sensorSizeX;					//assume 4:3 format as set!
+//        focalDist = vals[9]*1000.0f/crop;				//vals[9] is focal Distance at 32x24mm 'film' so introduce crop factor
+//        save_rot = rot;
+//        inv_rot = rot.transpose();
+//        save_pos = pos;
+//    }
+
+
+
+
 
 
     private static List<Geometry> importMeshesFromJson(Path meshFile, List<Material> materials) throws IOException {

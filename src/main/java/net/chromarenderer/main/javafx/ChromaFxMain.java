@@ -25,7 +25,6 @@ import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.renderer.ChromaRenderMode;
 import net.chromarenderer.renderer.camera.Camera;
-import net.chromarenderer.renderer.camera.PinholeCamera;
 import net.chromarenderer.renderer.scene.ChromaScene;
 import net.chromarenderer.renderer.scene.GeometryScene;
 import net.chromarenderer.renderer.scene.acc.AccStructType;
@@ -301,17 +300,16 @@ public class ChromaFxMain extends Application {
     public static void main(String[] args) {
         Thread thread = new Thread(chroma);
 
+        settings = new ChromaSettings(true, 512, 512, ChromaRenderMode.MT_PTDL, true, AccStructType.AABB_BVH);
+
+        final GeometryScene geometryScene = BlenderChromaImporter.importSceneFromFileSet("/Users/ben/Projects/chroma/scenes/cornellv02", "cornellv02");
         //scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, SceneFactory.createSomeSpheres());
         //scene = new FurnaceTest();
-
-        settings = new ChromaSettings(true, 512, 512, ChromaRenderMode.MT_PTDL, true, AccStructType.AABB_BVH);
-        final GeometryScene geometryScene = BlenderChromaImporter.importSceneFromFileSet("/Users/ben/Projects/chroma/scenes/cornellv02", "cornellv02");
         // TODO: Move camera reference to Scene if feasible
         scene = geometryScene;
-        //camera = geometryScene.getCamera();
-        camera = new PinholeCamera(new ImmutableVector3(0, 0, 10), 50.0f, 0.09f, 0.09f, 512, 512);
-
+        camera = geometryScene.getCamera();
         chroma.reinit(settings, scene, camera);
+
         thread.start();
 
         launch(ChromaFxMain.class, args);

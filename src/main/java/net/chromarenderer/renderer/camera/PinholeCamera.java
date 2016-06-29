@@ -13,6 +13,7 @@ import org.apache.commons.math3.util.FastMath;
 public class PinholeCamera implements Camera {
 
     private final ImmutableVector3 initialPosition;
+    private ImmutableMatrix3x3 initialCoordinateSystem;
 
     private ImmutableVector3 position;
     private ImmutableMatrix3x3 coordinateSystem;
@@ -25,9 +26,14 @@ public class PinholeCamera implements Camera {
 
 
     public PinholeCamera(ImmutableVector3 position, float focalDistance, float pixelSizeX, float pixelSizeY, int pixelsX, int pixelsY) {
-        this.initialPosition = new ImmutableVector3(position);
+        this(position, new ImmutableMatrix3x3(Vector3.X_AXIS, Vector3.Y_AXIS, Vector3.Z_AXIS), focalDistance, pixelSizeX, pixelSizeY, pixelsX, pixelsY);
+    }
+
+    public PinholeCamera(ImmutableVector3 position, ImmutableMatrix3x3 coordinateSystem, float focalDistance, float pixelSizeX, float pixelSizeY, int pixelsX, int pixelsY) {
+        this.initialPosition = position;
         this.position = position;
-        this.coordinateSystem = new ImmutableMatrix3x3(Vector3.X_AXIS, Vector3.Y_AXIS, Vector3.Z_AXIS);
+        this.initialCoordinateSystem = coordinateSystem;
+        this.coordinateSystem = coordinateSystem;
         this.focalDistance = focalDistance;
         this.pixelSizeX = pixelSizeX;
         this.pixelSizeY = pixelSizeY;
@@ -97,7 +103,7 @@ public class PinholeCamera implements Camera {
     @Override
     public void resetToInitial() {
         position = initialPosition;
-        this.coordinateSystem = new ImmutableMatrix3x3(Vector3.X_AXIS, Vector3.Y_AXIS, Vector3.Z_AXIS);
+        coordinateSystem = initialCoordinateSystem;
     }
 
 
