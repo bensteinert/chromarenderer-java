@@ -132,12 +132,13 @@ public class Chroma implements Runnable {
             default:
                 break;
         }
+
+        ChromaStatistics.reset();
     }
 
 
     public void takeScreenShot() {
         TgaImageWriter.writeTga(getCurrentFrame(), settings.getImgWidth(), settings.getImgHeight(), "./tmp/chroma/", "screenshot" + System.currentTimeMillis() + ".tga");
-
     }
 
 
