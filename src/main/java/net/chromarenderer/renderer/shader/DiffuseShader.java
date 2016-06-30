@@ -53,14 +53,14 @@ class DiffuseShader implements ChromaShader {
     public Radiance sampleDirectRadiance(Hitpoint hitpoint, Ray incomingRay) {
         ImmutableVector3 point = hitpoint.getPoint();
         Hitpoint lightSourceSample = scene.getLightSourceSample();
-        ImmutableVector3 directionToLightSource = point.minus(lightSourceSample.getPoint());
-        float distToLight = directionToLightSource.length();
+        ImmutableVector3 lightToHitDir = point.minus(lightSourceSample.getPoint());
+        float distToLight = lightToHitDir.length();
         hitpoint.setDistance(distToLight);
-        directionToLightSource = directionToLightSource.div(distToLight); // manual normalize
-        Ray shadowRay = new Ray(lightSourceSample.getPoint(), directionToLightSource.normalize(), Constants.FLT_EPSILON, distToLight - Constants.FLT_EPSILON, false);
-
-        float cosThetaContribHit = directionToLightSource.dot(lightSourceSample.getHitpointNormal());
-        float cosThetaSceneHit = directionToLightSource.mult(-1.0f).dot(hitpoint.getHitpointNormal());
+        lightToHitDir = lightToHitDir.div(distToLight); // manual normalize
+        Ray shadowRay = new Ray(lightSourceSample.getPoint(), lightToHitDir, Constants.FLT_EPSILON, distToLight - Constants.FLT_EPSILON, false);
+        shadowRay.mailbox(hitpoint.getHitGeometry());
+        float cosThetaContribHit = lightToHitDir.dot(lightSourceSample.getHitpointNormal());
+        float cosThetaSceneHit = lightToHitDir.mult(-1.0f).dot(hitpoint.getHitpointNormal());
 
         //lightSource hit from correct side?
         if (cosThetaSceneHit < 0.0f || cosThetaContribHit < 0.0f) {
