@@ -13,10 +13,18 @@ import net.chromarenderer.main.Chroma;
 /**
  * @author bensteinert
  */
-class ChromaFxPreviewWindowFactory {
+public class ChromaFxPreviewWindow extends Stage {
+
+    private final Chroma chroma;
+    private AnimationTimer animationTimer;
 
 
-    static Stage createPreviewWindow(final Chroma chroma) {
+    public ChromaFxPreviewWindow(Chroma chroma) {
+        super(StageStyle.UTILITY);
+        this.chroma = chroma;
+    }
+
+    public ChromaFxPreviewWindow init() {
         Pane previewPane = new Pane();
         final int width = chroma.getSettings().getImgWidth();
         final int height = chroma.getSettings().getImgHeight();
@@ -27,23 +35,32 @@ class ChromaFxPreviewWindowFactory {
         imageView.setImage(img);
         previewPane.getChildren().add(imageView);
 
-        AnimationTimer animationTimer = new AnimationTimer() {
+        // TODO: parallelize?
+        animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 if (chroma.hasChanges()) {
-                    // TODO: parallelize
+                    // TODO: parallelize?
                     img.getPixelWriter().setPixels(0, 0, width, height, PixelFormat.getByteRgbInstance(), chroma.getCurrentFrame(), 0, height * 3);
                 }
             }
         };
 
-        Scene scene = new Scene(previewPane, width, height);
-        Stage previewStage = new Stage(StageStyle.UTILITY);
-        previewStage.setOnHiding(event -> animationTimer.stop());
-        previewStage.setOnShowing(event -> animationTimer.start());
+        setOnHiding(event -> animationTimer.stop());
+        setOnShowing(event -> animationTimer.start());
 
-        previewStage.setTitle("Chroma Preview");
-        previewStage.setScene(scene);
-        return previewStage;
+        setTitle("Chroma Preview");
+        setScene(new Scene(previewPane, width, height));
+        return this;
+    }
+
+
+    void start() {
+        animationTimer.start();
+    }
+
+
+    void stop() {
+        animationTimer.stop();
     }
 }

@@ -2,14 +2,11 @@ package net.chromarenderer.main.javafx;
 
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Insets;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.chromarenderer.main.Chroma;
@@ -20,17 +17,26 @@ import org.apache.commons.math3.util.Precision;
 /**
  * @author bensteinert
  */
-class ChromaFxStatusWindowFactory extends StackPane {
+public class ChromaFxStatusWindow extends Stage {
 
+    private static final float WINDOW_REFRESH_INTERVAL = 1000.f; //ms
     private static final Font MONACO = Font.font("Monaco", 14);
-    private static final String WINDOW_TITLE = "Chroma Info and Controls";
+    private static final String WINDOW_TITLE = "Chroma Perf Statistics";
     private static final int WINDOW_WIDTH = 400;
     private static final int WINDOW_HEIGHT = 400;
-    private static final float WINDOW_REFRESH_INTERVAL = 1000.f; //ms
+    private final Chroma chroma;
+
+    private AnimationTimer animationTimer;
 
 
-    static Stage createStatusWindow(Chroma chroma) {
+    public ChromaFxStatusWindow(Chroma chroma) {
+        super(StageStyle.UTILITY);
+        this.chroma = chroma;
+    }
 
+
+    public ChromaFxStatusWindow init() {
+        setTitle(WINDOW_TITLE);
         GridPane statusGrid = new GridPane();
         statusGrid.setHgap(5);
         statusGrid.setVgap(10);
@@ -77,22 +83,14 @@ class ChromaFxStatusWindowFactory extends StackPane {
             ((Text) node).setFont(MONACO);
         });
 
-        Scene secondScene = new Scene(vBox, WINDOW_WIDTH, WINDOW_HEIGHT);
-        Stage statusStage = new Stage(StageStyle.UTILITY);
+        setScene(new Scene(vBox, WINDOW_WIDTH, WINDOW_HEIGHT));
 
-        statusStage.setTitle(WINDOW_TITLE);
-        statusStage.setScene(secondScene);
-
-
-        Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
-        statusStage.setX(visualBounds.getMaxX() - WINDOW_WIDTH);
-        statusStage.setY(visualBounds.getMaxY() - WINDOW_HEIGHT);
-
-        new AnimationTimer() {
+        animationTimer = new AnimationTimer() {
             long lastTimeStamp = System.nanoTime();
             float maxFps = 0.f;
             float maxRays = 0;
             float maxIntersections = 0;
+
 
             @Override
             public void handle(long now) {
@@ -118,7 +116,9 @@ class ChromaFxStatusWindowFactory extends StackPane {
                     intersectionsPeak.setText(String.valueOf(maxIntersections));
 
                     precisionFixedCount.setText(String.valueOf(ChromaStatistics.getSubsurfaceCorrectionsCount()));
-                    cameraPosition.setText(chroma.getCamera().getPosition().toString() + "\n" + chroma.getCamera().getCoordinateSystem().toString());
+                    if (chroma.getCamera() != null) {
+                        cameraPosition.setText(chroma.getCamera().getPosition().toString() + "\n" + chroma.getCamera().getCoordinateSystem().toString());
+                    }
                     framesTotal.setText(String.valueOf(ChromaStatistics.getTotalFrameCount()));
                     lastTimeStamp = now;
 
@@ -129,8 +129,20 @@ class ChromaFxStatusWindowFactory extends StackPane {
                     }
                 }
             }
-        }.start();
+        };
 
-        return statusStage;
+        setOnHiding(event -> animationTimer.stop());
+        setOnShowing(event -> animationTimer.start());
+        return this;
+    }
+
+
+    void start() {
+        animationTimer.start();
+    }
+
+
+    void stop() {
+        animationTimer.stop();
     }
 }

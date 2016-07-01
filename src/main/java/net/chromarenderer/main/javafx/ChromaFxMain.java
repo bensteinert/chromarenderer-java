@@ -5,7 +5,9 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -18,6 +20,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import net.chromarenderer.main.Chroma;
 import net.chromarenderer.main.ChromaSettings;
@@ -31,20 +35,21 @@ import net.chromarenderer.renderer.scene.acc.AccStructType;
 import net.chromarenderer.utils.BlenderChromaImporter;
 import net.chromarenderer.utils.BufferPressedKeysEventHandler;
 
+import java.io.File;
 import java.util.Set;
 
 public class ChromaFxMain extends Application {
 
     //-XX:+UnlockDiagnosticVMOptions -XX:+PrintAssembly -XX:+LogCompilation
 
-    private static final Chroma chroma = new Chroma();
-
+    private static Chroma chroma;
     private static ChromaSettings settings;
+
     private static ChromaScene scene;
     private static Camera camera;
 
-    private Stage previewStage;
-    private Stage statisticsStage;
+    private ChromaFxPreviewWindow previewStage;
+    private ChromaFxStatusWindow statisticsStage;
 
 
     @Override
@@ -54,10 +59,32 @@ public class ChromaFxMain extends Application {
         GridPane controlPane = new GridPane();
         controlPane.setHgap(10);
         controlPane.setVgap(10);
-        controlPane.setPadding(new Insets(0, 10, 0, 10));
+        controlPane.setPadding(new Insets(10));
+
+        HBox buttonPane = new HBox(10);
+        buttonPane.setPadding(new Insets(5));
+        buttonPane.setDisable(true);
+
 
         final boolean[] recreatePreview = {false};
         int rowIdx = 0;
+
+        controlPane.add(new Text("Scene"), 0, rowIdx);
+        Button select = new Button("Select Scene");
+        Button applySettings = new Button("Apply Settings");
+        Button start = new Button("Start");
+        Button stop = new Button("Stop");
+        Button screenShot = new Button("Save Image");
+
+        final Text sceneNameLabel = new Text("[SCENE_NAME]");
+        select.setOnAction(event -> {
+            if(loadSceneWithDialog(chromaMainStage, sceneNameLabel)){
+                buttonPane.setDisable(false);
+            }
+        });
+
+        controlPane.add(sceneNameLabel, 2, rowIdx);
+        controlPane.add(select,1, rowIdx++);
 
         controlPane.add(new Text("Acc Struct:"), 0, rowIdx);
         ComboBox<AccStructType> accStructCombo = new ComboBox<>(FXCollections.observableArrayList(
@@ -100,11 +127,15 @@ public class ChromaFxMain extends Application {
         controlPane.add(directLightEstimation, 1, rowIdx++);
         directLightEstimation.selectedProperty().setValue(settings.isDirectLightEstimationEnabled());
 
-        HBox buttonPane = new HBox(10);
-        buttonPane.setPadding(new Insets(5));
-        Button start = new Button("Start");
-        start.setOnAction(event -> chroma.start());
-        Button applySettings = new Button("Apply Settings");
+
+        start.setOnAction(event -> {
+            controlPane.setDisable(true);
+            statisticsStage.start();
+            chroma.start();
+            previewStage.start();
+            applySettings.setDisable(true);
+        });
+
         applySettings.setOnAction(event -> {
             start.setDisable(true);
             String[] split = resolutionCombo.getValue().split("x");
@@ -119,22 +150,24 @@ public class ChromaFxMain extends Application {
             chroma.reinit(settings, scene, camera);
             if (recreatePreview[0]) {
                 previewStage.close();
-                previewStage = ChromaFxPreviewWindowFactory.createPreviewWindow(chroma);
+                previewStage = new ChromaFxPreviewWindow(chroma).init();
                 previewStage.initOwner(chromaMainStage);
                 previewStage.show();
                 recreatePreview[0] = false;
             }
             start.setDisable(false);
         });
-        Button screenShot = new Button("Save Image");
-        screenShot.setOnAction(event -> chroma.takeScreenShot());
-        Button stop = new Button("Stop");
-        stop.setOnAction(event -> chroma.stop());
 
-        buttonPane.getChildren().add(applySettings);
-        buttonPane.getChildren().add(start);
-        buttonPane.getChildren().add(screenShot);
-        buttonPane.getChildren().add(stop);
+        screenShot.setOnAction(event -> chroma.takeScreenShot());
+        stop.setOnAction(event -> {
+            chroma.stop();
+            statisticsStage.stop();
+            previewStage.stop();
+            controlPane.setDisable(false);
+            applySettings.setDisable(false);
+        });
+
+        buttonPane.getChildren().addAll(applySettings, start, screenShot,stop);
 
         mainBox.setCenter(controlPane);
         mainBox.setBottom(buttonPane);
@@ -148,8 +181,9 @@ public class ChromaFxMain extends Application {
         chromaMainStage.addEventHandler(KeyEvent.ANY, bufferPressedKeysEventHandler);
         chromaMainStage.addEventHandler(KeyEvent.KEY_RELEASED, getKeyTypedEventHandler());
 
-        previewStage = ChromaFxPreviewWindowFactory.createPreviewWindow(chroma);
-        statisticsStage = ChromaFxStatusWindowFactory.createStatusWindow(chroma);
+        previewStage = new ChromaFxPreviewWindow(chroma).init();
+        statisticsStage = new ChromaFxStatusWindow(chroma).init();
+
         previewStage.initOwner(chromaMainStage);
         statisticsStage.initOwner(chromaMainStage);
 
@@ -162,8 +196,7 @@ public class ChromaFxMain extends Application {
         menuBar.getMenus().addAll(windows, menu3);
         MenuItem showPreview = new MenuItem("Preview");
         MenuItem showStatistics = new MenuItem("Statistics");
-        windows.getItems().add(showPreview);
-        windows.getItems().add(showStatistics);
+        windows.getItems().addAll(showPreview, showStatistics);
         showPreview.setOnAction(event -> previewStage.show());
         showStatistics.setOnAction(event -> statisticsStage.show());
 
@@ -186,10 +219,45 @@ public class ChromaFxMain extends Application {
             }
         }.start();
 
-        chromaMainStage.toFront();
         chromaMainStage.show();
         previewStage.show();
         statisticsStage.show();
+
+        Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
+        statisticsStage.setX(visualBounds.getMaxX() - statisticsStage.getWidth());
+        statisticsStage.setY(visualBounds.getMaxY() - statisticsStage.getHeight());
+
+        chromaMainStage.toFront();
+    }
+
+
+    private boolean loadSceneWithDialog(Stage chromaMainStage, Text sceneNameLabel) {
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Chroma Scenes");
+        File defaultDirectory = new File("./");
+        chooser.setInitialDirectory(defaultDirectory);
+        File selectedDirectory = chooser.showDialog(chromaMainStage);
+        if (selectedDirectory != null) {
+            final String sceneName = selectedDirectory.toPath().getFileName().toString();
+            final String[] blendFiles = selectedDirectory.list((dir, name) -> (sceneName + ".blend").equals(name));
+            if (blendFiles.length == 1) {
+                sceneNameLabel.setText(sceneName);
+                // TODO: improve by doing further checks and a potential 'blender --background ./cornellv02.blend --python ../../chroma.py'
+                final GeometryScene geometryScene = BlenderChromaImporter.importSceneFromFileSet(selectedDirectory.toPath());
+                scene = geometryScene;
+                camera = geometryScene.getCamera();
+                chroma.reinit(settings, scene, camera);
+                return true;
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Scene Import Error");
+                alert.setHeaderText("Error");
+                alert.setContentText("The selected directory does not contain any scene data!");
+                alert.showAndWait();
+                return false;
+            }
+        }
+        return false;
     }
 
 
@@ -298,21 +366,15 @@ public class ChromaFxMain extends Application {
 
 
     public static void main(String[] args) {
-        Thread thread = new Thread(chroma);
-
         settings = new ChromaSettings(true, 512, 512, ChromaRenderMode.MT_PTDL, true, AccStructType.AABB_BVH);
-
-        final GeometryScene geometryScene = BlenderChromaImporter.importSceneFromFileSet("/Users/ben/Projects/chroma/scenes/cornellv02", "cornellv02");
+        chroma = new Chroma(settings);
         //scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, SceneFactory.createSomeSpheres());
         //scene = new FurnaceTest();
-        // TODO: Move camera reference to Scene if feasible
-        scene = geometryScene;
-        camera = geometryScene.getCamera();
-        chroma.reinit(settings, scene, camera);
 
+        Thread thread = new Thread(chroma);
         thread.start();
-
         launch(ChromaFxMain.class, args);
+
         thread.interrupt();
         try {
             thread.join();

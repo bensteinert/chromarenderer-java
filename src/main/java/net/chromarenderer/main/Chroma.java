@@ -41,7 +41,8 @@ public class Chroma implements Runnable {
     private boolean needsFlush;
 
 
-    public Chroma() {
+    public Chroma(ChromaSettings initalSettings) {
+        this.settings = initalSettings;
     }
 
 

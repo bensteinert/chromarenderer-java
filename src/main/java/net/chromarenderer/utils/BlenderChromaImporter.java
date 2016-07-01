@@ -195,4 +195,9 @@ public class BlenderChromaImporter {
     public static void main(String[] args) {
         final GeometryScene geometryList = BlenderChromaImporter.importSceneFromFileSet("/Users/ben/Projects/chroma/scenes/cornellv02", "cornellv02");
     }
+
+
+    public static GeometryScene importSceneFromFileSet(Path selectedDirectory) {
+        return importSceneFromFileSet(selectedDirectory.toString(), selectedDirectory.getFileName().toString());
+    }
 }
