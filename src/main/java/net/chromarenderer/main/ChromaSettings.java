@@ -1,7 +1,10 @@
 package net.chromarenderer.main;
 
 import net.chromarenderer.renderer.ChromaRenderMode;
+import net.chromarenderer.renderer.scene.SceneType;
 import net.chromarenderer.renderer.scene.acc.AccStructType;
+
+import java.nio.file.Path;
 
 
 public class ChromaSettings {
@@ -12,19 +15,24 @@ public class ChromaSettings {
     private final ChromaRenderMode renderMode;
     private final boolean lightSourceSamplingMode;
     private final AccStructType accStructType;
+    private final SceneType sceneType;
+    private final Path scenePath;
     // TODO make configurable
     private final int maxRayDepth = 9;
 
+    // non-invasive properties
     private boolean computeL1 = false;
 
 
-    public ChromaSettings(boolean parallelize, int imgWidth, int imgHeight, ChromaRenderMode renderMode, boolean lightSourceSamplingMode, AccStructType accStructType) {
+    public ChromaSettings(boolean parallelize, int imgWidth, int imgHeight, ChromaRenderMode renderMode, boolean lightSourceSamplingMode, AccStructType accStructType, SceneType sceneType, Path scenePath) {
         this.parallelized = parallelize;
         this.imgWidth = imgWidth;
         this.imgHeight = imgHeight;
         this.renderMode = renderMode;
         this.lightSourceSamplingMode = lightSourceSamplingMode;
         this.accStructType = accStructType;
+        this.sceneType = sceneType;
+        this.scenePath = scenePath;
     }
 
 
@@ -35,6 +43,8 @@ public class ChromaSettings {
         this.renderMode = settings.getRenderMode();
         this.lightSourceSamplingMode = settings.lightSourceSamplingMode;
         this.accStructType = settings.accStructType;
+        this.scenePath = settings.scenePath;
+        this.sceneType = settings.sceneType;
     }
 
 
@@ -75,6 +85,16 @@ public class ChromaSettings {
 
     public boolean computeL1Norm() {
         return computeL1;
+    }
+
+
+    public Path getScenePath() {
+        return scenePath;
+    }
+
+
+    public SceneType getSceneType() {
+        return sceneType;
     }
 
 

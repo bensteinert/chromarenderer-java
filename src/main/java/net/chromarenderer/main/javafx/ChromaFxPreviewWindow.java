@@ -16,18 +16,20 @@ import net.chromarenderer.main.Chroma;
 public class ChromaFxPreviewWindow extends Stage {
 
     private final Chroma chroma;
+    private final int width;
+    private final int height;
     private AnimationTimer animationTimer;
 
 
-    public ChromaFxPreviewWindow(Chroma chroma) {
+    public ChromaFxPreviewWindow(Chroma chroma, int width, int height) {
         super(StageStyle.UTILITY);
         this.chroma = chroma;
+        this.width = width;
+        this.height = height;
     }
 
     public ChromaFxPreviewWindow init() {
         Pane previewPane = new Pane();
-        final int width = chroma.getSettings().getImgWidth();
-        final int height = chroma.getSettings().getImgHeight();
         final WritableImage img = new WritableImage(width, height);
 
         ImageView imageView = new ImageView();
@@ -40,11 +42,11 @@ public class ChromaFxPreviewWindow extends Stage {
             @Override
             public void handle(long now) {
                 if (chroma.hasChanges()) {
-                    // TODO: parallelize?
                     img.getPixelWriter().setPixels(0, 0, width, height, PixelFormat.getByteRgbInstance(), chroma.getCurrentFrame(), 0, height * 3);
                 }
             }
         };
+        animationTimer.stop();
 
         setOnHiding(event -> animationTimer.stop());
         setOnShowing(event -> animationTimer.start());

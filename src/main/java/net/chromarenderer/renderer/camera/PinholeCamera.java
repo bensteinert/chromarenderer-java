@@ -29,6 +29,7 @@ public class PinholeCamera implements Camera {
         this(position, new ImmutableMatrix3x3(Vector3.X_AXIS, Vector3.Y_AXIS, Vector3.Z_AXIS), focalDistance, pixelSizeX, pixelSizeY, pixelsX, pixelsY);
     }
 
+
     public PinholeCamera(ImmutableVector3 position, ImmutableMatrix3x3 coordinateSystem, float focalDistance, float pixelSizeX, float pixelSizeY, int pixelsX, int pixelsY) {
         this.initialPosition = position;
         this.position = position;
@@ -39,6 +40,11 @@ public class PinholeCamera implements Camera {
         this.pixelSizeY = pixelSizeY;
         this.shiftX = (pixelsX / 2) * pixelSizeX;
         this.shiftY = (pixelsY / 2) * pixelSizeY;
+    }
+
+
+    public PinholeCamera(ImmutableVector3 position, int pixelsX, int pixelsY) {
+        this(position, 50.0f, 36.0f / pixelsX, (36.0f * (pixelsY/pixelsX)) / pixelsY, pixelsX, pixelsY);
     }
 
 

@@ -28,14 +28,12 @@ import net.chromarenderer.main.ChromaSettings;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.renderer.ChromaRenderMode;
-import net.chromarenderer.renderer.camera.Camera;
-import net.chromarenderer.renderer.scene.ChromaScene;
-import net.chromarenderer.renderer.scene.GeometryScene;
+import net.chromarenderer.renderer.scene.SceneType;
 import net.chromarenderer.renderer.scene.acc.AccStructType;
-import net.chromarenderer.utils.BlenderChromaImporter;
 import net.chromarenderer.utils.BufferPressedKeysEventHandler;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Set;
 
 public class ChromaFxMain extends Application {
@@ -43,13 +41,11 @@ public class ChromaFxMain extends Application {
     //-XX:+UnlockDiagnosticVMOptions -XX:+PrintAssembly -XX:+LogCompilation
 
     private static Chroma chroma;
-    private static ChromaSettings settings;
-
-    private static ChromaScene scene;
-    private static Camera camera;
+    private ChromaSettings settings;
 
     private ChromaFxPreviewWindow previewStage;
     private ChromaFxStatusWindow statisticsStage;
+    private AnimationTimer cameraAnimationTimer;
 
 
     @Override
@@ -61,77 +57,95 @@ public class ChromaFxMain extends Application {
         controlPane.setVgap(10);
         controlPane.setPadding(new Insets(10));
 
-        HBox buttonPane = new HBox(10);
-        buttonPane.setPadding(new Insets(5));
-        buttonPane.setDisable(true);
-
-
         final boolean[] recreatePreview = {false};
         int rowIdx = 0;
 
-        controlPane.add(new Text("Scene"), 0, rowIdx);
-        Button select = new Button("Select Scene");
         Button applySettings = new Button("Apply Settings");
         Button start = new Button("Start");
         Button stop = new Button("Stop");
         Button screenShot = new Button("Save Image");
+        HBox buttonPane = new HBox(10, applySettings, start, screenShot, stop);
+        buttonPane.setPadding(new Insets(5));
 
+        // **** Scene import row ****
         final Text sceneNameLabel = new Text("[SCENE_NAME]");
-        select.setOnAction(event -> {
-            if(loadSceneWithDialog(chromaMainStage, sceneNameLabel)){
-                buttonPane.setDisable(false);
+        Button sceneDialogButton = new Button("Select Scene");
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Chroma Scenes");
+        chooser.setInitialDirectory(new File("./"));
+
+        final File[] selectedDirectory = new File[1];
+        sceneDialogButton.setOnAction(event -> {
+            selectedDirectory[0] = chooser.showDialog(chromaMainStage);
+            if (selectedDirectory[0] != null) {
+                final String sceneName = selectedDirectory[0].toPath().getFileName().toString();
+                final String[] blendFiles = selectedDirectory[0].list((dir, name) -> (sceneName + ".blend").equals(name));
+                if (blendFiles.length == 1) {
+                    sceneNameLabel.setText(sceneName);
+                    // TODO: improve by doing further checks and a potential 'blender --background ./cornellv02.blend --python ../../chroma.py' if exported files do not exist yet.
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Scene Import Error");
+                    alert.setHeaderText("Error");
+                    alert.setContentText("The selected directory does not contain any scene data!");
+                    alert.showAndWait();
+                }
             }
         });
 
-        controlPane.add(sceneNameLabel, 2, rowIdx);
-        controlPane.add(select,1, rowIdx++);
+        final ComboBox<SceneType> sceneType =  new ComboBox<>(FXCollections.observableArrayList(SceneType.values()));
+        sceneType.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(SceneType.BLENDER_EXPORT.equals(newValue)){
+                sceneDialogButton.setVisible(true);
+            } else {
+                sceneDialogButton.setVisible(false);
+            }
+        });
 
+        sceneType.valueProperty().setValue(SceneType.CORNELL_BOX);
+        controlPane.addRow(rowIdx++, new Text("Scene"), new HBox(10, sceneType, sceneDialogButton), sceneNameLabel);
+
+
+        // **** Acc Struct Row ****
         controlPane.add(new Text("Acc Struct:"), 0, rowIdx);
-        ComboBox<AccStructType> accStructCombo = new ComboBox<>(FXCollections.observableArrayList(
-                AccStructType.LIST,
-                AccStructType.AABB_BVH
-        ));
+        ComboBox<AccStructType> accStructCombo = new ComboBox<>(FXCollections.observableArrayList(AccStructType.values()));
+
         controlPane.add(accStructCombo, 1, rowIdx++);
-        accStructCombo.setValue(settings.getAccStructType());
+        accStructCombo.setValue(AccStructType.AABB_BVH);
 
         controlPane.add(new Text("Render Mode:"), 0, rowIdx);
-        ComboBox<ChromaRenderMode> renderModeCombo = new ComboBox<>(FXCollections.observableArrayList(
-                ChromaRenderMode.SIMPLE,
-                ChromaRenderMode.MT_PTDL,
-                ChromaRenderMode.COLOR_CUBE,
-                ChromaRenderMode.AVG
-        ));
+        ComboBox<ChromaRenderMode> renderModeCombo = new ComboBox<>(FXCollections.observableArrayList(ChromaRenderMode.values()));
         controlPane.add(renderModeCombo, 1, rowIdx++);
-        renderModeCombo.setValue(settings.getRenderMode());
+        renderModeCombo.setValue(ChromaRenderMode.MT_PTDL);
 
         controlPane.add(new Text("Resolution:"), 0, rowIdx);
         ComboBox<String> resolutionCombo = new ComboBox<>(FXCollections.observableArrayList(
                 "256x256", "512x512", "768x768", "1024x1024"
         ));
         controlPane.add(resolutionCombo, 1, rowIdx++);
-        resolutionCombo.setValue(settings.getImgWidth() + "x" + settings.getImgHeight());
+        resolutionCombo.setValue("512x512");
         resolutionCombo.valueProperty().addListener((ov, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 recreatePreview[0] = true;
             }
         });
 
-
         controlPane.add(new Text("Multi Threading:"), 0, rowIdx);
         CheckBox parallelize = new CheckBox();
         controlPane.add(parallelize, 1, rowIdx++);
-        parallelize.selectedProperty().setValue(settings.isMultiThreaded());
+        parallelize.selectedProperty().setValue(true);
 
         controlPane.add(new Text("DL Estimation:"), 0, rowIdx);
         CheckBox directLightEstimation = new CheckBox();
         controlPane.add(directLightEstimation, 1, rowIdx++);
-        directLightEstimation.selectedProperty().setValue(settings.isDirectLightEstimationEnabled());
+        directLightEstimation.selectedProperty().setValue(true);
 
 
         start.setOnAction(event -> {
             controlPane.setDisable(true);
             statisticsStage.start();
             chroma.start();
+            cameraAnimationTimer.start();
             previewStage.start();
             applySettings.setDisable(true);
         });
@@ -139,18 +153,24 @@ public class ChromaFxMain extends Application {
         applySettings.setOnAction(event -> {
             start.setDisable(true);
             String[] split = resolutionCombo.getValue().split("x");
+            final int imgWidth = Integer.parseInt(split[0]);
+            final int height = Integer.parseInt(split[1]);
+            final Path scenePath = selectedDirectory[0] != null ? selectedDirectory[0].toPath() : null;
+
             settings = new ChromaSettings(
                     parallelize.selectedProperty().getValue(),
-                    Integer.parseInt(split[0]),
-                    Integer.parseInt(split[1]),
+                    imgWidth, height,
                     renderModeCombo.getValue(),
                     directLightEstimation.selectedProperty().getValue(),
-                    accStructCombo.getValue()
-                    );
-            chroma.reinit(settings, scene, camera);
+                    accStructCombo.getValue(),
+                    sceneType.getValue(),
+                    scenePath);
+
+            chroma.initialize(settings);
+
             if (recreatePreview[0]) {
                 previewStage.close();
-                previewStage = new ChromaFxPreviewWindow(chroma).init();
+                previewStage = new ChromaFxPreviewWindow(chroma, imgWidth, height).init();
                 previewStage.initOwner(chromaMainStage);
                 previewStage.show();
                 recreatePreview[0] = false;
@@ -160,14 +180,10 @@ public class ChromaFxMain extends Application {
 
         screenShot.setOnAction(event -> chroma.takeScreenShot());
         stop.setOnAction(event -> {
-            chroma.stop();
-            statisticsStage.stop();
-            previewStage.stop();
+            fullStop();
             controlPane.setDisable(false);
             applySettings.setDisable(false);
         });
-
-        buttonPane.getChildren().addAll(applySettings, start, screenShot,stop);
 
         mainBox.setCenter(controlPane);
         mainBox.setBottom(buttonPane);
@@ -175,13 +191,14 @@ public class ChromaFxMain extends Application {
         chromaMainStage.setX(0);
         chromaMainStage.setX(0);
         chromaMainStage.setTitle("Chroma Renderer");
-        Scene scene = new Scene(mainBox, 400, 400);
+        Scene scene = new Scene(mainBox, 600, 400);
         chromaMainStage.setScene(scene);
         BufferPressedKeysEventHandler bufferPressedKeysEventHandler = new BufferPressedKeysEventHandler();
         chromaMainStage.addEventHandler(KeyEvent.ANY, bufferPressedKeysEventHandler);
         chromaMainStage.addEventHandler(KeyEvent.KEY_RELEASED, getKeyTypedEventHandler());
 
-        previewStage = new ChromaFxPreviewWindow(chroma).init();
+        String[] split = resolutionCombo.getValue().split("x");
+        previewStage = new ChromaFxPreviewWindow(chroma, Integer.parseInt(split[0]), Integer.parseInt(split[1])).init();
         statisticsStage = new ChromaFxStatusWindow(chroma).init();
 
         previewStage.initOwner(chromaMainStage);
@@ -202,22 +219,23 @@ public class ChromaFxMain extends Application {
 
         chromaMainStage.setOnCloseRequest((arg0 -> {
             arg0.consume();
+            fullStop();
             statisticsStage.close();
             previewStage.close();
             chromaMainStage.close();
         }));
 
-        new AnimationTimer() {
+        cameraAnimationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 Set<KeyCode> pressedKeys = bufferPressedKeysEventHandler.getPressedKeys();
                 final Vector3 translation = getTranslationVector(pressedKeys);
                 final Vector3 rotation = getRotationVector(pressedKeys);
                 if (translation.nonZero() || rotation.nonZero()) {
-                    camera.move(translation, rotation);
+                    chroma.getCamera().move(translation, rotation);
                 }
             }
-        }.start();
+        };
 
         chromaMainStage.show();
         previewStage.show();
@@ -231,33 +249,11 @@ public class ChromaFxMain extends Application {
     }
 
 
-    private boolean loadSceneWithDialog(Stage chromaMainStage, Text sceneNameLabel) {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Chroma Scenes");
-        File defaultDirectory = new File("./");
-        chooser.setInitialDirectory(defaultDirectory);
-        File selectedDirectory = chooser.showDialog(chromaMainStage);
-        if (selectedDirectory != null) {
-            final String sceneName = selectedDirectory.toPath().getFileName().toString();
-            final String[] blendFiles = selectedDirectory.list((dir, name) -> (sceneName + ".blend").equals(name));
-            if (blendFiles.length == 1) {
-                sceneNameLabel.setText(sceneName);
-                // TODO: improve by doing further checks and a potential 'blender --background ./cornellv02.blend --python ../../chroma.py'
-                final GeometryScene geometryScene = BlenderChromaImporter.importSceneFromFileSet(selectedDirectory.toPath());
-                scene = geometryScene;
-                camera = geometryScene.getCamera();
-                chroma.reinit(settings, scene, camera);
-                return true;
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Scene Import Error");
-                alert.setHeaderText("Error");
-                alert.setContentText("The selected directory does not contain any scene data!");
-                alert.showAndWait();
-                return false;
-            }
-        }
-        return false;
+    private void fullStop() {
+        chroma.stop();
+        statisticsStage.stop();
+        previewStage.stop();
+        cameraAnimationTimer.stop();
     }
 
 
@@ -303,7 +299,6 @@ public class ChromaFxMain extends Application {
         float moveY = 0.0f;
         float moveZ = 0.0f;
         boolean flushImage = false;
-
 
         // camera along negative z axis!
         for (KeyCode pressedKey : pressedKeys) {
@@ -353,7 +348,7 @@ public class ChromaFxMain extends Application {
         return event -> {
             switch (event.getCode()) {
                 case R:
-                    camera.resetToInitial();
+                    chroma.getCamera().resetToInitial();
                     chroma.flushOnNextImage();
                     break;
                 case L:
@@ -363,16 +358,11 @@ public class ChromaFxMain extends Application {
     }
 
 
-
-
     public static void main(String[] args) {
-        settings = new ChromaSettings(true, 512, 512, ChromaRenderMode.MT_PTDL, true, AccStructType.AABB_BVH);
-        chroma = new Chroma(settings);
-        //scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, SceneFactory.createSomeSpheres());
-        //scene = new FurnaceTest();
-
+        chroma = new Chroma();
         Thread thread = new Thread(chroma);
         thread.start();
+
         launch(ChromaFxMain.class, args);
 
         thread.interrupt();

@@ -1,16 +1,22 @@
 package net.chromarenderer.main;
 
+import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.renderer.Renderer;
 import net.chromarenderer.renderer.camera.Camera;
+import net.chromarenderer.renderer.camera.PinholeCamera;
 import net.chromarenderer.renderer.core.ColorCubeRenderer;
 import net.chromarenderer.renderer.core.MonteCarloPathTracer;
 import net.chromarenderer.renderer.core.MovingAverageRenderer;
 import net.chromarenderer.renderer.core.SimpleRayCaster;
 import net.chromarenderer.renderer.scene.ChromaScene;
+import net.chromarenderer.renderer.scene.FurnaceTest;
 import net.chromarenderer.renderer.scene.GeometryScene;
+import net.chromarenderer.renderer.scene.SceneFactory;
 import net.chromarenderer.renderer.shader.ShaderEngine;
+import net.chromarenderer.utils.BlenderChromaImporter;
 import net.chromarenderer.utils.TgaImageWriter;
 
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -37,12 +43,13 @@ public class Chroma implements Runnable {
     private boolean breakLoop = false;
     private CountDownLatch renderLatch;
     private ChromaSettings settings;
+
     private Camera camera;
+    private ChromaScene scene;
     private boolean needsFlush;
 
 
-    public Chroma(ChromaSettings initalSettings) {
-        this.settings = initalSettings;
+    public Chroma() {
     }
 
 
@@ -89,6 +96,7 @@ public class Chroma implements Runnable {
         }
     }
 
+
     public void stop() {
         breakLoop = true;
     }
@@ -105,13 +113,44 @@ public class Chroma implements Runnable {
     }
 
 
-    public void reinit(ChromaSettings settingsIn, ChromaScene scene, Camera cameraIn) {
+    public void initialize(ChromaSettings settingsIn) {
+
+        boolean initScene = true;
+        boolean initAccStruct = true;
+
+        // Save some time when working with large scenes ...
+        if (settings != null) {
+            if (Objects.equals(settings.getSceneType(),settingsIn.getSceneType())) {
+                initScene = false;
+            }
+            if (settings.getAccStructType().equals(settingsIn.getAccStructType())) {
+                initAccStruct = false;
+            }
+        }
+
         this.settings = settingsIn;
 
-        camera = cameraIn;
+        if (initScene) {
+            switch (settings.getSceneType()) {
+                case BLENDER_EXPORT:
+                    final GeometryScene geometryScene = BlenderChromaImporter.importSceneFromFileSet(settings.getScenePath());
+                    scene = geometryScene;
+                    camera = geometryScene.getCamera();
+                    break;
+                case FURNACE_TEST:
+                    scene = new FurnaceTest();
+                    camera = new PinholeCamera(new ImmutableVector3(1, 1, 5), settings.getImgWidth(), settings.getImgHeight());
+                    break;
+                case CORNELL_BOX:
+                    scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, SceneFactory.createSomeSpheres());
+                    camera = new PinholeCamera(new ImmutableVector3(0, 0, 7), settings.getImgWidth(), settings.getImgHeight());
+                    break;
+            }
+        }
+
         camera.recalibrateSensor(settings.getImgWidth(), settings.getImgHeight());
 
-        if(scene instanceof GeometryScene) {
+        if (scene instanceof GeometryScene && (initAccStruct || initScene)) {
             ((GeometryScene) scene).buildAccelerationStructure(settings.getAccStructType());
         }
 

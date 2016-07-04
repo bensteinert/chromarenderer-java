@@ -91,7 +91,6 @@ public class ChromaFxStatusWindow extends Stage {
             float maxRays = 0;
             float maxIntersections = 0;
 
-
             @Override
             public void handle(long now) {
 
@@ -122,7 +121,7 @@ public class ChromaFxStatusWindow extends Stage {
                     framesTotal.setText(String.valueOf(ChromaStatistics.getTotalFrameCount()));
                     lastTimeStamp = now;
 
-                    if (chroma.getSettings().computeL1Norm()) {
+                    if (chroma.getSettings() != null && chroma.getSettings().computeL1Norm()) {
                         L1NormValue.setText(String.valueOf(ChromaStatistics.L1Norm));
                     } else {
                         L1NormValue.setText("-.-");
@@ -130,6 +129,7 @@ public class ChromaFxStatusWindow extends Stage {
                 }
             }
         };
+        animationTimer.stop();
 
         setOnHiding(event -> animationTimer.stop());
         setOnShowing(event -> animationTimer.start());
