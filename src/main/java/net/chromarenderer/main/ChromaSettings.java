@@ -101,4 +101,18 @@ public class ChromaSettings {
     public void toggleL1Computation() {
         computeL1 = !computeL1;
     }
+
+
+    public String getSceneName() {
+        switch (sceneType) {
+            case BLENDER_EXPORT:
+                return scenePath.getFileName().toString();
+            case CORNELL_BOX:
+                return "builtInCornell";
+            case FURNACE_TEST:
+                return "furnaceTest";
+            default:
+                return "screenshot";
+        }
+    }
 }
