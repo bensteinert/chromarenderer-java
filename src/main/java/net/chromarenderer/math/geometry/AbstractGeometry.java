@@ -21,6 +21,7 @@ abstract class AbstractGeometry implements Geometry {
     }
 
 
+    @Override
     public void setMaterial(Material material) {
         this.material = material;
     }

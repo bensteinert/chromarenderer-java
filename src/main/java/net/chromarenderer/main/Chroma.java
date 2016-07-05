@@ -143,7 +143,7 @@ public class Chroma implements Runnable {
                     break;
                 case CORNELL_BOX:
                     scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, SceneFactory.createSomeSpheres());
-                    camera = new PinholeCamera(new ImmutableVector3(0, 0, 7), settings.getImgWidth(), settings.getImgHeight());
+                    camera = new PinholeCamera(new ImmutableVector3(0, -0.8, 5.4), settings.getImgWidth(), settings.getImgHeight());
                     break;
             }
         }
