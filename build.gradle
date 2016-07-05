@@ -1,11 +1,11 @@
 plugins {
     id 'idea'
     id 'java'
-    id "edu.sc.seis.macAppBundle" version "2.1.0"
+    id "edu.sc.seis.macAppBundle" version "2.1.6"
 }
 
 group = 'net.chromarenderer'
-version = '0.0.1-SNAPSHOT'
+version = '0.1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -41,10 +41,10 @@ jar {
 macAppBundle {
     mainClassName = jar.manifest.attributes.get("Main-Class")
     appName = jar.manifest.attributes.get("Application-Name")
-    icon = "icon.icns"
+    icon = "icon.icns" // https://iconverticons.com/online/
     bundleJRE = true
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.13'
+    gradleVersion = '2.14'
 }
