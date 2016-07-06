@@ -41,6 +41,7 @@ jar {
 macAppBundle {
     mainClassName = jar.manifest.attributes.get("Main-Class")
     appName = jar.manifest.attributes.get("Application-Name")
+    dmgName = jar.manifest.attributes.get("Application-Name") + " " + project.version
     icon = "icon.icns" // https://iconverticons.com/online/
     bundleJRE = false
 }
