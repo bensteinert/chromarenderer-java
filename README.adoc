@@ -1,0 +1,34 @@
+= Chroma Renderer
+
+== What is it
+Chroma is an unbiased Monte Carlo Path Tracer based on an https://github.com/bensteinert/chromarenderer[original implementation] by me in C++. Writing the first lines of code in 2008 formed the cornerstone for my https://www.ben-steinert.net/blog/thesis-publication[diploma thesis]. Back then I was conentrating on spectral rendering and realistic lens simulation to achieve photographic artifacts like Chromatic Aberration or Lens Flares.
+Goal is to bring most of these features back to life. As you know, code rots over the time, so it needs to be rewritten ;-).
+
+== Why Java?
+Because I can! No seriously, I see it also as kind of a playground. When getting familiar with Java 8 I was happy to have a working playground. And I had the idea to compare my Java alternative with the C++ code I wrote 8 years ago. And when I say compare, I mean micro-benchmarks. So I started another project called CroLaBeFra which is a set of Gradle plugins, which allows to build, run and compare micro benchmarks in both Java and C++. You can check the POC project out https://github.com/bensteinert/crolabefra-setup-poc[here]!
+
+== Current Feature Set
+
+== v 0.1.0
+
+*https://github.com/bensteinert/chromarenderer-java/raw/master/distribution/Chroma%20Renderer%200.1.0.dmg[Download Mac version here]* (Java 8 required)
+
+Sorry, all others have to build it themselves currently.
+
+* Unbiased Monte Carlo Path Tracing in plain mode and optional Direct Light estimation
+* Area lights
+* Material Support:
+** Diffuse (Lambert)
+** Plastic (Blinn-Phong)
+** Glass (https://en.wikipedia.org/wiki/Schlick%27s_approximation[Schlick approximation] no dispersion yet)
+** Mirror
+* Blender Scene Export/Import
+* Built-in Demo Scenes
+* JavaFx UI with Preview function
+
+== Todos:
+* Environment map support
+* Spectral rendering
+* Physically correct glass
+* Real lenses
+
