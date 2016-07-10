@@ -133,7 +133,7 @@ public class Chroma implements Runnable {
         if (initScene) {
             switch (settings.getSceneType()) {
                 case BLENDER_EXPORT:
-                    final GeometryScene geometryScene = BlenderChromaImporter.importSceneFromFileSet(settings.getScenePath());
+                    final GeometryScene geometryScene = BlenderChromaImporter.importSceneFromFile(settings.getScenePath(), settings.getSceneName() + ".blend");
                     scene = geometryScene;
                     camera = geometryScene.getCamera();
                     break;
@@ -178,7 +178,7 @@ public class Chroma implements Runnable {
 
 
     public void takeScreenShot() {
-        TgaImageWriter.writeTga(getCurrentFrame(), settings.getImgWidth(), settings.getImgHeight(), "./Chroma/Screenshots", settings.getSceneName() + "-" + System.currentTimeMillis() + ".tga");
+        TgaImageWriter.writeTga(getCurrentFrame(), settings.getImgWidth(), settings.getImgHeight(), System.getProperty("user.dir") + "/chroma/screenshots/" + settings.getSceneName() + "/", settings.getSceneName() + "-" + System.currentTimeMillis() + ".tga");
     }
 
 

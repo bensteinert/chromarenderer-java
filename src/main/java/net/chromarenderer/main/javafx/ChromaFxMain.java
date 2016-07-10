@@ -82,7 +82,6 @@ public class ChromaFxMain extends Application {
                 final String[] blendFiles = selectedDirectory[0].list((dir, name) -> (sceneName + ".blend").equals(name));
                 if (blendFiles.length == 1) {
                     sceneNameLabel.setText(sceneName);
-                    // TODO: improve by doing further checks and a potential 'blender --background ./cornellv02.blend --python ../../chroma.py' if exported files do not exist yet.
                 } else {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Scene Import Error");
