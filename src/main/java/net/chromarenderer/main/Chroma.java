@@ -16,8 +16,10 @@ import net.chromarenderer.renderer.shader.ShaderEngine;
 import net.chromarenderer.utils.BlenderChromaImporter;
 import net.chromarenderer.utils.TgaImageWriter;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
+import java.util.logging.LogManager;
 
 /**
  * @author bensteinert
@@ -37,6 +39,14 @@ public class Chroma implements Runnable {
 //            e.printStackTrace();
 //        }
 //    }
+
+    static {
+        try {
+            LogManager.getLogManager().readConfiguration(Chroma.class.getResourceAsStream("/logging.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private Renderer renderer;
     private boolean changed = false;

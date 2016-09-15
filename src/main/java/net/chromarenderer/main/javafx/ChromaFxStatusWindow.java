@@ -14,6 +14,9 @@ import net.chromarenderer.main.ChromaStatistics;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.Precision;
 
+import java.io.IOException;
+import java.io.PipedInputStream;
+
 /**
  * @author bensteinert
  */
@@ -25,13 +28,18 @@ public class ChromaFxStatusWindow extends Stage {
     private static final int WINDOW_WIDTH = 400;
     private static final int WINDOW_HEIGHT = 400;
     private final Chroma chroma;
+    private final PipedInputStream stream;
 
     private AnimationTimer animationTimer;
+    private byte[] buffer  = new byte[1024];
 
 
-    public ChromaFxStatusWindow(Chroma chroma) {
+
+
+    public ChromaFxStatusWindow(Chroma chroma, PipedInputStream stream) {
         super(StageStyle.UTILITY);
         this.chroma = chroma;
+        this.stream = stream;
     }
 
 
@@ -78,6 +86,8 @@ public class ChromaFxStatusWindow extends Stage {
         statusGrid.addColumn(1, col1Title, fpsCurr, intersectionsCurr, rayCountCurr, precisionFixedCount, L1NormValue);
         statusGrid.addColumn(2, col2Title, fpsPeak, intersectionsPeak, rayCountPeak);
         statusGrid.addColumn(3, col3Title, framesTotal);
+        Text text = new Text();
+        statusGrid.addRow(7, text);
 
         statusGrid.getChildren().stream().filter(node -> node instanceof Text).forEach(node -> {
             ((Text) node).setFont(MONACO);
@@ -125,6 +135,15 @@ public class ChromaFxStatusWindow extends Stage {
                         L1NormValue.setText(String.valueOf(ChromaStatistics.L1Norm));
                     } else {
                         L1NormValue.setText("-.-");
+                    }
+
+                    try {
+                        if (stream.available()>0) {
+                            stream.read(buffer, 0, 1024);
+                            text.setText(new String(buffer));
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
             }

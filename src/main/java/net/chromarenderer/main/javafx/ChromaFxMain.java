@@ -33,8 +33,12 @@ import net.chromarenderer.renderer.scene.acc.AccStructType;
 import net.chromarenderer.utils.BufferPressedKeysEventHandler;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.nio.file.Path;
 import java.util.Set;
+import java.util.logging.Logger;
 
 public class ChromaFxMain extends Application {
 
@@ -46,6 +50,7 @@ public class ChromaFxMain extends Application {
     private ChromaFxPreviewWindow previewStage;
     private ChromaFxStatusWindow statisticsStage;
     private AnimationTimer cameraAnimationTimer;
+    private static PipedInputStream snk;
 
 
     @Override
@@ -198,7 +203,7 @@ public class ChromaFxMain extends Application {
 
         String[] split = resolutionCombo.getValue().split("x");
         previewStage = new ChromaFxPreviewWindow(chroma, Integer.parseInt(split[0]), Integer.parseInt(split[1])).init();
-        statisticsStage = new ChromaFxStatusWindow(chroma).init();
+        statisticsStage = new ChromaFxStatusWindow(chroma, snk).init();
 
         previewStage.initOwner(chromaMainStage);
         statisticsStage.initOwner(chromaMainStage);
@@ -359,6 +364,18 @@ public class ChromaFxMain extends Application {
 
     public static void main(String[] args) {
         chroma = new Chroma();
+
+        final Logger fxLogger = Logger.getLogger("chroma");
+        try {
+            snk = new PipedInputStream();
+            final ChromaFxConsoleLogHandler handler = new ChromaFxConsoleLogHandler(new PipedOutputStream(snk));
+            fxLogger.addHandler(handler);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        fxLogger.info("Hello Stream!");
+
         Thread thread = new Thread(chroma);
         thread.start();
 
