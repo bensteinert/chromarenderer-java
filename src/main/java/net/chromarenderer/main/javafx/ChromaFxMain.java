@@ -49,8 +49,9 @@ public class ChromaFxMain extends Application {
 
     private ChromaFxPreviewWindow previewStage;
     private ChromaFxStatusWindow statisticsStage;
+    private ChromaFxLogOutputWindow logOutputWindow;
     private AnimationTimer cameraAnimationTimer;
-    private static PipedInputStream snk;
+    private static PipedInputStream logSink;
 
 
     @Override
@@ -155,23 +156,30 @@ public class ChromaFxMain extends Application {
         });
 
         applySettings.setOnAction(event -> {
-            start.setDisable(true);
+
             String[] split = resolutionCombo.getValue().split("x");
             final int imgWidth = Integer.parseInt(split[0]);
             final int height = Integer.parseInt(split[1]);
-            final Path scenePath = selectedDirectory[0] != null ? selectedDirectory[0].toPath() : null;
 
-            settings = new ChromaSettings(
-                    parallelize.selectedProperty().getValue(),
-                    imgWidth, height,
-                    renderModeCombo.getValue(),
-                    directLightEstimation.selectedProperty().getValue(),
-                    accStructCombo.getValue(),
-                    sceneType.getValue(),
-                    scenePath);
+            Thread initializer = new Thread(() -> {
+                start.setDisable(true);
 
-            chroma.initialize(settings);
+                final Path scenePath = selectedDirectory[0] != null ? selectedDirectory[0].toPath() : null;
 
+                settings = new ChromaSettings(
+                        parallelize.selectedProperty().getValue(),
+                        imgWidth, height,
+                        renderModeCombo.getValue(),
+                        directLightEstimation.selectedProperty().getValue(),
+                        accStructCombo.getValue(),
+                        sceneType.getValue(),
+                        scenePath);
+
+                chroma.initialize(settings);
+                start.setDisable(false);
+
+            });
+            initializer.start();
             if (recreatePreview[0]) {
                 previewStage.close();
                 previewStage = new ChromaFxPreviewWindow(chroma, imgWidth, height).init();
@@ -179,7 +187,6 @@ public class ChromaFxMain extends Application {
                 previewStage.show();
                 recreatePreview[0] = false;
             }
-            start.setDisable(false);
         });
 
         screenShot.setOnAction(event -> chroma.takeScreenShot());
@@ -203,29 +210,37 @@ public class ChromaFxMain extends Application {
 
         String[] split = resolutionCombo.getValue().split("x");
         previewStage = new ChromaFxPreviewWindow(chroma, Integer.parseInt(split[0]), Integer.parseInt(split[1])).init();
-        statisticsStage = new ChromaFxStatusWindow(chroma, snk).init();
+        statisticsStage = new ChromaFxStatusWindow(chroma).init();
+        logOutputWindow = new ChromaFxLogOutputWindow(logSink).init();
 
         previewStage.initOwner(chromaMainStage);
         statisticsStage.initOwner(chromaMainStage);
+        logOutputWindow.initOwner(chromaMainStage);
 
         MenuBar menuBar = new MenuBar();
         menuBar.setUseSystemMenuBar(true);
         final Menu windows = new Menu("Windows");
-        final Menu menu3 = new Menu("Help");
+        final Menu help = new Menu("Help");
         mainBox.setTop(menuBar);
 
-        menuBar.getMenus().addAll(windows, menu3);
+        menuBar.getMenus().addAll(windows, help);
         MenuItem showPreview = new MenuItem("Preview");
         MenuItem showStatistics = new MenuItem("Statistics");
-        windows.getItems().addAll(showPreview, showStatistics);
+        MenuItem showLog = new MenuItem("Log Console");
+        windows.getItems().addAll(showPreview, showStatistics, showLog);
         showPreview.setOnAction(event -> previewStage.show());
         showStatistics.setOnAction(event -> statisticsStage.show());
+        showLog.setOnAction(event -> {
+            logOutputWindow.show();
+            logOutputWindow.start();
+        });
 
         chromaMainStage.setOnCloseRequest((arg0 -> {
             arg0.consume();
             fullStop();
             statisticsStage.close();
             previewStage.close();
+            logOutputWindow.close();
             chromaMainStage.close();
         }));
 
@@ -367,8 +382,8 @@ public class ChromaFxMain extends Application {
 
         final Logger fxLogger = Logger.getLogger("chroma");
         try {
-            snk = new PipedInputStream();
-            final ChromaFxConsoleLogHandler handler = new ChromaFxConsoleLogHandler(new PipedOutputStream(snk));
+            logSink = new PipedInputStream(16384);
+            final ChromaFxConsoleLogHandler handler = new ChromaFxConsoleLogHandler(new PipedOutputStream(logSink));
             fxLogger.addHandler(handler);
         } catch (IOException e) {
             e.printStackTrace();

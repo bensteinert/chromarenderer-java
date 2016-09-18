@@ -58,7 +58,9 @@ public class ChromaFxPreviewWindow extends Stage {
 
 
     void start() {
-        animationTimer.start();
+        if (isShowing()) {
+            animationTimer.start();
+        }
     }
 
 

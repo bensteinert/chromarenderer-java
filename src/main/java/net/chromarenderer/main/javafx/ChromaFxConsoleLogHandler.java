@@ -13,6 +13,7 @@ public class ChromaFxConsoleLogHandler extends StreamHandler {
 
     public ChromaFxConsoleLogHandler(PipedOutputStream pipedOutputStream) throws IOException {
         super(pipedOutputStream, new ChromaLogFormatter());
+        //setLevel(Level.FINE);
     }
 
     @Override
