@@ -33,11 +33,11 @@ import net.chromarenderer.renderer.scene.acc.AccStructType;
 import net.chromarenderer.utils.BufferPressedKeysEventHandler;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Handler;
 import java.util.logging.Logger;
 
 public class ChromaFxMain extends Application {
@@ -49,13 +49,16 @@ public class ChromaFxMain extends Application {
 
     private ChromaFxPreviewWindow previewStage;
     private ChromaFxStatusWindow statisticsStage;
-    private ChromaFxLogOutputWindow logOutputWindow;
+    private Stage logOutputWindow;
     private AnimationTimer cameraAnimationTimer;
-    private static PipedInputStream logSink;
 
 
     @Override
     public void start(final Stage chromaMainStage) throws Exception {
+
+        final Logger fxLogger = Logger.getLogger("chroma");
+        final Optional<Handler> logHandler = Arrays.stream(fxLogger.getHandlers()).filter(handler -> handler instanceof ChromaFxLogWindowHandler).findFirst();
+        ChromaFxLogWindowHandler fxHandler = (ChromaFxLogWindowHandler) logHandler.get();
 
         BorderPane mainBox = new BorderPane();
         GridPane controlPane = new GridPane();
@@ -98,9 +101,9 @@ public class ChromaFxMain extends Application {
             }
         });
 
-        final ComboBox<SceneType> sceneType =  new ComboBox<>(FXCollections.observableArrayList(SceneType.values()));
+        final ComboBox<SceneType> sceneType = new ComboBox<>(FXCollections.observableArrayList(SceneType.values()));
         sceneType.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if(SceneType.BLENDER_EXPORT.equals(newValue)){
+            if (SceneType.BLENDER_EXPORT.equals(newValue)) {
                 sceneDialogButton.setVisible(true);
             } else {
                 sceneDialogButton.setVisible(false);
@@ -211,7 +214,7 @@ public class ChromaFxMain extends Application {
         String[] split = resolutionCombo.getValue().split("x");
         previewStage = new ChromaFxPreviewWindow(chroma, Integer.parseInt(split[0]), Integer.parseInt(split[1])).init();
         statisticsStage = new ChromaFxStatusWindow(chroma).init();
-        logOutputWindow = new ChromaFxLogOutputWindow(logSink).init();
+        logOutputWindow = fxHandler.defineNewLogWindow().init();
 
         previewStage.initOwner(chromaMainStage);
         statisticsStage.initOwner(chromaMainStage);
@@ -232,7 +235,6 @@ public class ChromaFxMain extends Application {
         showStatistics.setOnAction(event -> statisticsStage.show());
         showLog.setOnAction(event -> {
             logOutputWindow.show();
-            logOutputWindow.start();
         });
 
         chromaMainStage.setOnCloseRequest((arg0 -> {
@@ -259,6 +261,8 @@ public class ChromaFxMain extends Application {
         chromaMainStage.show();
         previewStage.show();
         statisticsStage.show();
+        logOutputWindow.show();
+        fxLogger.info("Hello Log Window! Nice to see you!");
 
         Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
         statisticsStage.setX(visualBounds.getMaxX() - statisticsStage.getWidth());
@@ -381,15 +385,8 @@ public class ChromaFxMain extends Application {
         chroma = new Chroma();
 
         final Logger fxLogger = Logger.getLogger("chroma");
-        try {
-            logSink = new PipedInputStream(16384);
-            final ChromaFxConsoleLogHandler handler = new ChromaFxConsoleLogHandler(new PipedOutputStream(logSink));
-            fxLogger.addHandler(handler);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        fxLogger.info("Hello Stream!");
+        final ChromaFxLogWindowHandler queueHandler = new ChromaFxLogWindowHandler();
+        fxLogger.addHandler(queueHandler);
 
         Thread thread = new Thread(chroma);
         thread.start();

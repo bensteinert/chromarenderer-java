@@ -8,33 +8,33 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PipedInputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.logging.LogRecord;
 
 /**
  * @author bensteinert
  */
-public class ChromaFxLogOutputWindow extends Stage {
+public class ChromaFxLogWindow extends Stage {
 
-    private static final float WINDOW_REFRESH_INTERVAL = 500.f; //ms
+    private static final float WINDOW_REFRESH_INTERVAL = 100.f; //ms
     private static final Font MONACO = Font.font("Monaco", 10);
     private static final String WINDOW_TITLE = "Chroma Log";
     private static final int WINDOW_WIDTH = 800;
     private static final int WINDOW_HEIGHT = 400;
-    private final PipedInputStream stream;
-    private char[] buffer = new char[8192];
+    private final BlockingQueue<LogRecord> queue;
     private AnimationTimer animationTimer;
+    ChromaLogFormatter logFormatter = new ChromaLogFormatter();
 
 
-    public ChromaFxLogOutputWindow(PipedInputStream stream) {
+    public ChromaFxLogWindow(BlockingQueue<LogRecord> queue) {
         super(StageStyle.UTILITY);
-        this.stream = stream;
+        this.queue = queue;
     }
 
 
-    public ChromaFxLogOutputWindow init() {
+    public ChromaFxLogWindow init() {
         setTitle(WINDOW_TITLE);
 
         VBox vBox = new VBox();
@@ -45,25 +45,31 @@ public class ChromaFxLogOutputWindow extends Stage {
         vBox.getChildren().add(logOutput);
         setScene(new Scene(vBox, WINDOW_WIDTH, WINDOW_HEIGHT));
         long lastTimeStamp = System.nanoTime();
-
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        List<LogRecord> drain = new ArrayList<>(10);
 
         animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                try {
-                    float delta = (now - lastTimeStamp) / 1000000.f;
-                    // updates just every x ms is fine
-                    if (delta > WINDOW_REFRESH_INTERVAL && reader.ready()) {
-                        reader.read(buffer, 0, 8192);
-                        logOutput.appendText(new String(buffer));
+                float delta = (now - lastTimeStamp) / 1000000.f;
+                // updates just every x ms is fine
+                if (delta > WINDOW_REFRESH_INTERVAL) {
+                    queue.drainTo(drain, 10);
+                    if (!drain.isEmpty()) {
+                        drain.stream().forEachOrdered(record -> logOutput.appendText(logFormatter.format(record)));
                         logOutput.setScrollTop(Double.MAX_VALUE);
+                        drain.clear();
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
         };
+
+        setOnShowing(event -> {
+            animationTimer.start();
+        });
+
+        setOnHiding(event -> {
+            animationTimer.stop();
+        });
 
         return this;
     }
