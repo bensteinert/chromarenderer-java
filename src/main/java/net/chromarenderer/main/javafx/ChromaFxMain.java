@@ -57,8 +57,8 @@ public class ChromaFxMain extends Application {
     public void start(final Stage chromaMainStage) throws Exception {
 
         final Logger fxLogger = Logger.getLogger("chroma");
-        final Optional<Handler> logHandler = Arrays.stream(fxLogger.getHandlers()).filter(handler -> handler instanceof ChromaFxLogWindowHandler).findFirst();
-        ChromaFxLogWindowHandler fxHandler = (ChromaFxLogWindowHandler) logHandler.get();
+        final Optional<Handler> logHandler = Arrays.stream(fxLogger.getHandlers()).filter(handler -> handler instanceof ChromaFxLogWindowForwardHandler).findFirst();
+        ChromaFxLogWindowForwardHandler fxHandler = (ChromaFxLogWindowForwardHandler) logHandler.get();
 
         BorderPane mainBox = new BorderPane();
         GridPane controlPane = new GridPane();
@@ -385,7 +385,7 @@ public class ChromaFxMain extends Application {
         chroma = new Chroma();
 
         final Logger fxLogger = Logger.getLogger("chroma");
-        final ChromaFxLogWindowHandler queueHandler = new ChromaFxLogWindowHandler();
+        final ChromaFxLogWindowForwardHandler queueHandler = new ChromaFxLogWindowForwardHandler();
         fxLogger.addHandler(queueHandler);
 
         Thread thread = new Thread(chroma);

@@ -8,24 +8,24 @@ import java.util.logging.LogRecord;
 /**
  * @author bensteinert
  */
-class ChromaFxLogWindowHandler extends Handler {
+class ChromaFxLogWindowForwardHandler extends Handler {
 
-    private final BlockingQueue<LogRecord> queue;
+    private final BlockingQueue<String> queue;
     private ChromaFxLogWindow logWindow;
 
 
-    ChromaFxLogWindowHandler() {
+    ChromaFxLogWindowForwardHandler() {
         this.queue = new ArrayBlockingQueue<>(1000);
+        setFormatter(new ChromaLogFormatter());
     }
 
 
     @Override
     public synchronized void publish(LogRecord record) {
-        final boolean success = queue.offer(record);
-        if (!success) {
-            System.err.println("Chroma Console Overflow! Skipping records...");
-            queue.clear();
+        if (!isLoggable(record)) {
+            return;
         }
+        queue.offer(getFormatter().format(record));
     }
 
 
