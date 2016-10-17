@@ -1,7 +1,7 @@
 package net.chromarenderer.main.javafx;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import org.apache.commons.collections4.queue.CircularFifoQueue;
+
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
@@ -10,12 +10,12 @@ import java.util.logging.LogRecord;
  */
 class ChromaFxLogWindowForwardHandler extends Handler {
 
-    private final BlockingQueue<String> queue;
+    private final CircularFifoQueue<String> queue;
     private ChromaFxLogWindow logWindow;
 
 
-    ChromaFxLogWindowForwardHandler() {
-        this.queue = new ArrayBlockingQueue<>(1000);
+    public ChromaFxLogWindowForwardHandler() {
+        this.queue = new CircularFifoQueue<>(1000);
         setFormatter(new ChromaLogFormatter());
     }
 
@@ -47,6 +47,6 @@ class ChromaFxLogWindowForwardHandler extends Handler {
 
     @Override
     public boolean isLoggable(LogRecord record) {
-        return logWindow != null && logWindow.isShowing() && super.isLoggable(record);
+        return logWindow != null && super.isLoggable(record);
     }
 }

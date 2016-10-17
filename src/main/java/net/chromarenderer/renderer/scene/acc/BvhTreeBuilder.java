@@ -15,6 +15,7 @@ import java.util.logging.Logger;
  */
 public class BvhTreeBuilder {
 
+    private static final Logger LOGGER = Logger.getLogger("chroma");
     private Geometry[] primitives;
     private int[] indices;
     private AxisAlignedBoundingBox[] boxes;
@@ -35,7 +36,7 @@ public class BvhTreeBuilder {
 
         int totalNumberOfPrimitives = geometryList.size();
 
-        // TODO-IMP: Geometry not yet aligned in memory: Possible improvement with  https://github.com/ObjectLayout/ObjectLayout
+        // TODO-IMP: Geometry not yet aligned in memory: Possible improvement with  https://github.com/ObjectLayout/ObjectLayout ?
         primitives = new Geometry[totalNumberOfPrimitives];
         indices = new int[totalNumberOfPrimitives];
         boxes = new AxisAlignedBoundingBox[totalNumberOfPrimitives];
@@ -62,7 +63,7 @@ public class BvhTreeBuilder {
                 throw new RuntimeException("Bottom-UP Bvh construction not yet implemented");
         }
 
-        Logger.getLogger("chroma").info("Finished BVH Build with a total score of " + bvhQualityIndex);
+        LOGGER.info("Finished BVH Build with a total score of " + bvhQualityIndex);
         return new BvhTree(primitives, root);
     }
 
@@ -71,7 +72,7 @@ public class BvhTreeBuilder {
         int numberOfIndices = right - left + 1;
         if (numberOfIndices <= minIndices || depth == maxTreeDepth) {
             node.indexList = Arrays.copyOfRange(indices, left, right + 1);
-            Logger.getLogger("chroma").info("Reaching BVH stop criteria with " + numberOfIndices + " indices at depth " + depth);
+            LOGGER.info("Reaching BVH stop criteria with " + numberOfIndices + " indices at depth " + depth);
             return;
         }
 
@@ -103,7 +104,6 @@ public class BvhTreeBuilder {
         }
 
         // *** Scoring: ***
-
         ImmutableVector3 volumes = new ImmutableVector3(
                 leftBoxVolume[0] + rightBoxVolume[0],
                 leftBoxVolume[1] + rightBoxVolume[1],

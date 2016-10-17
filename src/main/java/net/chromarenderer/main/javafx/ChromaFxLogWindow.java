@@ -10,10 +10,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
+import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 /**
  * @author bensteinert
@@ -24,13 +21,12 @@ public class ChromaFxLogWindow extends Stage {
     private static final String WINDOW_TITLE = "Chroma Log";
     private static final int WINDOW_WIDTH = 800;
     private static final int WINDOW_HEIGHT = 400;
-    private static final int DRAIN_SIZE = 32;
-    private final BlockingQueue<String> queue;
+    private final CircularFifoQueue<String> queue;
     private AnimationTimer animationTimer;
     private boolean follow = true;
 
 
-    public ChromaFxLogWindow(BlockingQueue<String> queue) {
+    public ChromaFxLogWindow(CircularFifoQueue<String> queue) {
         super(StageStyle.UTILITY);
         this.queue = queue;
     }
@@ -64,23 +60,29 @@ public class ChromaFxLogWindow extends Stage {
 
         vBox.getChildren().addAll(controls, logOutput, warning);
         setScene(new Scene(vBox, WINDOW_WIDTH, WINDOW_HEIGHT));
-        List<String> drain = new ArrayList<>(DRAIN_SIZE);
 
         animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                queue.drainTo(drain, DRAIN_SIZE);
-                if (!drain.isEmpty()) {
+                if(!queue.isEmpty()) {
                     long now2 = System.currentTimeMillis();
-                    if (queue.size() == DRAIN_SIZE) {
-                        logOutput.appendText("Log queue is full. Entry loss is likely.");
+
+                    if (queue.isAtFullCapacity()) {
+                        logOutput.appendText("Log queue is full. Entry loss is likely.\n");
                     }
+                    int elementsToProcess = Math.min(50, queue.size());
                     double previous = logOutput.getScrollTop();
-                    drain.stream().forEachOrdered(logOutput::appendText);
+                    while (elementsToProcess-- > 0) {
+                        try {
+                            logOutput.appendText(queue.remove());
+                        } catch (Exception e){
+                            System.out.println("Ups");
+                        }
+                    }
                     if (logOutput.getLength() > 110000) {
                         logOutput.deleteText(0, logOutput.getLength() - 100000); // 100000 characters history
                     }
-                    drain.clear();
+
                     if (follow) {
                         logOutput.setScrollTop(Double.MAX_VALUE);
                     } else {

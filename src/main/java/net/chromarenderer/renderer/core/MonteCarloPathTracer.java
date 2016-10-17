@@ -12,8 +12,6 @@ import net.chromarenderer.renderer.shader.Material;
 import net.chromarenderer.renderer.shader.MaterialType;
 import net.chromarenderer.renderer.shader.ShaderEngine;
 
-import java.util.logging.Logger;
-
 /**
  * @author bensteinert
  */
@@ -47,7 +45,6 @@ public class MonteCarloPathTracer extends AccumulativeRenderer  {
         int depth = 0;
         Hitpoint hitpoint;
         // L = Le + ∫ fr * Li
-        Logger.getLogger("chroma").info("Hello from level " + depth);
         while (pathWeight.getMaxValue() > Constants.FLT_EPSILON && depth <= settings.getMaxRayDepth()) {
             // scene intersection
             hitpoint = scene.intersect(incomingRay);
