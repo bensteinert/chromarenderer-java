@@ -1,5 +1,6 @@
-package net.chromarenderer.main.javafx;
+package net.chromarenderer.main.javafx.logging;
 
+import net.chromarenderer.main.ChromaLogger;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 import java.util.logging.Handler;
@@ -8,7 +9,7 @@ import java.util.logging.LogRecord;
 /**
  * @author bensteinert
  */
-class ChromaFxLogWindowForwardHandler extends Handler {
+public class ChromaFxLogWindowForwardHandler extends Handler {
 
     private final CircularFifoQueue<String> queue;
     private ChromaFxLogWindow logWindow;
@@ -16,7 +17,7 @@ class ChromaFxLogWindowForwardHandler extends Handler {
 
     public ChromaFxLogWindowForwardHandler() {
         this.queue = new CircularFifoQueue<>(1000);
-        setFormatter(new ChromaLogFormatter());
+        setFormatter(new ChromaLogger.ChromaLogFormatter());
     }
 
 

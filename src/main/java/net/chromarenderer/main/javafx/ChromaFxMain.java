@@ -25,6 +25,8 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import net.chromarenderer.main.Chroma;
 import net.chromarenderer.main.ChromaSettings;
+import net.chromarenderer.main.javafx.logging.ChromaFxLogWindowForwardHandler;
+import net.chromarenderer.main.ChromaLogger;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.renderer.ChromaRenderMode;
@@ -45,6 +47,7 @@ public class ChromaFxMain extends Application {
     //-XX:+UnlockDiagnosticVMOptions -XX:+PrintAssembly -XX:+LogCompilation
 
     private static Chroma chroma;
+    private static Logger logger;
     private ChromaSettings settings;
 
     private ChromaFxPreviewWindow previewStage;
@@ -384,10 +387,9 @@ public class ChromaFxMain extends Application {
     public static void main(String[] args) {
         chroma = new Chroma();
 
-        final Logger fxLogger = Logger.getLogger("chroma");
         final ChromaFxLogWindowForwardHandler queueHandler = new ChromaFxLogWindowForwardHandler();
-        fxLogger.addHandler(queueHandler);
-
+        logger = Logger.getLogger("chroma");
+        logger.addHandler(queueHandler);
         Thread thread = new Thread(chroma);
         thread.start();
 

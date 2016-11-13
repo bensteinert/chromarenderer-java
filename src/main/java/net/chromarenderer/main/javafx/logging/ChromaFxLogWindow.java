@@ -1,4 +1,4 @@
-package net.chromarenderer.main.javafx;
+package net.chromarenderer.main.javafx.logging;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
