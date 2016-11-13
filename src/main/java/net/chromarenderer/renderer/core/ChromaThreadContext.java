@@ -31,7 +31,7 @@ public class ChromaThreadContext {
 //        return currentY.get();
 //    }
 
-
+    //genrand_real2
     public static float randomFloatClosedOpen() {
         return mt.get().nextFloat();
     }
