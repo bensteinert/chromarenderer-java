@@ -33,6 +33,10 @@ public interface Vector3 {
         return (float) FastMath.sqrt(getX() * getX() + getY() * getY() + getZ() * getZ());
     }
 
+    default float squaredLength() {
+        return getX() * getX() + getY() * getY() + getZ() * getZ();
+    }
+
     float[] internalGetValues();
 
     float getX();
