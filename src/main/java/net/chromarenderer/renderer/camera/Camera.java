@@ -16,6 +16,10 @@ import net.chromarenderer.math.raytracing.Ray;
  */
 public interface Camera {
 
+    /**
+     * Produces rays which can be used for scene sampling. To say in other words, this method creates paths,
+     * leaving the camera, originating the sensor.
+     ***/
     Ray getRay(int x, int y);
 
     void move(Vector3 mutableVector3, Vector3 rotation);

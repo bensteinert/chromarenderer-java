@@ -7,7 +7,7 @@ import net.chromarenderer.renderer.canvas.ChromaCanvas;
 import net.chromarenderer.renderer.canvas.ParallelStreamAccumulationBuffer;
 
 /**
- * @author steinerb
+ * @author bensteinert
  */
 public class MovingAverageRenderer implements Renderer {
 

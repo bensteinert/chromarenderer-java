@@ -5,7 +5,7 @@ import net.chromarenderer.math.random.MersenneTwisterFast;
 import org.apache.commons.math3.util.FastMath;
 
 /**
- * @author steinerb
+ * @author bensteinert
  */
 public class RandomPixelGenerator {
 

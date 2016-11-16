@@ -7,6 +7,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Constants {
 
+    /**
+     * See also https://en.wikipedia.org/wiki/Machine_epsilon#How_to_determine_machine_epsilon
+     * @return the smallest epsilon
+     */
     private static float calculateMachineEpsilonFloat() {
         float machEps = 1.0f;
 
@@ -18,7 +22,6 @@ public class Constants {
     }
 
     public static final float FLT_EPSILON =  calculateMachineEpsilonFloat();
-    public static final double DBL_EPSILON = 0.000001;
     public static final float SPHERE_NAN_LIMIT = 1000000.0f;
     public static final float PI_f = 3.141593f;
     public static final float TWO_PI_f = 6.2831854f;
@@ -41,9 +44,8 @@ public class Constants {
     /*
      * well let's see when I get an ArrayIndexOutOfBounds, please increment here: [0]
      */
-    public static final int getNextPrime(){
+    public static int getNextPrime(){
         return SOME_NICE_PRIMES[primeIdx.getAndIncrement()];
     }
-
 
 }

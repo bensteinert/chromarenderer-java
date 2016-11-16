@@ -5,6 +5,10 @@ package net.chromarenderer.math;
  */
 public class ChromaFloat {
 
+    public static boolean approxEqual(float a, float b) {
+        return FastMath.abs(a - b) < Contstants.FLT_EPSILON;
+    }
+
     public static float rad(float deg) {
         return deg / 180.0f * Constants.PI_f;
     }

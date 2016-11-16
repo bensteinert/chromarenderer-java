@@ -7,7 +7,7 @@ import net.chromarenderer.renderer.Renderer;
 import net.chromarenderer.renderer.canvas.ChromaCanvas;
 
 /**
- * @author steinerb
+ * @author bensteinert
  */
 public class ColorCubeRenderer extends ChromaCanvas implements Renderer {
 

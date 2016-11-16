@@ -4,7 +4,7 @@ import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.random.MersenneTwisterFast;
 
 /**
- * @author steinerb
+ * @author bensteinert
  */
 public class ChromaThreadContext {
 

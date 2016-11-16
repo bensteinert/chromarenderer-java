@@ -1,5 +1,6 @@
 package net.chromarenderer.math.geometry;
 
+import net.chromarenderer.YouGotMeException;
 import net.chromarenderer.math.*;
 import net.chromarenderer.math.raytracing.CoordinateSystem;
 import net.chromarenderer.math.raytracing.Ray;
@@ -35,11 +36,12 @@ public class Disk extends AbstractGeometry implements Geometry {
         //H = O + t*d
         //0 = (O+t*d-P)*n
 
-        float t = planeRayIntersection(ray);
+        // NO Backface Culling! This means, the Disk behaves solid in both normal and opposite direction!
+
+        float t = PlaneUtils.planeRayIntersection(center, normal, ray);
 
         if (t > 0.0f) {
-            ImmutableVector3 planeHit = ray.onRay(t);
-            float squaredDist = planeHit.minus(center).squaredLength();
+            float squaredDist = ray.mutableOnRay(t).minus(center).squaredLength();
             if (squaredDist < squaredRadius) {
                 return t;
             }
@@ -47,18 +49,6 @@ public class Disk extends AbstractGeometry implements Geometry {
         return 0.0f;
     }
 
-
-    private float planeRayIntersection(Ray ray) {
-        float OminusPmultN = ray.getOrigin().minus(center).dot(normal);
-        float DmultN = ray.getDirection().dot(normal);
-        if (DmultN != 0.0f) {
-            //ray and plane are not parallel
-            float t = OminusPmultN / DmultN;
-            return -t;
-        }
-        // intersection just from normal-facing side
-        return 0.0f;
-    }
 
     @Override
     public Geometry transpose(Vector3 transpose) {
@@ -95,15 +85,15 @@ public class Disk extends AbstractGeometry implements Geometry {
         float sqrtU = (float) FastMath.sqrt(u);
         float v2pi = v * TWO_PI_f;
 
-        float sampleX = (float) FastMath.cos(v2pi) * sqrtU;
-        float sampleY = (float) FastMath.sin(v2pi) * sqrtU;
-        float sampleZ = (float) FastMath.sqrt(1.0f - u);
+        float sampleX = (float) FastMath.cos(v2pi) * sqrtU * radius;
+        float sampleY = (float) FastMath.sin(v2pi) * sqrtU * radius;
+        float sampleZ = 0.0f; // not relevant on the unit disk
+
         CoordinateSystem coordinateSystem = VectorUtils.buildCoordSystem(normal);
 
         Vector3 mutable = new MutableVector3(
                 coordinateSystem.getT1()).mult(sampleX)
-                .plus(coordinateSystem.getT2().mult(sampleY))
-                .plus(coordinateSystem.getN().mult(sampleZ)).normalize();
+                .plus(coordinateSystem.getT2().mult(sampleY));
 
         return new ImmutableVector3(mutable.plus(center));
     }
@@ -120,4 +110,13 @@ public class Disk extends AbstractGeometry implements Geometry {
         throw new YouGotMeException();
         //return center.plus((float)radius, (float)radius, (float)radius);
     }
+
+    public ImmutableVector3 getCenter() {
+        return center;
+    }
+
+    public float getRadius() {
+        return radius;
+    }
+
 }

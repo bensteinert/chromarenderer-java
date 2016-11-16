@@ -4,7 +4,7 @@ import net.chromarenderer.math.raytracing.CoordinateSystem;
 import org.apache.commons.math3.util.FastMath;
 
 /**
- * @author steinerb
+ * @author bensteinert
  */
 public class VectorUtils {
 

@@ -2,6 +2,7 @@ package net.chromarenderer.math.raytracing;
 
 import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.ImmutableVector3;
+import net.chromarenderer.math.MutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.geometry.Geometry;
 
@@ -75,6 +76,10 @@ public class Ray {
 
     public ImmutableVector3 onRay(float t) {
         return origin.plus(direction.mult(t));
+    }
+
+    public MutableVector3 mutableOnRay(float t) {
+        return new MutableVector3(direction).mult(t).plus(origin);
     }
 
 
