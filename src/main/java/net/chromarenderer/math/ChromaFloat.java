@@ -1,12 +1,14 @@
 package net.chromarenderer.math;
 
+import org.apache.commons.math3.util.FastMath;
+
 /**
  * @author steinerb
  */
 public class ChromaFloat {
 
     public static boolean approxEqual(float a, float b) {
-        return FastMath.abs(a - b) < Contstants.FLT_EPSILON;
+        return FastMath.abs(a - b) < Constants.FLT_EPSILON;
     }
 
     public static float rad(float deg) {
