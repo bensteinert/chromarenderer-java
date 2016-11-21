@@ -47,7 +47,7 @@ public class ChromaFxMain extends Application {
     //-XX:+UnlockDiagnosticVMOptions -XX:+PrintAssembly -XX:+LogCompilation
 
     private static Chroma chroma;
-    private static Logger logger;
+    private static Logger LOGGER;
     private ChromaSettings settings;
 
     private ChromaFxPreviewWindow previewStage;
@@ -59,8 +59,8 @@ public class ChromaFxMain extends Application {
     @Override
     public void start(final Stage chromaMainStage) throws Exception {
 
-        final Logger fxLogger = Logger.getLogger("chroma");
-        final Optional<Handler> logHandler = Arrays.stream(fxLogger.getHandlers()).filter(handler -> handler instanceof ChromaFxLogWindowForwardHandler).findFirst();
+
+        final Optional<Handler> logHandler = Arrays.stream(LOGGER.getHandlers()).filter(handler -> handler instanceof ChromaFxLogWindowForwardHandler).findFirst();
         ChromaFxLogWindowForwardHandler fxHandler = (ChromaFxLogWindowForwardHandler) logHandler.get();
 
         BorderPane mainBox = new BorderPane();
@@ -265,7 +265,7 @@ public class ChromaFxMain extends Application {
         previewStage.show();
         statisticsStage.show();
         logOutputWindow.show();
-        fxLogger.info("Hello Log Window! Nice to see you!");
+        LOGGER.info("Hello Log Window! Nice to see you!");
 
         Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
         statisticsStage.setX(visualBounds.getMaxX() - statisticsStage.getWidth());
@@ -388,8 +388,8 @@ public class ChromaFxMain extends Application {
         chroma = new Chroma();
 
         final ChromaFxLogWindowForwardHandler queueHandler = new ChromaFxLogWindowForwardHandler();
-        logger = Logger.getLogger("chroma");
-        logger.addHandler(queueHandler);
+        LOGGER = ChromaLogger.get();
+        LOGGER.addHandler(queueHandler);
         Thread thread = new Thread(chroma);
         thread.start();
 

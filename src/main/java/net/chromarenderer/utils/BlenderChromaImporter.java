@@ -4,6 +4,7 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
+import net.chromarenderer.main.ChromaLogger;
 import net.chromarenderer.math.ImmutableMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.geometry.Geometry;
@@ -33,7 +34,8 @@ import java.util.logging.Logger;
  */
 public class BlenderChromaImporter {
 
-    public static final String BLENDER_TO_CHROMA_SCRIPT = "blenderToChroma.py";
+    private static final String BLENDER_TO_CHROMA_SCRIPT = "blenderToChroma.py";
+    private static final Logger LOGGER = ChromaLogger.get();
 
 
     public enum BlenderChromaConversionStatus {
@@ -47,7 +49,7 @@ public class BlenderChromaImporter {
             String sceneName = blenderFileName.substring(0, blenderFileName.lastIndexOf('.'));
             Path pythonScript = path.getParent().resolve(BLENDER_TO_CHROMA_SCRIPT);
             if (!Files.exists(pythonScript)) {
-                Logger.getGlobal().log(Level.SEVERE, "Chroma conversion script for Blender not found. Aborting.");
+                LOGGER.log(Level.SEVERE, "Chroma conversion script for Blender not found. Aborting.");
                 return BlenderChromaConversionStatus.FAIL;
             }
 
@@ -55,7 +57,7 @@ public class BlenderChromaImporter {
             final File blendFile = blendFilePath.toFile();
 
             if (!Files.exists(blendFilePath)) {
-                Logger.getGlobal().log(Level.SEVERE, "Blender file " + blendFilePath.toString() + " not found. Aborting.");
+                LOGGER.log(Level.SEVERE, "Blender file " + blendFilePath.toString() + " not found. Aborting.");
                 return BlenderChromaConversionStatus.FAIL;
             }
 
@@ -73,7 +75,7 @@ public class BlenderChromaImporter {
 
             if (doConversion) {
                 final String cmd = "blender --background " + blendFilePath.toString() + " --python " + pythonScript.toString();
-                Logger.getGlobal().log(Level.INFO, "Executing shell process " + cmd);
+                LOGGER.log(Level.INFO, "Executing shell process " + cmd);
                 Process p = Runtime.getRuntime().exec(cmd);
                 try {
                     final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -82,7 +84,7 @@ public class BlenderChromaImporter {
                     if (p.exitValue() == 0) {
                         return BlenderChromaConversionStatus.OK;
                     } else {
-                        Logger.getGlobal().log(Level.SEVERE, "Abnormal exit code received from Blender conversion process. Please check sysout!");
+                        LOGGER.log(Level.SEVERE, "Abnormal exit code received from Blender conversion process. Please check sysout!");
                         return BlenderChromaConversionStatus.FAIL;
                     }
                 } catch (InterruptedException e) {
@@ -92,10 +94,10 @@ public class BlenderChromaImporter {
                 return BlenderChromaConversionStatus.NOTHING_TODO;
             }
         } catch (InvalidPathException e) {
-            Logger.getGlobal().log(Level.SEVERE, "Invalid path to for Blender Conversion. Aborting.", e);
+            LOGGER.log(Level.SEVERE, "Invalid path to for Blender Conversion. Aborting.", e);
             return BlenderChromaConversionStatus.FAIL;
         } catch (IOException e) {
-            Logger.getGlobal().log(Level.SEVERE, "Unexpected I/O problem while converting from .blend to chroma format. Aborting.", e);
+            LOGGER.log(Level.SEVERE, "Unexpected I/O problem while converting from .blend to chroma format. Aborting.", e);
             return BlenderChromaConversionStatus.FAIL;
         }
     }
@@ -132,7 +134,7 @@ public class BlenderChromaImporter {
             if (!jsonFormatMaterials) {
                 materialFile = path.resolve(sceneName + ".mat.bin");
                 if (!Files.exists(materialFile)) {
-                    Logger.getGlobal().log(Level.SEVERE, "Missing Material file for '{}'. Aborting import.", sceneName);
+                    LOGGER.log(Level.SEVERE, "Missing Material file for '{}'. Aborting import.", sceneName);
                     return null;
                 }
             }
@@ -140,7 +142,7 @@ public class BlenderChromaImporter {
             if (!jsonFormatMeshes) {
                 meshFile = path.resolve(sceneName + ".mesh.bin");
                 if (Files.exists(meshFile)) {
-                    Logger.getGlobal().log(Level.SEVERE, "Missing Mesh file for '{}'. Aborting import.", sceneName);
+                    LOGGER.log(Level.SEVERE, "Missing Mesh file for '{}'. Aborting import.", sceneName);
                     return null;
                 }
             }
@@ -152,10 +154,10 @@ public class BlenderChromaImporter {
             camera = importCameraFromJson(path.resolve(sceneName + ".cam.json"));
 
         } catch (InvalidPathException e) {
-            Logger.getGlobal().log(Level.SEVERE, "Invalid path to files for Blender Import. Aborting import.", e);
+            LOGGER.log(Level.SEVERE, "Invalid path to files for Blender Import. Aborting import.", e);
             return null;
         } catch (IOException e) {
-            Logger.getGlobal().log(Level.SEVERE, "Unexpected I/O problem while importing. Aborting import.", e);
+            LOGGER.log(Level.SEVERE, "Unexpected I/O problem while importing. Aborting import.", e);
             return null;
         }
 
@@ -206,11 +208,11 @@ public class BlenderChromaImporter {
                 }
                 result.addAll(triangleList);
             } else {
-                Logger.getGlobal().log(Level.SEVERE, "Currently only TRIANGULAR_MESH is supported for Geometry. Aborting import.");
+                LOGGER.log(Level.SEVERE, "Currently only TRIANGULAR_MESH is supported for Geometry. Aborting import.");
                 return Collections.emptyList();
             }
         }
-        Logger.getGlobal().log(Level.INFO, "Successfully imported {0} triangles", result.size());
+        LOGGER.log(Level.INFO, "Successfully imported {0} triangles", result.size());
         return result;
     }
 
@@ -237,7 +239,7 @@ public class BlenderChromaImporter {
             JsonObject jsonMaterial = value.asObject();
             String name = jsonMaterial.get("name").asString();
 
-            Logger.getGlobal().log(Level.INFO, "Importing JSON Material with name {0}.", name);
+            LOGGER.log(Level.INFO, "Importing JSON Material with name {0}.", name);
 
             ImmutableVector3 color = toImmVec(jsonMaterial.get("color").asArray());
             float ior = jsonMaterial.get("ior").asFloat();
@@ -248,16 +250,16 @@ public class BlenderChromaImporter {
             try {
                 materialType = MaterialType.valueOf(typeAsString);
             } catch (IllegalArgumentException e) {
-                Logger.getGlobal().log(Level.SEVERE, "Unknown MaterialType {0} found. Aborting import.", typeAsString);
+                LOGGER.log(Level.SEVERE, "Unknown MaterialType {0} found. Aborting import.", typeAsString);
                 return Collections.emptyList();
             }
 
             newMaterial = new Material(materialType, color, ior, emits, specHardness);
-            Logger.getGlobal().log(Level.INFO, () -> String.format("%s identified as %s.", name, newMaterial.getType()));
+            LOGGER.log(Level.INFO, () -> String.format("%s identified as %s.", name, newMaterial.getType()));
             result.add(newMaterial);
         }
 
-        Logger.getGlobal().log(Level.INFO, "Successfully imported {0} materials", result.size());
+        LOGGER.log(Level.INFO, "Successfully imported {0} materials", result.size());
 
         return result;
     }
