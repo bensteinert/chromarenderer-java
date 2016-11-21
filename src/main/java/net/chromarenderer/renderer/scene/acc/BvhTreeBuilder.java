@@ -1,5 +1,6 @@
 package net.chromarenderer.renderer.scene.acc;
 
+import net.chromarenderer.main.ChromaLogger;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.MutableVector3;
 import net.chromarenderer.math.Vector3;
@@ -15,7 +16,7 @@ import java.util.logging.Logger;
  */
 public class BvhTreeBuilder {
 
-    private static final Logger LOGGER = Logger.getLogger("chroma");
+    private static final Logger LOGGER = ChromaLogger.get();
     private Geometry[] primitives;
     private int[] indices;
     private AxisAlignedBoundingBox[] boxes;

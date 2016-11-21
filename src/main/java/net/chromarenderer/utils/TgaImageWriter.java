@@ -1,12 +1,13 @@
 package net.chromarenderer.utils;
 
+import net.chromarenderer.main.ChromaLogger;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.logging.Logger;
 
 
 public class TgaImageWriter {
@@ -55,7 +56,7 @@ public class TgaImageWriter {
 
             outputStream.write(currentFrame);
             outputStream.close();
-            Logger.getGlobal().info("Successfully stored screenshot to " + path + fileName);
+            ChromaLogger.get().info("Successfully stored screenshot to " + path + fileName);
 
         } catch (IOException e) {
             e.printStackTrace();
