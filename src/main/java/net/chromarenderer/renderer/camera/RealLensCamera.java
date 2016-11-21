@@ -30,6 +30,14 @@ public class RealLensCamera implements Camera {
     private final LensSystem lensSystem;
     private final LensTracer lensTracer;
 
+
+    public RealLensCamera(ImmutableVector3 initialPosition, LensSystem lensSystem, LensTracer lensTracer) {
+        this.initialPosition = initialPosition;
+        this.lensSystem = lensSystem;
+        this.lensTracer = lensTracer;
+    }
+
+
     @Override
     public Ray getRay(int x, int y) {
         // Sample pixel, start ray and send it through the LensSystem

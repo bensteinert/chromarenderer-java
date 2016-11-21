@@ -181,4 +181,9 @@ public class Dome extends AbstractGeometry implements Geometry {
     public ImmutableVector3 getCenter() {
         return center;
     }
+
+
+    public float getBaseRadius() {
+        return baseRadius;
+    }
 }

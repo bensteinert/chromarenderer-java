@@ -34,7 +34,7 @@ public class DomeTest {
     @Test
     public void getUnifDistrSample100000Times() throws Exception {
         Dome dome = new Dome(Vector3.ONE, new ImmutableVector3(0.5,0.5,0.5).normalize(),2.0f, 1.0f);
-        for (int = 0; i<100000; i++) {
+        for (int i = 0; i<100000; i++) {
             ImmutableVector3 sample = dome.getUnifDistrSample();
             Assert.assertTrue(ChromaFloat.approxEqual(sample.minus(dome.getCenter()).length(), dome.getBaseRadius()));
         }

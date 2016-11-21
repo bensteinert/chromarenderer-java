@@ -23,6 +23,14 @@ public class LensSystem implements AccelerationStructure {
      */
     private final Disk[] entrancePupils;
 
+
+    public LensSystem(Geometry[] surfaces, Aperture[] apertures, Disk[] entrancePupils) {
+        this.surfaces = surfaces;
+        this.apertures = apertures;
+        this.entrancePupils = entrancePupils;
+    }
+
+
     /**
      * Decrease aperture diameter
      **/
