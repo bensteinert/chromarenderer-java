@@ -16,34 +16,35 @@ import static net.chromarenderer.math.Constants.TWO_PI_f;
  */
 public class Dome extends AbstractGeometry implements Geometry {
 
-    private final ImmutableVector3 center;
-    private final ImmutableVector3 domeVector;
-    private final float baseRadius;
-    private final float curveRadius;
-    private final float height;
+    private final ImmutableVector3 sphereCenter;
+    private final float sphereRadius;
+
+    private final ImmutableVector3 domeOrientation;
+    private final float domeBaseRadius;
+    private final float domeHeight;
     private final float cosSemiAngle;
 
-    public Dome(ImmutableVector3 center, ImmutableVector3 domeVector, float baseRadius, float signedCurveRadius) {
-        super(Material.NULL);
-        this.center = center;
-
-        // ported from chroma1. Doesn't make sense so far ;)
-        this.domeVector = domeVector;
-        this.baseRadius = baseRadius;
-        this.curveRadius = FastMath.abs(signedCurveRadius);
-        this.height = (float) (curveRadius - FastMath.sqrt(curveRadius * curveRadius - baseRadius * baseRadius));
-        this.cosSemiAngle = (curveRadius - height) / curveRadius;
-    }
-
-    public Dome(ImmutableVector3 center, ImmutableVector3 domeVector, float baseRadius, float curveRadius, float height, float cosSemiAngle, Material material) {
+    private Dome(ImmutableVector3 sphereCenter, float sphereRadius, ImmutableVector3 domeOrientation, float domeBaseRadius, float domeHeight, float cosSemiAngle, Material material) {
         super(material);
-        this.center = center;
-        this.domeVector = domeVector;
-        this.baseRadius = baseRadius;
-        this.curveRadius = curveRadius;
-        this.height = height;
+        this.sphereCenter = sphereCenter;
+        this.domeOrientation = domeOrientation;
+        this.domeBaseRadius = domeBaseRadius;
+        this.sphereRadius = sphereRadius;
+        this.domeHeight = domeHeight;
         this.cosSemiAngle = cosSemiAngle;
     }
+
+
+    public Dome(ImmutableVector3 sphereCenter, float sphereRadius, ImmutableVector3 domeOrientation, float domeHeight, Material material) {
+        super(material);
+        this.sphereCenter = sphereCenter;
+        this.sphereRadius = sphereRadius;
+        this.domeOrientation = domeOrientation;
+        this.domeHeight = domeHeight;
+        this.domeBaseRadius = (float) FastMath.sqrt(domeHeight * (2*sphereRadius -domeHeight));
+        this.cosSemiAngle = (sphereRadius - domeHeight) / sphereRadius;
+    }
+
 
     @Override
     public float intersect(Ray ray) {
@@ -59,11 +60,11 @@ public class Dome extends AbstractGeometry implements Geometry {
         //code from http://wiki.cgsociety.org/index.php/Ray_Sphere_Intersection
         //special intersect routine returning both t values for later analysis eg in lens intersection test
 
-        ImmutableVector3 OminusC = ray.getOrigin().minus(center);
+        ImmutableVector3 OminusC = ray.getOrigin().minus(sphereCenter);
 
         double a = ray.getDirection().dot(ray.getDirection());
         double b = ray.getDirection().dot(OminusC) * 2.0;
-        double c = OminusC.dot(OminusC) - curveRadius * curveRadius;
+        double c = OminusC.dot(OminusC) - sphereRadius * sphereRadius;
 
         //Find discriminant
         double disc = (b * b) - (4.0 * a * c);
@@ -94,14 +95,14 @@ public class Dome extends AbstractGeometry implements Geometry {
 
 
         if (t0 > 0.0f) {
-            float domeAngle = ray.mutableOnRay(t0).minus(center).div(curveRadius).dot(domeVector);
+            float domeAngle = ray.mutableOnRay(t0).minus(sphereCenter).div(sphereRadius).dot(domeOrientation);
             // hit t0 inside dome angle
             if (domeAngle > cosSemiAngle) {
                 return t0;
             }
         }
         else {
-            float domeAngle = ray.mutableOnRay(t1).minus(center).div(curveRadius).dot(domeVector);
+            float domeAngle = ray.mutableOnRay(t1).minus(sphereCenter).div(sphereRadius).dot(domeOrientation);
             // hit t1 inside dome angle
             if (domeAngle > cosSemiAngle) {
                 return t1;
@@ -113,7 +114,7 @@ public class Dome extends AbstractGeometry implements Geometry {
 
     @Override
     public Geometry transpose(Vector3 transpose) {
-        return new Dome(center.plus(transpose), domeVector, baseRadius, curveRadius, height, cosSemiAngle, getMaterial());
+        return new Dome(sphereCenter.plus(transpose), sphereRadius, domeOrientation, domeBaseRadius, domeHeight, cosSemiAngle, getMaterial());
     }
 
     @Override
@@ -123,8 +124,8 @@ public class Dome extends AbstractGeometry implements Geometry {
 
     @Override
     public ImmutableVector3 getNormal(ImmutableVector3 hitpoint) {
-        // TODO: This normal always points away from the way dome center. We might need the other direction as well. Think of concave lenses
-        return hitpoint.minus(center).div(curveRadius);
+        // TODO: This normal always points away from the way dome sphereCenter. We might need the other direction as well. Think of concave lenses
+        return hitpoint.minus(sphereCenter).div(sphereRadius);
     }
 
     @Override
@@ -135,13 +136,13 @@ public class Dome extends AbstractGeometry implements Geometry {
 
     @Override
     public float getArea() {
-        return TWO_PI_f * height * curveRadius;
+        return TWO_PI_f * domeHeight * sphereRadius;
     }
 
     @Override
     public ImmutableVector3 getUnifDistrSample() {
 
-        CoordinateSystem coordinateSystem = VectorUtils.buildCoordSystem(domeVector);
+        CoordinateSystem coordinateSystem = VectorUtils.buildCoordSystem(domeOrientation);
 
         /*
         * Cap sampling
@@ -154,9 +155,9 @@ public class Dome extends AbstractGeometry implements Geometry {
         float sqrtTerm = (float) FastMath.sqrt(1.0f - FastMath.pow(1.0f - u * (1.0f - cosSemiAngle), 2.0f));
         float v2pi = v * TWO_PI_f;
 
-        float sampleX = sqrtTerm * (float) FastMath.cos(v2pi) * curveRadius;
-        float sampleY = sqrtTerm * (float) FastMath.sin(v2pi) * curveRadius;
-        float sampleZ = 1.0f - u * (1.0f - cosSemiAngle) * curveRadius;
+        float sampleX = sqrtTerm * (float) FastMath.cos(v2pi) * sphereRadius;
+        float sampleY = sqrtTerm * (float) FastMath.sin(v2pi) * sphereRadius;
+        float sampleZ = 1.0f - u * (1.0f - cosSemiAngle) * sphereRadius;
 
         // rotate
         Vector3 mutable = new MutableVector3(
@@ -165,7 +166,7 @@ public class Dome extends AbstractGeometry implements Geometry {
                 .plus(coordinateSystem.getN().mult(sampleZ));
 
         // transpose and return
-        return new ImmutableVector3(mutable.plus(center));
+        return new ImmutableVector3(mutable.plus(sphereCenter));
     }
 
     @Override
@@ -178,12 +179,32 @@ public class Dome extends AbstractGeometry implements Geometry {
         throw new YouGotMeException();
     }
 
-    public ImmutableVector3 getCenter() {
-        return center;
+    public ImmutableVector3 getSphereCenter() {
+        return sphereCenter;
     }
 
 
-    public float getBaseRadius() {
-        return baseRadius;
+    public float getSphereRadius() {
+        return sphereRadius;
+    }
+
+
+    public ImmutableVector3 getDomeOrientation() {
+        return domeOrientation;
+    }
+
+
+    public float getDomeHeight() {
+        return domeHeight;
+    }
+
+
+    public float getCosSemiAngle() {
+        return cosSemiAngle;
+    }
+
+
+    public float getDomeBaseRadius() {
+        return domeBaseRadius;
     }
 }

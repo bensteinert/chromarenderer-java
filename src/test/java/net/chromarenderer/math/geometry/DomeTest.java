@@ -4,6 +4,7 @@ import net.chromarenderer.math.ChromaFloat;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Ray;
+import net.chromarenderer.renderer.shader.Material;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -15,10 +16,39 @@ import org.junit.Test;
 public class DomeTest {
 
     @Test
-    public void intersectHit() throws Exception {
-        Dome dome = new Dome(Vector3.ONE, new ImmutableVector3(0.5,0.5,0.5).normalize(),2.0f, 1.0f);
+    public void validateGeometryConditions() throws Exception {
+        // Full hemisphere dome (cosTheta=0)
+        Dome dome = new Dome(Vector3.ORIGIN, 1.0f, Vector3.Y_AXIS, 1.0f, Material.NULL);
+
+        Assert.assertTrue(ChromaFloat.approxEqual(dome.getDomeBaseRadius(), 1.0f));
+        Assert.assertTrue(ChromaFloat.approxEqual(dome.getCosSemiAngle(), 0.0f));
+
         float t = dome.intersect(new Ray(Vector3.ORIGIN, new ImmutableVector3(0.4, 0.6, 0.3).normalize()));
         Assert.assertTrue(t > 0.0f);
+    }
+
+    @Test
+    public void intersectHemisphere() throws Exception {
+        // Full hemisphere dome (cosTheta=0)
+        Dome dome = new Dome(Vector3.ORIGIN, 1.0f, Vector3.Y_AXIS, 1.0f, Material.NULL);
+
+        float t = dome.intersect(new Ray(Vector3.ORIGIN, new ImmutableVector3(0.0, 1.0, 0.0).normalize()));
+        Assert.assertTrue(t > 0.0f);
+
+        t = dome.intersect(new Ray(Vector3.ORIGIN, new ImmutableVector3(0.0, 0.9, 0.1).normalize()));
+        Assert.assertTrue(t > 0.0f);
+        t = dome.intersect(new Ray(Vector3.ORIGIN, new ImmutableVector3(0.0, 0.7, 0.3).normalize()));
+        Assert.assertTrue(t > 0.0f);
+        t = dome.intersect(new Ray(Vector3.ORIGIN, new ImmutableVector3(0.0, 0.5, 0.5).normalize()));
+        Assert.assertTrue(t > 0.0f);
+        t = dome.intersect(new Ray(Vector3.ORIGIN, new ImmutableVector3(0.0, 0.3, 0.7).normalize()));
+        Assert.assertTrue(t > 0.0f);
+        t = dome.intersect(new Ray(Vector3.ORIGIN, new ImmutableVector3(0.0, 0.1, 0.9).normalize()));
+        Assert.assertTrue(t > 0.0f);
+
+        // hitting the hemisphere on the outer edge vertex is not defined (float precision)
+        t = dome.intersect(new Ray(Vector3.ORIGIN, new ImmutableVector3(0.0, 0.0, 1.0).normalize()));
+        Assert.assertFalse(t > 0.0f);
     }
 
     @Test
@@ -33,10 +63,10 @@ public class DomeTest {
 
     @Test
     public void getUnifDistrSample100000Times() throws Exception {
-        Dome dome = new Dome(Vector3.ONE, new ImmutableVector3(0.5,0.5,0.5).normalize(),2.0f, 1.0f);
+        Dome dome = new Dome(Vector3.ONE, 200.0f, new ImmutableVector3(0.5,0.5,0.5).normalize(),10.0f, Material.NULL);
         for (int i = 0; i<100000; i++) {
             ImmutableVector3 sample = dome.getUnifDistrSample();
-            Assert.assertTrue(ChromaFloat.approxEqual(sample.minus(dome.getCenter()).length(), dome.getBaseRadius()));
+            Assert.assertTrue(ChromaFloat.approxEqual(sample.minus(dome.getSphereCenter()).length(), dome.getDomeBaseRadius()));
         }
     }
 
