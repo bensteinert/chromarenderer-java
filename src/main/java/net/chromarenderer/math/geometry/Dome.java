@@ -1,5 +1,6 @@
 package net.chromarenderer.math.geometry;
 
+import net.chromarenderer.UnexpectedGeometryException;
 import net.chromarenderer.YouGotMeException;
 import net.chromarenderer.main.ChromaStatistics;
 import net.chromarenderer.math.*;
@@ -24,6 +25,16 @@ public class Dome extends AbstractGeometry implements Geometry {
     private final float domeHeight;
     private final float cosSemiAngle;
 
+    public static Dome create(ImmutableVector3 sphereCenter, float sphereRadius, ImmutableVector3 domeOrientation, float domeHeight, Material material){
+        if (domeHeight > sphereRadius) {
+            throw new UnexpectedGeometryException("Your dome base is largter than the according sphere radius _Oo_");
+        }
+        final float domeBaseRadius = (float) FastMath.sqrt(domeHeight * (2 * sphereRadius - domeHeight));
+        final float cosSemiAngle = (sphereRadius - domeHeight) / sphereRadius;
+        return new Dome(sphereCenter, sphereRadius, domeOrientation, domeBaseRadius, domeHeight, cosSemiAngle, material);
+    }
+
+
     private Dome(ImmutableVector3 sphereCenter, float sphereRadius, ImmutableVector3 domeOrientation, float domeBaseRadius, float domeHeight, float cosSemiAngle, Material material) {
         super(material);
         this.sphereCenter = sphereCenter;
@@ -32,17 +43,6 @@ public class Dome extends AbstractGeometry implements Geometry {
         this.sphereRadius = sphereRadius;
         this.domeHeight = domeHeight;
         this.cosSemiAngle = cosSemiAngle;
-    }
-
-
-    public Dome(ImmutableVector3 sphereCenter, float sphereRadius, ImmutableVector3 domeOrientation, float domeHeight, Material material) {
-        super(material);
-        this.sphereCenter = sphereCenter;
-        this.sphereRadius = sphereRadius;
-        this.domeOrientation = domeOrientation;
-        this.domeHeight = domeHeight;
-        this.domeBaseRadius = (float) FastMath.sqrt(domeHeight * (2*sphereRadius -domeHeight));
-        this.cosSemiAngle = (sphereRadius - domeHeight) / sphereRadius;
     }
 
 
@@ -148,6 +148,8 @@ public class Dome extends AbstractGeometry implements Geometry {
         * Cap sampling
         * from Global Illumination Compendium p19f
         * pdf is 1/(2Pi*(1-cosSemiAngle))
+        *
+        * Expect float precision loss on the samples of at least 2 digits! See DomeTest.getUnifDistrSample100000Times()
         */
 
         float u = (float) ChromaThreadContext.randomDoubleClosedOpen();
@@ -155,15 +157,16 @@ public class Dome extends AbstractGeometry implements Geometry {
         float sqrtTerm = (float) FastMath.sqrt(1.0f - FastMath.pow(1.0f - u * (1.0f - cosSemiAngle), 2.0f));
         float v2pi = v * TWO_PI_f;
 
-        float sampleX = sqrtTerm * (float) FastMath.cos(v2pi) * sphereRadius;
-        float sampleY = sqrtTerm * (float) FastMath.sin(v2pi) * sphereRadius;
-        float sampleZ = 1.0f - u * (1.0f - cosSemiAngle) * sphereRadius;
+        // unit cap sample
+        float sampleX = sqrtTerm * (float) FastMath.cos(v2pi);
+        float sampleY = sqrtTerm * (float) FastMath.sin(v2pi);
+        float sampleZ = 1.0f - u * (1.0f - cosSemiAngle);
 
         // rotate
         Vector3 mutable = new MutableVector3(
-                coordinateSystem.getT1()).mult(sampleX)
-                .plus(coordinateSystem.getT2().mult(sampleY))
-                .plus(coordinateSystem.getN().mult(sampleZ));
+                coordinateSystem.getT1()).mult(sampleX * sphereRadius)
+                .plus(coordinateSystem.getT2().mult(sampleY * sphereRadius))
+                .plus(coordinateSystem.getN().mult(sampleZ * sphereRadius));
 
         // transpose and return
         return new ImmutableVector3(mutable.plus(sphereCenter));

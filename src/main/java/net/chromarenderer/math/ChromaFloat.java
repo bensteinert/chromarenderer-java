@@ -8,7 +8,11 @@ import org.apache.commons.math3.util.FastMath;
 public class ChromaFloat {
 
     public static boolean approxEqual(float a, float b) {
-        return FastMath.abs(a - b) < Constants.FLT_EPSILON;
+        return approxEqual(a,b, 1);
+    }
+
+    public static boolean approxEqual(float a, float b, int epsilonShift) {
+        return FastMath.abs(a - b) < Constants.FLT_EPSILON * epsilonShift;
     }
 
     public static float rad(float deg) {
