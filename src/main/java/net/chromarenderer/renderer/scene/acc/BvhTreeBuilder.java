@@ -73,7 +73,7 @@ public class BvhTreeBuilder {
         int numberOfIndices = right - left + 1;
         if (numberOfIndices <= minIndices || depth == maxTreeDepth) {
             node.indexList = Arrays.copyOfRange(indices, left, right + 1);
-            LOGGER.info("Reaching BVH stop criteria with " + numberOfIndices + " indices at depth " + depth);
+            LOGGER.fine("Reaching BVH stop criteria with " + numberOfIndices + " indices at depth " + depth);
             return;
         }
 

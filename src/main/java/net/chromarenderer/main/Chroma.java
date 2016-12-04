@@ -19,6 +19,7 @@ import net.chromarenderer.utils.TgaImageWriter;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
+import java.util.logging.Level;
 import java.util.logging.LogManager;
 
 /**
@@ -39,6 +40,7 @@ public class Chroma implements Runnable {
 //            e.printStackTrace();
 //        }
 //    }
+
 
     static {
         try {
@@ -78,6 +80,11 @@ public class Chroma implements Runnable {
                 renderLatch.await();
                 breakLoop = false;
 
+                if (!sceneAndSettingsOk()) {
+                    ChromaLogger.get().severe("Scene cannot be rendered with the current settings, Please check earlier errors and warnings in the logs.");
+                    continue;
+                }
+
                 do {
                     if (needsFlush) {
                         flushRenderer();
@@ -97,6 +104,17 @@ public class Chroma implements Runnable {
                 Thread.currentThread().interrupt();
             }
         }
+    }
+
+
+    private boolean sceneAndSettingsOk() {
+        // currently there is no environmental light model ...
+
+        ChromaLogger.get().log(Level.INFO, "Number of light sources in the scene: {0}", scene.getNumberOfLightSources());
+
+        final boolean lightSourcesOk = scene.getNumberOfLightSources() > 0;
+
+        return lightSourcesOk;
     }
 
 
@@ -130,7 +148,7 @@ public class Chroma implements Runnable {
 
         // Save some time when working with large scenes ...
         if (settings != null) {
-            if (Objects.equals(settings.getSceneType(),settingsIn.getSceneType())) {
+            if (Objects.equals(settings.getSceneType(), settingsIn.getSceneType())) {
                 initScene = false;
             }
             if (settings.getAccStructType().equals(settingsIn.getAccStructType())) {

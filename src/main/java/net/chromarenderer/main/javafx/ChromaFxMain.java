@@ -24,9 +24,9 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import net.chromarenderer.main.Chroma;
+import net.chromarenderer.main.ChromaLogger;
 import net.chromarenderer.main.ChromaSettings;
 import net.chromarenderer.main.javafx.logging.ChromaFxLogWindowForwardHandler;
-import net.chromarenderer.main.ChromaLogger;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.renderer.ChromaRenderMode;
@@ -58,7 +58,6 @@ public class ChromaFxMain extends Application {
 
     @Override
     public void start(final Stage chromaMainStage) throws Exception {
-
 
         final Optional<Handler> logHandler = Arrays.stream(LOGGER.getHandlers()).filter(handler -> handler instanceof ChromaFxLogWindowForwardHandler).findFirst();
         ChromaFxLogWindowForwardHandler fxHandler = (ChromaFxLogWindowForwardHandler) logHandler.get();

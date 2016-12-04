@@ -1,5 +1,6 @@
 package net.chromarenderer.renderer.scene;
 
+import net.chromarenderer.main.ChromaLogger;
 import net.chromarenderer.main.ChromaStatistics;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.geometry.Geometry;
@@ -58,7 +59,7 @@ public class GeometryScene implements ChromaScene {
         } else {
             totalLightSourceArea = 0.0f;
             lightSourceDistributions = null;
-            System.err.println("No LightSources detected");
+            ChromaLogger.get().warning("No LightSources detected");
         }
     }
 
@@ -162,5 +163,9 @@ public class GeometryScene implements ChromaScene {
 
     public void setCamera(Camera camera) {
         this.camera = camera;
+    }
+
+    public int getNumberOfLightSources () {
+        return lightSources.size();
     }
 }

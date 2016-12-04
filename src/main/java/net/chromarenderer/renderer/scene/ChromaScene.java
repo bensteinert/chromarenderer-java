@@ -12,4 +12,6 @@ public interface ChromaScene {
     Hitpoint getLightSourceSample();
 
     boolean isObstructed(Ray shadowRay);
+
+    int getNumberOfLightSources();
 }

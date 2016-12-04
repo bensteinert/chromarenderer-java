@@ -65,19 +65,13 @@ public class ChromaFxLogWindow extends Stage {
             @Override
             public void handle(long now) {
                 if(!queue.isEmpty()) {
-                    long now2 = System.currentTimeMillis();
-
                     if (queue.isAtFullCapacity()) {
                         logOutput.appendText("Log queue is full. Entry loss is likely.\n");
                     }
                     int elementsToProcess = Math.min(50, queue.size());
                     double previous = logOutput.getScrollTop();
                     while (elementsToProcess-- > 0) {
-                        try {
-                            logOutput.appendText(queue.remove());
-                        } catch (Exception e){
-                            System.out.println("Ups");
-                        }
+                        logOutput.appendText(queue.remove());
                     }
                     if (logOutput.getLength() > 110000) {
                         logOutput.deleteText(0, logOutput.getLength() - 100000); // 100000 characters history
@@ -88,8 +82,6 @@ public class ChromaFxLogWindow extends Stage {
                     } else {
                         logOutput.setScrollTop(previous);
                     }
-
-                    System.out.println("refresh took " + (System.currentTimeMillis()-now2));
                 }
             }
         };

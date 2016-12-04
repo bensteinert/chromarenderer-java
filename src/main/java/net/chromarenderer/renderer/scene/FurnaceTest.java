@@ -47,4 +47,10 @@ public class FurnaceTest implements ChromaScene {
     public boolean isObstructed(Ray shadowRay) {
         return false;
     }
+
+
+    @Override
+    public int getNumberOfLightSources() {
+        return 1;
+    }
 }

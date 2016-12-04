@@ -20,6 +20,9 @@ public class ChromaSettings {
     // TODO make configurable
     private final int maxRayDepth = 9;
 
+    // TODO set it either true or false, dependening on whether FX frontend is running or not
+    private boolean headless = false;
+
     // non-invasive properties
     private boolean computeL1 = false;
 
@@ -114,5 +117,15 @@ public class ChromaSettings {
             default:
                 return "screenshot";
         }
+    }
+
+
+    public boolean isHeadless() {
+        return headless;
+    }
+
+
+    public void setHeadless(boolean headless) {
+        this.headless = headless;
     }
 }
