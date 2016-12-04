@@ -89,9 +89,10 @@ public class Dome extends AbstractGeometry implements Geometry {
         }
 
         // ignore imprecision flaws.....
-        if (!(t0 < Constants.SPHERE_NAN_LIMIT) || !(t1 < Constants.SPHERE_NAN_LIMIT)) {
-            return 0.0f;
-        }
+        // I can't remember why I added that... Could be not necessary ...
+//        if (!(t0 < Constants.SPHERE_NAN_LIMIT) || !(t1 < Constants.SPHERE_NAN_LIMIT)) {
+//            return 0.0f;
+//        }
 
 
         if (t0 > 0.0f) {
@@ -122,6 +123,13 @@ public class Dome extends AbstractGeometry implements Geometry {
         throw new YouGotMeException();
     }
 
+
+    /**
+     * For performance reasons, this method does not check, whether the hitpoint actually IS on the dome.
+     *
+     * @param hitpoint hitpoint on the Dome
+     * @return normal at the hitpoint.
+     */
     @Override
     public ImmutableVector3 getNormal(ImmutableVector3 hitpoint) {
         // TODO: This normal always points away from the way dome sphereCenter. We might need the other direction as well. Think of concave lenses
