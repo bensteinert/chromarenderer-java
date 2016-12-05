@@ -161,7 +161,13 @@ public class Chroma implements Runnable {
         if (initScene) {
             switch (settings.getSceneType()) {
                 case BLENDER_EXPORT:
-                    final GeometryScene geometryScene = BlenderChromaImporter.importSceneFromFile(settings.getScenePath(), settings.getSceneName() + ".blend");
+                    GeometryScene geometryScene = null;
+                    try {
+                        geometryScene = BlenderChromaImporter.importSceneFromFile(settings.getScenePath(), settings.getSceneName() + ".blend");
+                    }
+                    catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
                     scene = geometryScene;
                     camera = geometryScene.getCamera();
                     break;

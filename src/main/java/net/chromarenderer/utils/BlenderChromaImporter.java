@@ -35,25 +35,22 @@ import java.util.logging.Logger;
 public class BlenderChromaImporter {
 
     private static final String BLENDER_TO_CHROMA_SCRIPT = "blenderToChroma.py";
+    private static final String CHROMA_WORK_DIR = ".chroma";
     private static final Logger LOGGER = ChromaLogger.get();
 
 
-    public enum BlenderChromaConversionStatus {
+    private enum BlenderChromaConversionStatus {
         OK, FAIL, NOTHING_TODO;
     }
 
 
-    public static BlenderChromaConversionStatus execBlenderToChromaConversion(Path path, String blenderFileName) {
+    private static BlenderChromaConversionStatus execBlenderToChromaConversion(Path path, String blenderFileName) throws InterruptedException {
 
         try {
-            String sceneName = blenderFileName.substring(0, blenderFileName.lastIndexOf('.'));
-            Path pythonScript = path.getParent().resolve(BLENDER_TO_CHROMA_SCRIPT);
-            if (!Files.exists(pythonScript)) {
-                LOGGER.log(Level.SEVERE, "Chroma conversion script for Blender not found. Aborting.");
-                return BlenderChromaConversionStatus.FAIL;
-            }
-
-            Path blendFilePath = path.resolve(blenderFileName);
+            final Path chromaWorkFolderPath = ensureAndGetChromaWorkFolderPath();
+            final Path pythonScript = ensureAndGetPythonScript(chromaWorkFolderPath);
+            final String sceneName = blenderFileName.substring(0, blenderFileName.lastIndexOf('.'));
+            final Path blendFilePath = path.resolve(blenderFileName);
             final File blendFile = blendFilePath.toFile();
 
             if (!Files.exists(blendFilePath)) {
@@ -61,45 +58,94 @@ public class BlenderChromaImporter {
                 return BlenderChromaConversionStatus.FAIL;
             }
 
-            boolean doConversion = false;
+            boolean conversionRequired = false;
             Path meshFile = path.resolve(sceneName + ".mesh.json");
             Path materialFile = path.resolve(sceneName + ".mat.json");
             Path camFile = path.resolve(sceneName + ".cam.json");
 
             if (Files.notExists(meshFile) || Files.notExists(materialFile) || Files.notExists(meshFile)) {
-                doConversion = true;
+                conversionRequired = true;
             } else if (isOutdated(meshFile, blendFile) || isOutdated(materialFile, blendFile) || isOutdated(camFile, blendFile)) {
                 // all exist, timestamp outdated?
-                doConversion = true;
+                conversionRequired = true;
             }
 
-            if (doConversion) {
+            if (conversionRequired) {
+                if (!isBlenderInstalled()) {
+                    LOGGER.log(Level.SEVERE, "Blender to Chroma conversion required but disabled. Aborting.");
+                    return BlenderChromaConversionStatus.FAIL;
+                }
                 final String cmd = "blender --background " + blendFilePath.toString() + " --python " + pythonScript.toString();
-                LOGGER.log(Level.INFO, "Executing shell process " + cmd);
-                Process p = Runtime.getRuntime().exec(cmd);
-                try {
-                    final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                    bufferedReader.lines().forEach(System.out::println);
-                    p.waitFor();
-                    if (p.exitValue() == 0) {
-                        return BlenderChromaConversionStatus.OK;
-                    } else {
-                        LOGGER.log(Level.SEVERE, "Abnormal exit code received from Blender conversion process. Please check sysout!");
-                        return BlenderChromaConversionStatus.FAIL;
-                    }
-                } catch (InterruptedException e) {
+                LOGGER.log(Level.INFO, "Blender to Chroma conversion starts.");
+                Process p = execCmdAndWait(cmd);
+                if (p.exitValue() == 0) {
+                    LOGGER.log(Level.INFO, "Blender to Chroma conversion done.");
+                    return BlenderChromaConversionStatus.OK;
+                } else {
+                    LOGGER.log(Level.SEVERE, "Abnormal exit code received from Blender conversion process. Please check logs!");
                     return BlenderChromaConversionStatus.FAIL;
                 }
             } else {
                 return BlenderChromaConversionStatus.NOTHING_TODO;
             }
-        } catch (InvalidPathException e) {
+        }
+        catch (InvalidPathException e) {
             LOGGER.log(Level.SEVERE, "Invalid path to for Blender Conversion. Aborting.", e);
             return BlenderChromaConversionStatus.FAIL;
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Unexpected I/O problem while converting from .blend to chroma format. Aborting.", e);
             return BlenderChromaConversionStatus.FAIL;
         }
+    }
+
+
+    private static Path ensureAndGetPythonScript(Path chromaWorkFolderPath) throws IOException {
+        Path pythonScript = chromaWorkFolderPath.resolve(BLENDER_TO_CHROMA_SCRIPT);
+
+        if (!Files.exists(pythonScript)) {
+            Files.copy(BlenderChromaImporter.class.getResourceAsStream("/blenderToChroma.py"), pythonScript);
+        }
+        return pythonScript;
+    }
+
+
+    private static Path ensureAndGetChromaWorkFolderPath() throws IOException {
+        final Path chromaWorkFolderPath = Paths.get(System.getProperty("user.home") + File.separator + CHROMA_WORK_DIR);
+        if (!Files.exists(chromaWorkFolderPath)) {
+            Files.createDirectory(chromaWorkFolderPath);
+        }
+        return chromaWorkFolderPath;
+    }
+
+
+    private static boolean isBlenderInstalled() throws InterruptedException {
+        try {
+            final String cmd = "blender --version";
+            Process p = execCmdAndWait(cmd);
+            if (p.exitValue() == 0) {
+                // Simple check for exitcode 0 should be sufficient for now ... let' see how long ;)
+                final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                final String versionLine = bufferedReader.readLine();
+                LOGGER.log(Level.INFO, "Found " + versionLine);
+                return true;
+            } else {
+                LOGGER.log(Level.SEVERE, "Abnormal exit while checking for Blender installation.");
+            }
+        }
+        catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Exception while trying to check whether Blender is available.", e);
+        }
+
+        return false;
+    }
+
+
+    private static Process execCmdAndWait(String cmd) throws IOException, InterruptedException {
+        LOGGER.log(Level.FINE, "Executing shell process " + cmd);
+        Process p = Runtime.getRuntime().exec(cmd);
+        p.waitFor();
+        return p;
     }
 
 
@@ -108,7 +154,7 @@ public class BlenderChromaImporter {
     }
 
 
-    public static GeometryScene importSceneFromFile(Path path, String blenderFileName) {
+    public static GeometryScene importSceneFromFile(Path path, String blenderFileName) throws InterruptedException {
 
         execBlenderToChromaConversion(path, blenderFileName);
 
@@ -135,6 +181,7 @@ public class BlenderChromaImporter {
                 materialFile = path.resolve(sceneName + ".mat.bin");
                 if (!Files.exists(materialFile)) {
                     LOGGER.log(Level.SEVERE, "Missing Material file for '{}'. Aborting import.", sceneName);
+                    // TODO: Replace with return of immutable empty scene
                     return null;
                 }
             }
@@ -143,21 +190,24 @@ public class BlenderChromaImporter {
                 meshFile = path.resolve(sceneName + ".mesh.bin");
                 if (Files.exists(meshFile)) {
                     LOGGER.log(Level.SEVERE, "Missing Mesh file for '{}'. Aborting import.", sceneName);
+                    // TODO: Replace with return of immutable empty scene
                     return null;
                 }
             }
 
             materials = jsonFormatMaterials ? importMaterialsFromJson(materialFile) : importMaterialsFromBinary(materialFile);
-
             result = jsonFormatMeshes ? importMeshesFromJson(meshFile, materials) : importMeshesFromBinary(meshFile, materials);
-
             camera = importCameraFromJson(path.resolve(sceneName + ".cam.json"));
 
-        } catch (InvalidPathException e) {
+        }
+        catch (InvalidPathException e) {
             LOGGER.log(Level.SEVERE, "Invalid path to files for Blender Import. Aborting import.", e);
+            // TODO: Replace with return of empty scene
             return null;
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Unexpected I/O problem while importing. Aborting import.", e);
+            // TODO: Replace with return of empty scene
             return null;
         }
 
@@ -249,7 +299,8 @@ public class BlenderChromaImporter {
             MaterialType materialType;
             try {
                 materialType = MaterialType.valueOf(typeAsString);
-            } catch (IllegalArgumentException e) {
+            }
+            catch (IllegalArgumentException e) {
                 LOGGER.log(Level.SEVERE, "Unknown MaterialType {0} found. Aborting import.", typeAsString);
                 return Collections.emptyList();
             }
@@ -274,12 +325,17 @@ public class BlenderChromaImporter {
         if (args.length != 1) {
             System.err.println("Please define path to Blender file or chroma export set for import.");
         }
-        final GeometryScene geometryList = BlenderChromaImporter.importSceneFromBlenderFile(Paths.get(args[0]));
+        try {
+            final GeometryScene geometryList = BlenderChromaImporter.importSceneFromBlenderFile(Paths.get(args[0]));
+        }
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         System.exit(0);
     }
 
 
-    public static GeometryScene importSceneFromBlenderFile(Path pathToBlendFile) {
+    private static GeometryScene importSceneFromBlenderFile(Path pathToBlendFile) throws InterruptedException {
         return importSceneFromFile(pathToBlendFile.getParent(), pathToBlendFile.getFileName().toString());
     }
 }
