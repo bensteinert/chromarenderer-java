@@ -209,7 +209,7 @@ public class Chroma implements Runnable {
 
 
     public void takeScreenShot() {
-        TgaImageWriter.writeTga(getCurrentFrame(), settings.getImgWidth(), settings.getImgHeight(), System.getProperty("user.dir") + "/chroma/screenshots/" + settings.getSceneName() + "/", settings.getSceneName() + "-" + System.currentTimeMillis() + ".tga");
+        TgaImageWriter.writeTga(getCurrentFrame(), settings.getImgWidth(), settings.getImgHeight(), settings.getSceneName() + "-" + System.currentTimeMillis() + ".tga");
     }
 
 

@@ -6,13 +6,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 
 
 public class TgaImageWriter {
 
-    public static void writeTga(byte[] pixels, int width, int height, String path, String fileName) {
+    public static void writeTga(byte[] pixels, int width, int height, String fileName) {
 
         if (width > Short.MAX_VALUE || height > Short.MAX_VALUE){
             System.err.println("Image dimensions are not supported by TGA format!");
@@ -20,11 +19,9 @@ public class TgaImageWriter {
         }
 
         OutputStream outputStream = null;
-        Path javaPath = Paths.get(path);
-
         try {
-            Files.createDirectories(javaPath);
-            outputStream = Files.newOutputStream(Paths.get(path + fileName));
+            final Path path = WorkspaceUtils.ensureAndGetChromaWorkFolderPath();
+            outputStream = Files.newOutputStream(path.resolve(fileName));
 
             // TGA file header: http://en.wikipedia.org/wiki/Truevision_TGA
             byte[] header = new byte[18];

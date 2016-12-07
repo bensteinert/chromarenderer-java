@@ -36,8 +36,6 @@ import java.util.logging.Logger;
  */
 public class BlenderChromaImporter {
 
-    private static final String BLENDER_TO_CHROMA_SCRIPT = "blenderToChroma.py";
-    private static final String CHROMA_WORK_DIR = ".chroma";
     private static final Logger LOGGER = ChromaLogger.get();
 
 
@@ -49,8 +47,8 @@ public class BlenderChromaImporter {
     private static BlenderChromaConversionStatus execBlenderToChromaConversion(Path path, String blenderFileName) throws InterruptedException {
 
         try {
-            final Path chromaWorkFolderPath = ensureAndGetChromaWorkFolderPath();
-            final Path pythonScript = ensureAndGetPythonScript(chromaWorkFolderPath);
+            final Path chromaWorkFolderPath = WorkspaceUtils.ensureAndGetChromaWorkFolderPath();
+            final Path pythonScript = WorkspaceUtils.ensureAndGetPythonScript(chromaWorkFolderPath);
             final String sceneName = blenderFileName.substring(0, blenderFileName.lastIndexOf('.'));
             final Path blendFilePath = path.resolve(blenderFileName);
             final File blendFile = blendFilePath.toFile();
@@ -99,25 +97,6 @@ public class BlenderChromaImporter {
             LOGGER.log(Level.SEVERE, "Unexpected I/O problem while converting from .blend to chroma format. Aborting.", e);
             return BlenderChromaConversionStatus.FAIL;
         }
-    }
-
-
-    private static Path ensureAndGetPythonScript(Path chromaWorkFolderPath) throws IOException {
-        Path pythonScript = chromaWorkFolderPath.resolve(BLENDER_TO_CHROMA_SCRIPT);
-
-        if (!Files.exists(pythonScript)) {
-            Files.copy(BlenderChromaImporter.class.getResourceAsStream("/blenderToChroma.py"), pythonScript);
-        }
-        return pythonScript;
-    }
-
-
-    private static Path ensureAndGetChromaWorkFolderPath() throws IOException {
-        final Path chromaWorkFolderPath = Paths.get(System.getProperty("user.home") + File.separator + CHROMA_WORK_DIR);
-        if (!Files.exists(chromaWorkFolderPath)) {
-            Files.createDirectory(chromaWorkFolderPath);
-        }
-        return chromaWorkFolderPath;
     }
 
 
