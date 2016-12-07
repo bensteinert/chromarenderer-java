@@ -31,14 +31,15 @@ public class GeometryScene implements ChromaScene {
     private final float[] lightSourceDistributions;
     private final float totalLightSourceArea;
 
-    private Camera camera;
+    private final Camera camera;
     private AccelerationStructure accStruct;
 
 
-    public GeometryScene(List<Geometry> geometryList) {
+    public GeometryScene(List<Geometry> geometryList, Camera camera) {
         this.geometryList = geometryList;
         lightSources = filterEmittingGeometry(geometryList);
         accStruct = new NoAccelerationImpl(geometryList);
+        this.camera = camera;
 
         if (lightSources.size() > 0) {
             lightSourceDistributions = new float[lightSources.size()];
@@ -160,10 +161,6 @@ public class GeometryScene implements ChromaScene {
         return camera;
     }
 
-
-    public void setCamera(Camera camera) {
-        this.camera = camera;
-    }
 
     public int getNumberOfLightSources () {
         return lightSources.size();

@@ -47,6 +47,10 @@ public class PinholeCamera implements Camera {
         this(position, 50.0f, 36.0f / pixelsX, (36.0f * (pixelsY/pixelsX)) / pixelsY, pixelsX, pixelsY);
     }
 
+    public static PinholeCamera createWithDefaults(){
+        return new PinholeCamera(new ImmutableVector3(1, 1, 5), 1000, 1000);
+    }
+
 
     @Override
     public Ray getRay(int x, int y) {

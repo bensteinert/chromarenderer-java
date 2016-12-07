@@ -6,7 +6,6 @@ import net.chromarenderer.math.Vector3;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.renderer.Renderer;
-import net.chromarenderer.renderer.camera.Camera;
 import net.chromarenderer.renderer.canvas.ChromaCanvas;
 import net.chromarenderer.renderer.scene.ChromaScene;
 
@@ -19,14 +18,12 @@ public class SimpleRayCaster extends ChromaCanvas implements Renderer {
 
     private final ChromaSettings settings;
     private final ChromaScene scene;
-    private final Camera camera;
 
 
-    public SimpleRayCaster(ChromaSettings settings, ChromaScene scene, Camera camera) {
+    public SimpleRayCaster(ChromaSettings settings, ChromaScene scene) {
         super(settings.getImgWidth(), settings.getImgHeight());
         this.settings = settings;
         this.scene = scene;
-        this.camera = camera;
     }
 
 
@@ -54,7 +51,7 @@ public class SimpleRayCaster extends ChromaCanvas implements Renderer {
 //        ChromaThreadContext.setY(j);
 
         // create camera/eye ray
-        Ray cameraRay = camera.getRay(i, j);
+        Ray cameraRay = scene.getCamera().getRay(i, j);
 
         // scene intersection
         Hitpoint hitpoint = scene.intersect(cameraRay);

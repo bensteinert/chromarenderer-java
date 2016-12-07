@@ -56,7 +56,6 @@ public class Chroma implements Runnable {
     private CountDownLatch renderLatch;
     private ChromaSettings settings;
 
-    private Camera camera;
     private ChromaScene scene;
     private boolean needsFlush;
 
@@ -161,7 +160,7 @@ public class Chroma implements Runnable {
         if (initScene) {
             switch (settings.getSceneType()) {
                 case BLENDER_EXPORT:
-                    GeometryScene geometryScene = null;
+                    ChromaScene geometryScene = null;
                     try {
                         geometryScene = BlenderChromaImporter.importSceneFromFile(settings.getScenePath(), settings.getSceneName() + ".blend");
                     }
@@ -169,20 +168,18 @@ public class Chroma implements Runnable {
                         Thread.currentThread().interrupt();
                     }
                     scene = geometryScene;
-                    camera = geometryScene.getCamera();
                     break;
                 case FURNACE_TEST:
-                    scene = new FurnaceTest();
-                    camera = new PinholeCamera(new ImmutableVector3(1, 1, 5), settings.getImgWidth(), settings.getImgHeight());
+                    scene = FurnaceTest.create();
                     break;
                 case CORNELL_BOX:
-                    scene = SceneFactory.cornellBox(new ImmutableVector3(0, 0, 0), 2, SceneFactory.createSomeSpheres());
-                    camera = new PinholeCamera(new ImmutableVector3(0, -0.7, 5.4), settings.getImgWidth(), settings.getImgHeight());
+                    final PinholeCamera pinholeCamera = new PinholeCamera(new ImmutableVector3(0, -0.7, 5.4), settings.getImgWidth(), settings.getImgHeight());
+                    scene = SceneFactory.cornellBox(pinholeCamera,new ImmutableVector3(0, 0, 0), 2, SceneFactory.createSomeSpheres());
                     break;
             }
         }
 
-        camera.recalibrateSensor(settings.getImgWidth(), settings.getImgHeight());
+        scene.getCamera().recalibrateSensor(settings.getImgWidth(), settings.getImgHeight());
 
         if (scene instanceof GeometryScene && (initAccStruct || initScene)) {
             ((GeometryScene) scene).buildAccelerationStructure(settings.getAccStructType());
@@ -192,7 +189,7 @@ public class Chroma implements Runnable {
 
         switch (settings.getRenderMode()) {
             case SIMPLE:
-                setRenderer(new SimpleRayCaster(settings, scene, camera));
+                setRenderer(new SimpleRayCaster(settings, scene));
                 break;
             case AVG:
                 setRenderer(new MovingAverageRenderer(settings));
@@ -201,7 +198,7 @@ public class Chroma implements Runnable {
                 setRenderer(new ColorCubeRenderer(settings));
                 break;
             case MT_PTDL:
-                setRenderer(new MonteCarloPathTracer(settings, scene, camera));
+                setRenderer(new MonteCarloPathTracer(settings, scene));
                 break;
             default:
                 break;
@@ -217,7 +214,7 @@ public class Chroma implements Runnable {
 
 
     public Camera getCamera() {
-        return camera;
+        return scene != null ? scene.getCamera(): null;
     }
 
 

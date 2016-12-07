@@ -2,7 +2,6 @@ package net.chromarenderer.renderer.core;
 
 import net.chromarenderer.main.ChromaSettings;
 import net.chromarenderer.renderer.Renderer;
-import net.chromarenderer.renderer.camera.Camera;
 import net.chromarenderer.renderer.canvas.AccumulationBuffer;
 import net.chromarenderer.renderer.canvas.ChromaCanvas;
 import net.chromarenderer.renderer.canvas.ParallelStreamAccumulationBuffer;
@@ -17,16 +16,14 @@ abstract class AccumulativeRenderer extends ChromaCanvas implements Renderer {
 
     private final AccumulationBuffer buffer;
     final ChromaSettings settings;
-    final Camera camera;
     final ChromaScene scene;
 
 
-    AccumulativeRenderer(ChromaSettings settings, ChromaScene scene, Camera camera) {
+    AccumulativeRenderer(ChromaSettings settings, ChromaScene scene) {
         super(settings.getImgWidth(), settings.getImgHeight());
         this.settings = settings;
         buffer = new ParallelStreamAccumulationBuffer(settings.getImgWidth(), settings.getImgHeight());
         this.scene = scene;
-        this.camera = camera;
     }
 
     @Override

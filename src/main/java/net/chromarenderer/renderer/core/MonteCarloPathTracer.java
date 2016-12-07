@@ -5,7 +5,6 @@ import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.MutableVector3;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
-import net.chromarenderer.renderer.camera.Camera;
 import net.chromarenderer.renderer.scene.ChromaScene;
 import net.chromarenderer.renderer.scene.Radiance;
 import net.chromarenderer.renderer.shader.Material;
@@ -17,13 +16,13 @@ import net.chromarenderer.renderer.shader.ShaderEngine;
  */
 public class MonteCarloPathTracer extends AccumulativeRenderer  {
 
-    public MonteCarloPathTracer(ChromaSettings settings, ChromaScene scene, Camera camera) {
-        super(settings, scene, camera);
+    public MonteCarloPathTracer(ChromaSettings settings, ChromaScene scene) {
+        super(settings, scene);
     }
 
 
     protected void renderPixel(int j, int i) {
-        Ray cameraRay = camera.getRay(i, j);
+        Ray cameraRay = scene.getCamera().getRay(i, j);
         kernel(cameraRay, pixels[width * j + i]);
     }
 

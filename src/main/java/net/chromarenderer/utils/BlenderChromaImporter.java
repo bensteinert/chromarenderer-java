@@ -11,6 +11,8 @@ import net.chromarenderer.math.geometry.Geometry;
 import net.chromarenderer.math.geometry.SimpleTriangle;
 import net.chromarenderer.renderer.camera.Camera;
 import net.chromarenderer.renderer.camera.PinholeCamera;
+import net.chromarenderer.renderer.scene.ChromaScene;
+import net.chromarenderer.renderer.scene.EmptyScene;
 import net.chromarenderer.renderer.scene.GeometryScene;
 import net.chromarenderer.renderer.shader.Material;
 import net.chromarenderer.renderer.shader.MaterialType;
@@ -154,7 +156,7 @@ public class BlenderChromaImporter {
     }
 
 
-    public static GeometryScene importSceneFromFile(Path path, String blenderFileName) throws InterruptedException {
+    public static ChromaScene importSceneFromFile(Path path, String blenderFileName) throws InterruptedException {
 
         execBlenderToChromaConversion(path, blenderFileName);
 
@@ -181,8 +183,7 @@ public class BlenderChromaImporter {
                 materialFile = path.resolve(sceneName + ".mat.bin");
                 if (!Files.exists(materialFile)) {
                     LOGGER.log(Level.SEVERE, "Missing Material file for '{}'. Aborting import.", sceneName);
-                    // TODO: Replace with return of immutable empty scene
-                    return null;
+                    return EmptyScene.create();
                 }
             }
 
@@ -190,8 +191,8 @@ public class BlenderChromaImporter {
                 meshFile = path.resolve(sceneName + ".mesh.bin");
                 if (Files.exists(meshFile)) {
                     LOGGER.log(Level.SEVERE, "Missing Mesh file for '{}'. Aborting import.", sceneName);
-                    // TODO: Replace with return of immutable empty scene
-                    return null;
+                    return EmptyScene.create();
+
                 }
             }
 
@@ -202,18 +203,14 @@ public class BlenderChromaImporter {
         }
         catch (InvalidPathException e) {
             LOGGER.log(Level.SEVERE, "Invalid path to files for Blender Import. Aborting import.", e);
-            // TODO: Replace with return of empty scene
-            return null;
+            return EmptyScene.create();
         }
         catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Unexpected I/O problem while importing. Aborting import.", e);
-            // TODO: Replace with return of empty scene
-            return null;
+            return EmptyScene.create();
         }
 
-        final GeometryScene geometryScene = new GeometryScene(result);
-        geometryScene.setCamera(camera);
-        return geometryScene;
+        return new GeometryScene(result, camera);
     }
 
 
@@ -326,7 +323,7 @@ public class BlenderChromaImporter {
             System.err.println("Please define path to Blender file or chroma export set for import.");
         }
         try {
-            final GeometryScene geometryList = BlenderChromaImporter.importSceneFromBlenderFile(Paths.get(args[0]));
+            final ChromaScene geometryList = BlenderChromaImporter.importSceneFromBlenderFile(Paths.get(args[0]));
         }
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -335,7 +332,7 @@ public class BlenderChromaImporter {
     }
 
 
-    private static GeometryScene importSceneFromBlenderFile(Path pathToBlendFile) throws InterruptedException {
+    private static ChromaScene importSceneFromBlenderFile(Path pathToBlendFile) throws InterruptedException {
         return importSceneFromFile(pathToBlendFile.getParent(), pathToBlendFile.getFileName().toString());
     }
 }

@@ -6,6 +6,8 @@ import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.geometry.Sphere;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
+import net.chromarenderer.renderer.camera.Camera;
+import net.chromarenderer.renderer.camera.PinholeCamera;
 import net.chromarenderer.renderer.shader.Material;
 
 /**
@@ -13,8 +15,23 @@ import net.chromarenderer.renderer.shader.Material;
  */
 public class FurnaceTest implements ChromaScene {
 
-    Sphere innerSphere = new Sphere(new ImmutableVector3(1.0f,1.0f,1.0f), 1.0f, Material.createDiffuseMaterial(COLORS.GREY));
-    Sphere outerSphere = new Sphere(new ImmutableVector3(1.0f,1.0f,1.0f), 100000.0f, Material.createEmittingMaterial(COLORS.FULL_WHITE, 1.0f));
+    private final Sphere innerSphere;
+    private final Sphere outerSphere;
+    private final PinholeCamera camera;
+
+    private FurnaceTest(Sphere innerSphere, Sphere outerSphere, PinholeCamera camera) {
+        this.innerSphere = innerSphere;
+        this.outerSphere = outerSphere;
+        this.camera = camera;
+    }
+
+
+    public static ChromaScene create() {
+        PinholeCamera camera = PinholeCamera.createWithDefaults();
+        Sphere innerSphere = new Sphere(new ImmutableVector3(1.0f, 1.0f, 1.0f), 1.0f, Material.createDiffuseMaterial(COLORS.GREY));
+        Sphere outerSphere = new Sphere(new ImmutableVector3(1.0f, 1.0f, 1.0f), 100000.0f, Material.createEmittingMaterial(COLORS.FULL_WHITE, 1.0f));
+        return new FurnaceTest(innerSphere, outerSphere, camera);
+    }
 
 
     @Override
@@ -52,5 +69,10 @@ public class FurnaceTest implements ChromaScene {
     @Override
     public int getNumberOfLightSources() {
         return 1;
+    }
+
+    @Override
+    public Camera getCamera() {
+        return camera;
     }
 }
