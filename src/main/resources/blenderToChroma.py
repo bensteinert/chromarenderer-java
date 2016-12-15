@@ -1,3 +1,5 @@
+# 1
+# version number needs to be incremented each time the file changes!
 import math
 import mathutils
 import struct
