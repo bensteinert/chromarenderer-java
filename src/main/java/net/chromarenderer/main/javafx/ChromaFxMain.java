@@ -112,7 +112,7 @@ public class ChromaFxMain extends Application {
             }
         });
 
-        sceneType.valueProperty().setValue(SceneType.CORNELL_BOX);
+        sceneType.valueProperty().setValue(SceneType.BLENDER_EXPORT);
         controlPane.addRow(rowIdx++, new Text("Scene"), new HBox(10, sceneType, sceneDialogButton), sceneNameLabel);
 
 

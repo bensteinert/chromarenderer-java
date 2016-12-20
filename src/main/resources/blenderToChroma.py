@@ -1,4 +1,4 @@
-# 1
+# 3
 # version number needs to be incremented each time the file changes!
 import math
 import mathutils
@@ -6,7 +6,7 @@ import struct
 import bpy
 import json
 
-writePackedBinary = False
+writePackedBinary = True
 
 filepathPRFX = bpy.data.filepath.rsplit('.', 1)[0]
 

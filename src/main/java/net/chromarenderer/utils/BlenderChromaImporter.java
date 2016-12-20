@@ -17,10 +17,10 @@ import net.chromarenderer.renderer.scene.GeometryScene;
 import net.chromarenderer.renderer.shader.Material;
 import net.chromarenderer.renderer.shader.MaterialType;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -60,12 +60,19 @@ public class BlenderChromaImporter {
 
             boolean conversionRequired = false;
             Path meshFile = path.resolve(sceneName + ".mesh.json");
+            Path binaryMeshFile = path.resolve(sceneName + ".mesh.bin");
             Path materialFile = path.resolve(sceneName + ".mat.json");
             Path camFile = path.resolve(sceneName + ".cam.json");
 
-            if (Files.notExists(meshFile) || Files.notExists(materialFile) || Files.notExists(meshFile)) {
+            boolean binaryMesh = Files.exists(binaryMeshFile);
+
+            if ((binaryMesh ? Files.notExists(binaryMeshFile) : Files.notExists(meshFile)) ||
+                    Files.notExists(materialFile) ||
+                    Files.notExists(camFile)) {
                 conversionRequired = true;
-            } else if (isOutdated(meshFile, blendFile) || isOutdated(materialFile, blendFile) || isOutdated(camFile, blendFile)) {
+            } else if ((binaryMesh ? isOutdated(binaryMeshFile, blendFile) : isOutdated(meshFile, blendFile)) ||
+                    isOutdated(materialFile, blendFile) ||
+                    isOutdated(camFile, blendFile)) {
                 // all exist, timestamp outdated?
                 conversionRequired = true;
             }
@@ -153,29 +160,27 @@ public class BlenderChromaImporter {
 
             //prefer json version if existing
             materialFile = path.resolve(sceneName + ".mat.json");
-            jsonFormatMaterials = Files.exists(materialFile);
             meshFile = materialFile.resolveSibling(sceneName + ".mesh.json");
             jsonFormatMeshes = Files.exists(meshFile);
 
-            //fallback to binary version
-            if (!jsonFormatMaterials) {
-                materialFile = path.resolve(sceneName + ".mat.bin");
-                if (!Files.exists(materialFile)) {
-                    LOGGER.log(Level.SEVERE, "Missing Material file for '{}'. Aborting import.", sceneName);
-                    return EmptyScene.create();
-                }
-            }
+//            //fallback to binary version
+//            if (!jsonFormatMaterials) {
+//                materialFile = path.resolve(sceneName + ".mat.bin");
+//                if (!Files.exists(materialFile)) {
+//                    LOGGER.log(Level.SEVERE, "Missing Material file for '{}'. Aborting import.", sceneName);
+//                    return EmptyScene.create();
+//                }
+//            }
 
             if (!jsonFormatMeshes) {
                 meshFile = path.resolve(sceneName + ".mesh.bin");
-                if (Files.exists(meshFile)) {
-                    LOGGER.log(Level.SEVERE, "Missing Mesh file for '{}'. Aborting import.", sceneName);
+                if (Files.notExists(meshFile)) {
+                    LOGGER.log(Level.SEVERE, "Missing binary fallback Mesh file for '{}'. Aborting import.", sceneName);
                     return EmptyScene.create();
-
                 }
             }
 
-            materials = jsonFormatMaterials ? importMaterialsFromJson(materialFile) : importMaterialsFromBinary(materialFile);
+            materials = importMaterialsFromJson(materialFile);
             result = jsonFormatMeshes ? importMeshesFromJson(meshFile, materials) : importMeshesFromBinary(meshFile, materials);
             camera = importCameraFromJson(path.resolve(sceneName + ".cam.json"));
 
@@ -243,13 +248,26 @@ public class BlenderChromaImporter {
     }
 
 
-    private static List<Geometry> importMeshesFromBinary(Path meshFile, List<Material> materials) {
-        throw new RuntimeException("Not yet implemented");
-    }
+    private static List<Geometry> importMeshesFromBinary(Path meshFile, List<Material> materials) throws IOException {
 
+        final List<Geometry> result = new ArrayList<>();
 
-    private static List<Material> importMaterialsFromBinary(Path materialFile) {
-        throw new RuntimeException("Not yet implemented");
+        final DataInputStream dataInputStream = new DataInputStream(Files.newInputStream(meshFile));
+        byte[] triangleStrip = new byte[37];
+        int offset = 0;
+
+        while (dataInputStream.read(triangleStrip, offset, 37) == 37) {
+            final FloatBuffer floatBuffer = ByteBuffer.wrap(triangleStrip).order(ByteOrder.nativeOrder()).asFloatBuffer();
+
+            ImmutableVector3 p0 = new ImmutableVector3(floatBuffer.get(0), floatBuffer.get(1), floatBuffer.get(2));
+            ImmutableVector3 p1 = new ImmutableVector3(floatBuffer.get(3), floatBuffer.get(4), floatBuffer.get(5));
+            ImmutableVector3 p2 = new ImmutableVector3(floatBuffer.get(6), floatBuffer.get(7), floatBuffer.get(8));
+
+            int materialId = triangleStrip[36];
+            result.add(new SimpleTriangle(p0, p1, p2, materials.get(materialId)));
+        }
+
+        return result;
     }
 
 
