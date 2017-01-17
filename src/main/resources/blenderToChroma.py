@@ -1,4 +1,4 @@
-# 3
+# 4
 # version number needs to be incremented each time the file changes!
 import math
 import mathutils
@@ -78,13 +78,11 @@ for obj in objList:
     if obj.type == "CAMERA":
         cam = obj.data
         if cam.type != "PERSP":
-            print('no support for orthographic camera model! Ignoring ' + cam.name)
+            print('no support for camera models other than \'perspective\'. Ignoring ' + cam.name)
             continue
         else:
             print("Exporting PERSP Camera")
-            fov = 2 * math.atan2(16.0, cam.lens)
-            ##fol = (24*0.5)/math.tan(fov)
-            fol = cam.lens / 1000.0
+            focalLength = (cam.lens/cam.sensor_width)*36.0
             objmatrix = obj.matrix_world
 
             eyeV = mathutils.Vector([0, 0, 0, 1])
@@ -101,8 +99,7 @@ for obj in objList:
             camExport["viewDirection"] = [dirV[0], dirV[1], dirV[2]]
             camExport["upVector"] = [upV[0], upV[1], upV[2]]
 
-            camExport["focalLength"] = fol
-            camExport["fieldOfView"] = fov
+            camExport["focalLength"] = focalLength
             camfile.write(json.dumps(camExport))
 
     if obj.type == "MESH":

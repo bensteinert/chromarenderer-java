@@ -25,6 +25,7 @@ public class PinholeCamera implements Camera {
     private float shiftY;
 
 
+    //TODO: clean up ctors
     public PinholeCamera(ImmutableVector3 position, float focalDistance, float pixelSizeX, float pixelSizeY, int pixelsX, int pixelsY) {
         this(position, new ImmutableMatrix3x3(Vector3.X_AXIS, Vector3.Y_AXIS, Vector3.Z_AXIS), focalDistance, pixelSizeX, pixelSizeY, pixelsX, pixelsY);
     }
@@ -45,6 +46,10 @@ public class PinholeCamera implements Camera {
 
     public PinholeCamera(ImmutableVector3 position, int pixelsX, int pixelsY) {
         this(position, 50.0f, 36.0f / pixelsX, (36.0f * (pixelsY/pixelsX)) / pixelsY, pixelsX, pixelsY);
+    }
+
+    public PinholeCamera(ImmutableVector3 position, ImmutableMatrix3x3 coordinateSystem, float focalLength, int numPixelsX, int numPixelsY) {
+        this(position, coordinateSystem, focalLength, 36.0f / numPixelsX, 36.0f / numPixelsY, numPixelsX, numPixelsY);
     }
 
     public static PinholeCamera createWithDefaults(){

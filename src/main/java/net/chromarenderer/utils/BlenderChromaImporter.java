@@ -207,12 +207,12 @@ public class BlenderChromaImporter {
         ImmutableVector3 position = toImmVec(cameraJson.get("position").asArray());
         ImmutableVector3 upVector = toImmVec(cameraJson.get("upVector").asArray());
         ImmutableVector3 viewDirection = toImmVec(cameraJson.get("viewDirection").asArray());
-        float focalLength = cameraJson.get("focalLength").asFloat() * 1000.0f * (36.0f / 32.0f);// convert m to mm
+        float focalLength = cameraJson.get("focalLength").asFloat(); // Assumption is that json contains a 'normalized' focal length, means relative to a 36mm image plane'
 
         ImmutableVector3 col3 = viewDirection.normalize();
         ImmutableVector3 col2 = upVector.normalize();
         ImmutableVector3 col1 = col2.crossProduct(col3).normalize();
-        camera = new PinholeCamera(position, new ImmutableMatrix3x3(col1, col2, col3), focalLength, 0.07f, 0.07f, 512, 512);
+        camera = new PinholeCamera(position, new ImmutableMatrix3x3(col1, col2, col3), focalLength, 512, 512);
         return camera;
     }
 
