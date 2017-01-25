@@ -1,0 +1,29 @@
+plugins {
+    id 'idea'
+    id 'java'
+    id "edu.sc.seis.macAppBundle" version "2.1.6"
+}
+
+group = 'net.chromarenderer.core'
+version = '0.3.0-SNAPSHOT'
+
+// In this section you declare the dependencies for your production and test code
+dependencies {
+    compile project(":chroma-java-core")
+}
+
+jar {
+    manifest {
+        attributes("Main-Class": "net.chromarenderer.main.javafx.ChromaFxMain")
+        attributes("Application-Name": "Chroma Renderer")
+    }
+}
+
+macAppBundle {
+    mainClassName = jar.manifest.attributes.get("Main-Class")
+    appName = jar.manifest.attributes.get("Application-Name")
+    dmgName = jar.manifest.attributes.get("Application-Name") + " " + project.version
+    icon = "icon.icns" // https://iconverticons.com/online/
+    bundleJRE = false
+}
+

@@ -18,7 +18,7 @@ public class Ray {
     private final float tMax;
     private float sampleWeight = 1.0f;
 
-    // if the direction is negative, sign =
+    // if the direction is negative, sign = 1
     private final byte signX;
     private final byte signY;
     private final byte signZ;

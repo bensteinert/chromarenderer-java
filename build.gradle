@@ -1,52 +1,15 @@
 plugins {
     id 'idea'
-    id 'java'
-    id "edu.sc.seis.macAppBundle" version "2.1.6"
 }
 
-group = 'net.chromarenderer'
-version = '0.2.0-SNAPSHOT'
+allprojects {
+    repositories {
+        mavenCentral()
+    }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-compileJava.options.encoding = 'UTF-8'
-compileTestJava.options.encoding = 'UTF-8'
-
-idea {
-    module {
-        downloadJavadoc = false
-        downloadSources = true
+    task wrapper(type: Wrapper) {
+        gradleVersion = '2.14'
     }
 }
 
-repositories {
-    mavenCentral()
-}
 
-dependencies {
-    compile 'org.apache.commons:commons-math3:3.6.1'
-    compile 'org.apache.commons:commons-collections4:4.1'
-    compile 'com.eclipsesource.minimal-json:minimal-json:0.9.4'
-    compile files('lib/ObjectLayout-1.0.5-SNAPSHOT.jar')
-    testCompile 'junit:junit:4.12'
-}
-
-jar {
-    manifest {
-        attributes("Main-Class": "net.chromarenderer.main.javafx.ChromaFxMain")
-        attributes("Application-Name": "Chroma Renderer")
-    }
-}
-
-macAppBundle {
-    mainClassName = jar.manifest.attributes.get("Main-Class")
-    appName = jar.manifest.attributes.get("Application-Name")
-    dmgName = jar.manifest.attributes.get("Application-Name") + " " + project.version
-    icon = "icon.icns" // https://iconverticons.com/online/
-    bundleJRE = false
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.14'
-}
