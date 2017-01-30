@@ -1,4 +1,4 @@
 include 'chroma-fx-ui'
 include 'chroma-java-core'
 
-rootProject.name = 'chroma-java'
+//rootProject.name = 'chroma-java'
