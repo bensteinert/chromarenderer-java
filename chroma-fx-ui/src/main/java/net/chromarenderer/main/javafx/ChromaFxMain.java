@@ -32,7 +32,6 @@ import net.chromarenderer.math.Vector3;
 import net.chromarenderer.renderer.ChromaRenderMode;
 import net.chromarenderer.renderer.scene.SceneType;
 import net.chromarenderer.renderer.scene.acc.AccStructType;
-import net.chromarenderer.utils.BufferPressedKeysEventHandler;
 
 import java.io.File;
 import java.nio.file.Path;

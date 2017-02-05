@@ -1,4 +1,4 @@
-package net.chromarenderer.utils;
+package net.chromarenderer.main.javafx;
 
 
 import javafx.event.EventHandler;
