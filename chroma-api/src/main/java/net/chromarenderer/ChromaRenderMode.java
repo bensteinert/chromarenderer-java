@@ -1,4 +1,4 @@
-package net.chromarenderer.renderer;
+package net.chromarenderer;
 
 /**
  * Created by ben on 22/03/14.

@@ -1,6 +1,6 @@
 package net.chromarenderer.math.geometry;
 
-import net.chromarenderer.main.ChromaStatistics;
+import net.chromarenderer.utils.ChromaStatistics;
 import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.ImmutableMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;

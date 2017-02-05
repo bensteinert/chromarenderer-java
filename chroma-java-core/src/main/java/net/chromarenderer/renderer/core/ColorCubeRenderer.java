@@ -1,6 +1,6 @@
 package net.chromarenderer.renderer.core;
 
-import net.chromarenderer.main.ChromaSettings;
+import net.chromarenderer.ChromaSettings;
 import net.chromarenderer.math.COLORS;
 import net.chromarenderer.math.Vector3;
 import net.chromarenderer.renderer.Renderer;

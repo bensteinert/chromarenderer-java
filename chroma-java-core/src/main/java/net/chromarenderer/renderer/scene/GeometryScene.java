@@ -1,16 +1,15 @@
 package net.chromarenderer.renderer.scene;
 
-import net.chromarenderer.main.ChromaLogger;
-import net.chromarenderer.main.ChromaStatistics;
+import net.chromarenderer.utils.ChromaLogger;
+import net.chromarenderer.utils.ChromaStatistics;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.geometry.Geometry;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
 import net.chromarenderer.renderer.camera.Camera;
 import net.chromarenderer.renderer.core.ChromaThreadContext;
-import net.chromarenderer.renderer.scene.acc.AccStructType;
+import net.chromarenderer.AccStructType;
 import net.chromarenderer.renderer.scene.acc.AccelerationStructure;
-import net.chromarenderer.renderer.scene.acc.BvhStrategyType;
 import net.chromarenderer.renderer.scene.acc.BvhTreeBuilder;
 import net.chromarenderer.renderer.scene.acc.IntersectionContext;
 import net.chromarenderer.renderer.scene.acc.NoAccelerationImpl;
@@ -147,7 +146,7 @@ public class GeometryScene implements ChromaScene {
         switch (type) {
             case AABB_BVH:
                 BvhTreeBuilder treeBuilder = new BvhTreeBuilder(4, 20);
-                accStruct = treeBuilder.buildBvh(geometryList, BvhStrategyType.TOP_DOWN);
+                accStruct = treeBuilder.buildBvh(geometryList);
                 break;
             case LIST:
             default:

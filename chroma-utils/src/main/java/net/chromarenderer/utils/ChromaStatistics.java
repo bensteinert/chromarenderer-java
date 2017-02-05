@@ -1,7 +1,5 @@
-package net.chromarenderer.main;
+package net.chromarenderer.utils;
 
-
-import net.chromarenderer.utils.FpsCounter;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -33,7 +31,7 @@ public class ChromaStatistics {
     }
 
 
-    static void reset() {
+    public static void reset() {
         subsurfaceHitpointCorrected.set(0);
         totalFrames.set(0);
         fpsCounter.reset();
@@ -42,7 +40,7 @@ public class ChromaStatistics {
     }
 
 
-    static void frame() {
+    public static void frame() {
         totalFrames.incrementAndGet();
         fpsCounter.frame();
     }

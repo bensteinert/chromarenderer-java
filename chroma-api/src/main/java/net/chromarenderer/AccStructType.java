@@ -1,4 +1,4 @@
-package net.chromarenderer.renderer.scene.acc;
+package net.chromarenderer;
 
 /**
  * @author bensteinert

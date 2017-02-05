@@ -1,4 +1,6 @@
-include 'chroma-fx-ui'
+include 'chroma-api'
+include 'chroma-utils'
 include 'chroma-java-core'
+include 'chroma-fx-ui'
 
 //rootProject.name = 'chroma-java'

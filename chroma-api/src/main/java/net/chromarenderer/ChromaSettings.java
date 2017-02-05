@@ -1,8 +1,5 @@
-package net.chromarenderer.main;
+package net.chromarenderer;
 
-import net.chromarenderer.renderer.ChromaRenderMode;
-import net.chromarenderer.renderer.scene.SceneType;
-import net.chromarenderer.renderer.scene.acc.AccStructType;
 
 import java.nio.file.Path;
 

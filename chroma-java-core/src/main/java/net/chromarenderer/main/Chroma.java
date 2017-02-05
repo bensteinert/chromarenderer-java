@@ -1,5 +1,6 @@
 package net.chromarenderer.main;
 
+import net.chromarenderer.ChromaSettings;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.renderer.Renderer;
 import net.chromarenderer.renderer.camera.Camera;
@@ -14,6 +15,8 @@ import net.chromarenderer.renderer.scene.GeometryScene;
 import net.chromarenderer.renderer.scene.SceneFactory;
 import net.chromarenderer.renderer.shader.ShaderEngine;
 import net.chromarenderer.utils.BlenderChromaImporter;
+import net.chromarenderer.utils.ChromaLogger;
+import net.chromarenderer.utils.ChromaStatistics;
 import net.chromarenderer.utils.TgaImageWriter;
 
 import java.io.IOException;

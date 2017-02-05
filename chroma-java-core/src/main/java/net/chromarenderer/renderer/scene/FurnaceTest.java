@@ -1,6 +1,6 @@
 package net.chromarenderer.renderer.scene;
 
-import net.chromarenderer.main.ChromaStatistics;
+import net.chromarenderer.utils.ChromaStatistics;
 import net.chromarenderer.math.COLORS;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.geometry.Sphere;

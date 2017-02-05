@@ -1,4 +1,4 @@
-package net.chromarenderer.main;
+package net.chromarenderer.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

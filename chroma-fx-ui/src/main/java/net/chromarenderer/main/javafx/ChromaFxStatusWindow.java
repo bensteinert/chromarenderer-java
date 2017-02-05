@@ -10,7 +10,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.chromarenderer.main.Chroma;
-import net.chromarenderer.main.ChromaStatistics;
+import net.chromarenderer.utils.ChromaStatistics;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.Precision;
 

@@ -1,6 +1,6 @@
 package net.chromarenderer.main.javafx.logging;
 
-import net.chromarenderer.main.ChromaLogger;
+import net.chromarenderer.utils.ChromaLogger;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 import java.util.logging.Handler;

@@ -30,6 +30,8 @@ task wrapper(type: Wrapper) {
 
 
 dependencies {
+    compile project(":chroma-utils")
+    compile project(":chroma-api")
     compile 'org.apache.commons:commons-math3:3.6.1'
     compile 'org.apache.commons:commons-collections4:4.1'
     compile 'com.eclipsesource.minimal-json:minimal-json:0.9.4'

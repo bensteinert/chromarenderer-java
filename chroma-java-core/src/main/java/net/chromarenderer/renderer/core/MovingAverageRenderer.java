@@ -1,6 +1,6 @@
 package net.chromarenderer.renderer.core;
 
-import net.chromarenderer.main.ChromaSettings;
+import net.chromarenderer.ChromaSettings;
 import net.chromarenderer.renderer.Renderer;
 import net.chromarenderer.renderer.canvas.AccumulationBuffer;
 import net.chromarenderer.renderer.canvas.ChromaCanvas;

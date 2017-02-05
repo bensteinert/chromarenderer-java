@@ -1,5 +1,6 @@
 package net.chromarenderer.renderer.scene.acc;
 
+import net.chromarenderer.AccStructType;
 import net.chromarenderer.math.geometry.Geometry;
 
 /**

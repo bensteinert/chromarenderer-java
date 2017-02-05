@@ -1,6 +1,6 @@
 package net.chromarenderer.renderer.core;
 
-import net.chromarenderer.main.ChromaSettings;
+import net.chromarenderer.ChromaSettings;
 import net.chromarenderer.math.Constants;
 import net.chromarenderer.math.MutableVector3;
 import net.chromarenderer.math.raytracing.Hitpoint;

@@ -1,6 +1,6 @@
 package net.chromarenderer.renderer.scene.acc;
 
-import net.chromarenderer.main.ChromaLogger;
+import net.chromarenderer.utils.ChromaLogger;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.MutableVector3;
 import net.chromarenderer.math.Vector3;
@@ -33,7 +33,7 @@ public class BvhTreeBuilder {
     }
 
 
-    public BvhTree buildBvh(List<Geometry> geometryList, BvhStrategyType strategy) {
+    public BvhTree buildBvh(List<Geometry> geometryList) {
 
         int totalNumberOfPrimitives = geometryList.size();
 
@@ -55,14 +55,9 @@ public class BvhTreeBuilder {
         BvhNode root = null;
         bvhQualityIndex = 0;
 
-        switch (strategy) {
-            case TOP_DOWN:
-                root = createNode(0, totalNumberOfPrimitives - 1);
-                buildTreeTopDown(root, 0, 0, totalNumberOfPrimitives - 1);
-                break;
-            case BOTTOM_UP:
-                throw new RuntimeException("Bottom-UP Bvh construction not yet implemented");
-        }
+        root = createNode(0, totalNumberOfPrimitives - 1);
+        buildTreeTopDown(root, 0, 0, totalNumberOfPrimitives - 1);
+
 
         LOGGER.info("Finished BVH Build with a total score of " + bvhQualityIndex);
         return new BvhTree(primitives, root);
