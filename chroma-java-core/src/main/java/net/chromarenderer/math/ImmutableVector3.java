@@ -41,6 +41,12 @@ public class ImmutableVector3 implements Vector3 {
         this((float)x, (float)y, (float)z);
     }
 
+    public ImmutableVector3(float[] input) {
+        this.x = input[0];
+        this.y = input[1];
+        this.z = input[2];
+    }
+
 
     public ImmutableVector3 mult(float val){
         return new ImmutableVector3(

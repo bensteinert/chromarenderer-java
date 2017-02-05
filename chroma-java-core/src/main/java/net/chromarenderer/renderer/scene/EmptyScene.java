@@ -2,7 +2,7 @@ package net.chromarenderer.renderer.scene;
 
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
-import net.chromarenderer.renderer.camera.Camera;
+import net.chromarenderer.renderer.camera.CoreCamera;
 import net.chromarenderer.renderer.camera.PinholeCamera;
 
 /**
@@ -10,7 +10,7 @@ import net.chromarenderer.renderer.camera.PinholeCamera;
  */
 public class EmptyScene implements ChromaScene {
 
-    private final Camera camera;
+    private final CoreCamera camera;
 
     private EmptyScene(PinholeCamera camera) {
         this.camera = camera;
@@ -41,7 +41,7 @@ public class EmptyScene implements ChromaScene {
     }
 
     @Override
-    public Camera getCamera() {
+    public CoreCamera getCamera() {
         return camera;
     }
 }

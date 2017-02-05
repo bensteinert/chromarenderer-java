@@ -6,7 +6,7 @@ import net.chromarenderer.math.Vector3;
 import net.chromarenderer.renderer.shader.Material;
 
 /**
- * Chroma uses the right-hand-coordinate system. Think about three vertices specified counterclockwise on the floor.
+ * ChromaCore uses the right-hand-coordinate system. Think about three vertices specified counterclockwise on the floor.
  * The normal will always point upwards!
  *
  * @author bensteinert

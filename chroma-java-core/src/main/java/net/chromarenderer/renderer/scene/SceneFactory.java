@@ -8,7 +8,7 @@ import net.chromarenderer.math.geometry.Geometry;
 import net.chromarenderer.math.geometry.SimpleTriangle;
 import net.chromarenderer.math.geometry.Sphere;
 import net.chromarenderer.math.geometry.Triangle;
-import net.chromarenderer.renderer.camera.Camera;
+import net.chromarenderer.renderer.camera.CoreCamera;
 import net.chromarenderer.renderer.shader.Material;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class SceneFactory {
     private static final Material RIGHT_WALL_MATERIAL = Material.createDiffuseMaterial(COLORS.GREEN);
     private static final Material CORNELL_LIGHT = Material.createEmittingMaterial(COLORS.WHITE, 10.f);
 
-    public static GeometryScene cornellBox(Camera camera, ImmutableVector3 center, float halfDimension, List<Geometry> content) {
+    public static GeometryScene cornellBox(CoreCamera camera, ImmutableVector3 center, float halfDimension, List<Geometry> content) {
         List<Triangle> baseBox = buildBaseBox(center, halfDimension);
         List<Triangle> lightSource = buildLightSource(halfDimension);
         List<Geometry> result = new ArrayList<>(lightSource.size() + content.size() + baseBox.size() * 16);

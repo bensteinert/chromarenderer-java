@@ -10,7 +10,7 @@ import org.apache.commons.math3.util.FastMath;
 /**
  * @author bensteinert
  */
-public class PinholeCamera implements Camera {
+public class PinholeCamera implements CoreCamera {
 
     private final ImmutableVector3 initialPosition;
     private ImmutableMatrix3x3 initialCoordinateSystem;

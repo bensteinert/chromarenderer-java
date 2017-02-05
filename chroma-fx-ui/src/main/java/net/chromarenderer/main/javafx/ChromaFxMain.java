@@ -23,15 +23,9 @@ import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import net.chromarenderer.main.Chroma;
+import net.chromarenderer.*;
 import net.chromarenderer.utils.ChromaLogger;
-import net.chromarenderer.ChromaSettings;
 import net.chromarenderer.main.javafx.logging.ChromaFxLogWindowForwardHandler;
-import net.chromarenderer.math.ImmutableVector3;
-import net.chromarenderer.math.Vector3;
-import net.chromarenderer.ChromaRenderMode;
-import net.chromarenderer.SceneType;
-import net.chromarenderer.AccStructType;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -251,9 +245,11 @@ public class ChromaFxMain extends Application {
             @Override
             public void handle(long now) {
                 Set<KeyCode> pressedKeys = bufferPressedKeysEventHandler.getPressedKeys();
-                final Vector3 translation = getTranslationVector(pressedKeys);
-                final Vector3 rotation = getRotationVector(pressedKeys);
-                if (translation.nonZero() || rotation.nonZero()) {
+                final float[] translation = getTranslationVector(pressedKeys);
+                final float[] rotation = getRotationVector(pressedKeys);
+
+                float sum = translation[0] + translation[1] + translation[2] + rotation[0] + rotation[1] + rotation[2];
+                if (sum > 0.0f) {
                     chroma.getCamera().move(translation, rotation);
                 }
             }
@@ -281,7 +277,7 @@ public class ChromaFxMain extends Application {
     }
 
 
-    private Vector3 getRotationVector(Set<KeyCode> pressedKeys) {
+    private float[] getRotationVector(Set<KeyCode> pressedKeys) {
         float rotX = 0.0f;
         float rotY = 0.0f;
         //float rotZ = 0.0f;
@@ -313,11 +309,11 @@ public class ChromaFxMain extends Application {
             }
         }
 
-        return new ImmutableVector3(rotX, rotY, 0.0f);
+        return new float[]{rotX, rotY, 0.0f};
     }
 
 
-    private Vector3 getTranslationVector(Set<KeyCode> pressedKeys) {
+    private float[] getTranslationVector(Set<KeyCode> pressedKeys) {
 
         float moveX = 0.0f;
         float moveY = 0.0f;
@@ -364,7 +360,7 @@ public class ChromaFxMain extends Application {
             }
         }
 
-        return new ImmutableVector3(moveX, moveY, moveZ);
+        return new float[]{moveX, moveY, moveZ};
     }
 
 
@@ -383,11 +379,11 @@ public class ChromaFxMain extends Application {
 
 
     public static void main(String[] args) {
-        chroma = new Chroma();
-
         final ChromaFxLogWindowForwardHandler queueHandler = new ChromaFxLogWindowForwardHandler();
         LOGGER = ChromaLogger.get();
         LOGGER.addHandler(queueHandler);
+
+        chroma = ChromaFactory.create();
         Thread thread = new Thread(chroma);
         thread.start();
 

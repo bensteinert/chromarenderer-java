@@ -1,9 +1,10 @@
 package net.chromarenderer.main;
 
+import net.chromarenderer.Chroma;
 import net.chromarenderer.ChromaSettings;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.renderer.Renderer;
-import net.chromarenderer.renderer.camera.Camera;
+import net.chromarenderer.renderer.camera.CoreCamera;
 import net.chromarenderer.renderer.camera.PinholeCamera;
 import net.chromarenderer.renderer.core.ColorCubeRenderer;
 import net.chromarenderer.renderer.core.MonteCarloPathTracer;
@@ -28,7 +29,7 @@ import java.util.logging.LogManager;
 /**
  * @author bensteinert
  */
-public class Chroma implements Runnable {
+public class ChromaCore implements Runnable, Chroma {
 
 //    public static Unsafe UNSAFE;
 //
@@ -45,13 +46,13 @@ public class Chroma implements Runnable {
 //    }
 
 
-    static {
-        try {
-            LogManager.getLogManager().readConfiguration(Chroma.class.getResourceAsStream("/logging.properties"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    static {
+//        try {
+//            LogManager.getLogManager().readConfiguration(ChromaCore.class.getResourceAsStream("/logging.properties"));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     private Renderer renderer;
     private boolean changed = false;
@@ -63,7 +64,7 @@ public class Chroma implements Runnable {
     private boolean needsFlush;
 
 
-    public Chroma() {
+    public ChromaCore() {
     }
 
 
@@ -216,7 +217,7 @@ public class Chroma implements Runnable {
     }
 
 
-    public Camera getCamera() {
+    public CoreCamera getCamera() {
         return scene != null ? scene.getCamera(): null;
     }
 

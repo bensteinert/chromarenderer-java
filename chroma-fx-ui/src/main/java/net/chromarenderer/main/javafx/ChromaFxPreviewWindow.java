@@ -8,7 +8,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import net.chromarenderer.main.Chroma;
+import net.chromarenderer.Chroma;
 
 /**
  * @author bensteinert

@@ -8,7 +8,7 @@ import net.chromarenderer.math.ImmutableMatrix3x3;
 import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.geometry.Geometry;
 import net.chromarenderer.math.geometry.SimpleTriangle;
-import net.chromarenderer.renderer.camera.Camera;
+import net.chromarenderer.renderer.camera.CoreCamera;
 import net.chromarenderer.renderer.camera.PinholeCamera;
 import net.chromarenderer.renderer.scene.ChromaScene;
 import net.chromarenderer.renderer.scene.EmptyScene;
@@ -78,14 +78,14 @@ public class BlenderChromaImporter {
 
             if (conversionRequired) {
                 if (!isBlenderInstalled()) {
-                    LOGGER.log(Level.SEVERE, "Blender to Chroma conversion required but disabled. Aborting.");
+                    LOGGER.log(Level.SEVERE, "Blender to ChromaCore conversion required but disabled. Aborting.");
                     return BlenderChromaConversionStatus.FAIL;
                 }
                 final String cmd = "blender --background " + blendFilePath.toString() + " --python " + pythonScript.toString();
-                LOGGER.log(Level.INFO, "Blender to Chroma conversion starts.");
+                LOGGER.log(Level.INFO, "Blender to ChromaCore conversion starts.");
                 Process p = execCmdAndWait(cmd);
                 if (p.exitValue() == 0) {
-                    LOGGER.log(Level.INFO, "Blender to Chroma conversion done.");
+                    LOGGER.log(Level.INFO, "Blender to ChromaCore conversion done.");
                     return BlenderChromaConversionStatus.OK;
                 } else {
                     LOGGER.log(Level.SEVERE, "Abnormal exit code received from Blender conversion process. Please check logs!");
@@ -147,7 +147,7 @@ public class BlenderChromaImporter {
 
         List<Geometry> result;
         List<Material> materials;
-        Camera camera;
+        CoreCamera camera;
 
         boolean jsonFormatMaterials;
         boolean jsonFormatMeshes;
@@ -197,8 +197,8 @@ public class BlenderChromaImporter {
     }
 
 
-    private static Camera importCameraFromJson(Path cameraFile) throws IOException {
-        Camera camera;
+    private static CoreCamera importCameraFromJson(Path cameraFile) throws IOException {
+        CoreCamera camera;
         final BufferedReader reader = Files.newBufferedReader(cameraFile);
 
         //Currently only one camera per scene accepted!

@@ -10,7 +10,7 @@ import org.ObjectLayout.CtorAndArgsProvider;
 import org.ObjectLayout.StructuredArray;
 
 /**
- * Chroma uses the right-hand-coordinate system. Think about three vertices specified counterclockwise on the floor.
+ * ChromaCore uses the right-hand-coordinate system. Think about three vertices specified counterclockwise on the floor.
  * The normal will always point upwards!
  *
  * @author steinerb

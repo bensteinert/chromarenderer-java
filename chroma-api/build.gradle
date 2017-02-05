@@ -1,2 +1,8 @@
 apply plugin: 'java'
 
+dependencies {
+    // Too broad but works ;-) Some sort of dummy module with a reference impl would be good for checking.
+    // https://dzone.com/articles/using-animal-sniffer-gradle might also vbe worth a closer look.
+    compileOnly project(":chroma-java-core")
+}
+

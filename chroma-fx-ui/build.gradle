@@ -17,7 +17,11 @@ task wrapper(type: Wrapper) {
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
-    compile project(":chroma-java-core")
+    compile project(":chroma-api")
+    compile project(":chroma-utils")
+    runtime project(":chroma-java-core")
+    compile 'org.apache.commons:commons-math3:3.6.1'
+    compile 'org.apache.commons:commons-collections4:4.1'
 }
 
 jar {

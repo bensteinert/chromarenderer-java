@@ -9,7 +9,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import net.chromarenderer.main.Chroma;
+import net.chromarenderer.Chroma;
 import net.chromarenderer.utils.ChromaStatistics;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.Precision;
@@ -115,7 +115,7 @@ public class ChromaFxStatusWindow extends Stage {
 
                     precisionFixedCount.setText(String.valueOf(ChromaStatistics.getSubsurfaceCorrectionsCount()));
                     if (chroma.getCamera() != null) {
-                        cameraPosition.setText(chroma.getCamera().getPosition().toString() + "\n" + chroma.getCamera().getCoordinateSystem().toString());
+                        cameraPosition.setText(chroma.getCamera().getPositionAsString() + "\n" + chroma.getCamera().getCoordinateSystemAsString());
                     }
                     framesTotal.setText(String.valueOf(ChromaStatistics.getTotalFrameCount()));
                     lastTimeStamp = now;

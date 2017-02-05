@@ -6,7 +6,7 @@ import net.chromarenderer.math.ImmutableVector3;
 import net.chromarenderer.math.geometry.Sphere;
 import net.chromarenderer.math.raytracing.Hitpoint;
 import net.chromarenderer.math.raytracing.Ray;
-import net.chromarenderer.renderer.camera.Camera;
+import net.chromarenderer.renderer.camera.CoreCamera;
 import net.chromarenderer.renderer.camera.PinholeCamera;
 import net.chromarenderer.renderer.shader.Material;
 
@@ -72,7 +72,7 @@ public class FurnaceTest implements ChromaScene {
     }
 
     @Override
-    public Camera getCamera() {
+    public CoreCamera getCamera() {
         return camera;
     }
 }
