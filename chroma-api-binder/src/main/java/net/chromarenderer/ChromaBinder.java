@@ -1,19 +1,18 @@
 package net.chromarenderer;
 
-import net.chromarenderer.main.ChromaCore;
-
 /**
  * @author bensteinert
  */
 public class ChromaBinder {
 
-    private static ChromaBinder INSTANCE = new ChromaBinder();
-
     public static ChromaBinder get() {
-        return INSTANCE;
+        throw new MockBinderError();
     }
 
     public Object createCore() {
-        return new ChromaCore();
+        throw new MockBinderError();
+    }
+
+    public static class MockBinderError extends Error {
     }
 }

@@ -10,7 +10,7 @@ public class ChromaFactory {
     }
 
     public static Chroma create() {
-        return ChromaBinder.get().createCore();
+        return (Chroma) (ChromaBinder.get()).createCore();
     }
 
     private static void checkForCoreFactory() {
