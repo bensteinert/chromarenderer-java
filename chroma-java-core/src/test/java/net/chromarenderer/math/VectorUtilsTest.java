@@ -13,4 +13,13 @@ public class VectorUtilsTest extends TestCase {
         Vector3 result = VectorUtils.mirror(toMirror, normal);
         Assert.assertEquals(result, new ImmutableVector3(1.f, 1.f, 0.f).normalize());
     }
+
+    @Test
+    public void testComputeNormal() throws Exception {
+        ImmutableVector3 normal = VectorUtils.computeNormal(
+                new ImmutableVector3(1, 0, 0),
+                new ImmutableVector3(2, 0, 0),
+                new ImmutableVector3(1.5f, 2, 0));
+
+    }
 }

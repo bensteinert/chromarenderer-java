@@ -11,6 +11,20 @@ repositories {
 dependencies {
     compile 'org.apache.commons:commons-math3:3.6.1'
     compile 'org.scala-lang:scala-library:2.12.1'
-    //compile
+    compile group: 'org.specs2', name: 'specs2-scalacheck_2.12', version: '3.8.8'
+    compile project(':chroma-api')
+    compile project(':chroma-utils')
 }
 
+
+//task specs(type: JavaExec, dependsOn: testClasses) {
+//    main = 'org.specs2.files'
+//    args = ['console']
+//    classpath sourceSets.main.runtimeClasspath
+//    classpath sourceSets.test.runtimeClasspath
+//    classpath configurations.runtime
+//    classpath configurations.testRuntime
+//}
+//
+//test.dependsOn specs
+//

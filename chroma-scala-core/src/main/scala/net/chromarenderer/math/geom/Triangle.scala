@@ -1,5 +1,6 @@
 package net.chromarenderer.math.geom
 
+import net.chromarenderer.math.Vector3.calculateNormal
 import net.chromarenderer.math.{Constants, Vector3}
 import net.chromarenderer.math.raytracing.Ray
 
@@ -10,16 +11,10 @@ import net.chromarenderer.math.raytracing.Ray
   * @author bensteinert
   */
 
-class Triangle(p0_in: Vector3, p1_in: Vector3, p2_in: Vector3, n_in: Vector3) {
-
-  var p0: Vector3 = p0_in
-  var p1: Vector3 = p1_in
-  var p2: Vector3 = p2_in
-  var n: Vector3 = n_in
-
+case class Triangle(p0: Vector3, p1: Vector3, p2: Vector3, n: Vector3) {
 
   def this(p0: Vector3, p1: Vector3, p2: Vector3) {
-    this(p0, p1, p2, (p1 - p0 % p2 - p0).norm())
+    this(p0, p1, p2, calculateNormal(p0, p1, p2))
   }
 
   def e1: Vector3 = {
@@ -38,10 +33,10 @@ class Triangle(p0_in: Vector3, p1_in: Vector3, p2_in: Vector3, n_in: Vector3) {
     val pOnE3 = p1 + p2 * 0.5f
 
     Array(
-      new Triangle(p0, pOnE1, pOnE2, n),
-      new Triangle(pOnE1, p1, pOnE3, n),
-      new Triangle(pOnE3, p2, pOnE2, n),
-      new Triangle(pOnE1, pOnE3, pOnE2, n)
+      Triangle(p0, pOnE1, pOnE2, n),
+      Triangle(pOnE1, p1, pOnE3, n),
+      Triangle(pOnE3, p2, pOnE2, n),
+      Triangle(pOnE1, pOnE3, pOnE2, n)
     )
   }
 
@@ -72,12 +67,8 @@ class Triangle(p0_in: Vector3, p1_in: Vector3, p2_in: Vector3, n_in: Vector3) {
     val Q = T % e1
     /* calculate V parameter and test bounds */
     val v = (ray.dir * Q) * invDet
-    if (v < 0.0f || u + v > 1.0f) {
-      return 0
-    }
 
-    /* calculate distance, ray intersects triangle */
-    (e2 * Q) * invDet
+    /* if ray intersects triangle then calculate distance */
+    if (v < 0 || u + v > 1) 0 else (e2 * Q) * invDet
   }
-
 }

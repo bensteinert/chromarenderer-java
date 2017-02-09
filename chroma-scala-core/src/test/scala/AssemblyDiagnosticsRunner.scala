@@ -7,11 +7,11 @@ import net.chromarenderer.math.raytracing.Ray
 object AssemblyDiagnosticsRunner {
 
   def main(args: Array[String]) {
-    val TRIANGLE = new Triangle(new Vector3(0.0f, 0.0f, 1.0f), //x
-      new Vector3(.0f, 1.0f, 1.0f), //y
-      new Vector3(1.0f, 0.0f, 1.0f), //z
-      new Vector3(0.0f, 0.0f, -1.0f))
-    val RAY = new Ray(new Vector3(0.2f, 0.2f, 0.0f), new Vector3(0.0f, 0.0f, 1.0f), 0.0f, Float.MaxValue)
+    val TRIANGLE = Triangle(Vector3(0.0f, 0.0f, 1.0f), //x
+      Vector3(.0f, 1.0f, 1.0f), //y
+      Vector3(1.0f, 0.0f, 1.0f), //z
+      Vector3(0.0f, 0.0f, -1.0f))
+    val RAY = Ray(Vector3(0.2f, 0.2f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), 0.0f, Float.MaxValue)
 
     val start = System.currentTimeMillis
     var i = 0

@@ -38,4 +38,8 @@ public class VectorUtils {
         ImmutableVector3 t2 = vector.crossProduct(t1).normalize();
         return new CoordinateSystem(new ImmutableVector3(t1), t2, vector);
     }
+
+    public static ImmutableVector3 computeNormal(ImmutableVector3 p0, ImmutableVector3 p1, ImmutableVector3 p2){
+        return (p1.minus(p0).crossProduct(p2.minus(p0))).normalize();
+    }
 }
